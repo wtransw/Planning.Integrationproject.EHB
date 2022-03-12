@@ -3,40 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{642DD870-B326-4D3B-9E71-9D2E83F0FA2A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarWeb", "CalendarWeb\CalendarWeb.csproj", "{34DD357C-A365-4819-8470-3DD9EF84EBF3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarServices", "src\CalendarServices\CalendarServices.csproj", "{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}"
-EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{34DD357C-A365-4819-8470-3DD9EF84EBF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34DD357C-A365-4819-8470-3DD9EF84EBF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34DD357C-A365-4819-8470-3DD9EF84EBF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34DD357C-A365-4819-8470-3DD9EF84EBF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{34DD357C-A365-4819-8470-3DD9EF84EBF3} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
-		{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
-		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BE603E6D-113C-4951-B1FA-0F1795A2FD9D}
