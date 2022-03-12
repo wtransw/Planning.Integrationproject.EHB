@@ -18,8 +18,7 @@ class Program
     };
 
     static string ApplicationName = "Google Calendar API Test"; //dubbelchecken in gCloud services.
-    static string CalendarId = "integrationprojplanningwt2022";             //TODO: uit AppSettings halen.
-    static string CalendarIdWithEmail = "integrationprojplanningwt2022@google.com";
+    static string CalendarId = "planning.integrationproject.ehb@gmail.com"; //TODO: uit AppSettings halen.
     static string eventIdMeeting120322 = "0pmjplojtl1hsp897u8s2shns4";      //TODO: uit AppSettings halen.
 
     static void Main(string[] args)
@@ -46,22 +45,6 @@ class Program
             HttpClientInitializer = credential,
             ApplicationName = ApplicationName,
         });
-
-        Google.GoogleApiException
-              HResult = 0x80131500
-              Message = Google.Apis.Requests.RequestError
-            Request had insufficient authentication scopes. [403]
-            Errors[
-                Message[Insufficient Permission] Location[- ] Reason[insufficientPermissions] Domain[global]
-            ]
-
-  Source = Google.Apis
-  StackTrace:
-        at Google.Apis.Requests.ClientServiceRequest`1.< ParseResponse > d__35.MoveNext()
-   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-   at Google.Apis.Requests.ClientServiceRequest`1.Execute()
-   at Program.Main(String[] args) in C: \Users\Wouter A\source\repos\Planning.Integrationproject.EHB\ConsoleTest\Program.cs:line 92
-
 
         var newEvent = new Event()
         {
@@ -104,17 +87,14 @@ class Program
             }
         };
 
-        EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, newEvent, "primary");
+
+
+        EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, newEvent, CalendarId);
         Event response = request.Execute();
 
-        service.Events.Insert(newEvent, "primary").Execute();
+        //service.Events.Insert(newEvent, CalendarId).Execute();
         ;
-        //service.Events.Insert(newEvent, "primary").Execute();
-        //Console.WriteLine($"Event created: {newEvent.Summary}");
 
-
-
-        //ShowEvents(service).ConfigureAwait(false);
 
         //Add an Attendee
         EventAttendee newAttendee = new()
@@ -123,9 +103,9 @@ class Program
             DisplayName = "Eerste Genodigde",
             Comment = "Ik zal zeker komen"
         };
-        var eventItem = GetEvent(service, eventIdMeeting120322).Result; //.ConfigureAwait(false);
-        if (eventItem is not null)
-            AddAttendee(service, eventItem, newAttendee).ConfigureAwait(false);
+        //var eventItem = GetEvent(service, eventIdMeeting120322).Result; //.ConfigureAwait(false);
+        //if (eventItem is not null)
+        //    AddAttendee(service, eventItem, newAttendee).ConfigureAwait(false);
 
 
 
@@ -189,39 +169,28 @@ class Program
 
     async static Task AddAttendee(CalendarService service, Event eventItem, EventAttendee eventAttendee)
     {
-        //var eventje = await GetEvent(service, eventIdMeeting120322);
-        //if (eventje != null)
+
+
         eventItem.Attendees.Add(eventAttendee);
+        //eventItem.Location = "Berlin";
+
+        // Update the event
+        Event updatedEvent = service.Events.Update(eventItem, CalendarId, eventItem.Id).Execute();
 
         //var req = service.Events.Patch(eventItem, CalendarId, eventIdMeeting120322);
         //var req = service.Events.Update(eventItem, CalendarId, eventIdMeeting120322);
 
-        EventsResource.PatchRequest request = new EventsResource.PatchRequest(service, eventItem, "primary", eventIdMeeting120322);
-        Event response = request.Execute();
+        //EventsResource.PatchRequest request = new EventsResource.PatchRequest(service, eventItem, "primary", eventIdMeeting120322);
+        //Event response = request.Execute();
         ;
 
         //var response = await req.ExecuteAsync();
 
-        Console.WriteLine($"aantal genodigden: {response.Attendees?.Count().ToString() ?? "unavailable"}");
+        Console.WriteLine($"aantal genodigden: {updatedEvent.Attendees?.Count().ToString() ?? "unavailable"}");
         ;
 
     }
 
-
-
-    //async Task Run()
-    //{
-    //    CalendarService calendarService = new(new BaseClientService.Initializer
-    //    {
-    //        ApplicationName = "Google Calendar API Sample",
-    //        ApiKey = ApiKey,
-    //    });
-
-    //    //authenticate google calendar
-    //    var calendarList = await calendarService.CalendarList.List().ExecuteAsync();
-    //    var calendar = calendarList.Items.FirstOrDefault(x => x.Id == CalendarId);
-
-    //    ;
 
 
 }
