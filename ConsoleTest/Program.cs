@@ -88,6 +88,8 @@ class Program
         };
 
 
+        //service.Events.Insert(newEvent, CalendarId).Execute();
+        ;
 
         //EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, newEvent, CalendarId);
         //Event response = request.Execute();
@@ -118,7 +120,7 @@ class Program
         var req = await request.ExecuteAsync();
 
 
-        return req.Items.FirstOrDefault();
+        return req.Items.FirstOrDefault(ev => ev.Id == eventId);
     }
 
     async static Task ShowEvents(CalendarService service)
@@ -152,7 +154,7 @@ class Program
                 var numberOfAttendees = eventItem.Attendees?.Count ?? 0;
                 Console.WriteLine($"Aantal aanwezigen: {numberOfAttendees}");
                 if (numberOfAttendees > 0)
-                    foreach (var attendee in eventItem.Attendees)
+                    foreach (var attendee in eventItem.Attendees!)
                     {
                         Console.WriteLine($"{attendee.DisplayName} ({attendee.Email}) - Antwoord: {attendee.ResponseStatus}");
                     }
@@ -169,26 +171,10 @@ class Program
 
     async static Task AddAttendee(CalendarService service, Event eventItem, EventAttendee eventAttendee)
     {
-        //var eventje = await GetEvent(service, eventIdMeeting120322);
-        //if (eventje != null)
         eventItem.Attendees.Add(eventAttendee);
-        //eventItem.Location = "Berlin";
-
-        // Update the event
-        Event updatedEvent = service.Events.Update(eventItem, CalendarId, eventItem.Id).Execute();
-
-        //var req = service.Events.Patch(eventItem, CalendarId, eventIdMeeting120322);
-        //var req = service.Events.Update(eventItem, CalendarId, eventIdMeeting120322);
-
-        //EventsResource.PatchRequest request = new EventsResource.PatchRequest(service, eventItem, "primary", eventIdMeeting120322);
-        //Event response = request.Execute();
-        ;
-
-        //var response = await req.ExecuteAsync();
+        var updatedEvent = await service.Events.Update(eventItem, CalendarId, eventIdMeeting120322).ExecuteAsync();
 
         Console.WriteLine($"aantal genodigden: {updatedEvent.Attendees?.Count().ToString() ?? "unavailable"}");
-        ;
-
     }
 
 
