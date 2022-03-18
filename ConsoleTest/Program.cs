@@ -3,26 +3,37 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
+using System.IO;
 
 class Program
 {
     // If modifying these scopes, delete your previously saved credentials
     // at ~/.credentials/calendar-dotnet-quickstart.json
 
-    //Scope aanpassen indien nodig ivm veiligheid. Staat nu open. 
+    //Scope aanpassen indien nodig ivm veiligheid. Staat nu open.
+    //Na aapassen van de scopes niet vergeten je token.json file te deleten in je build direcory!!!!!!!!!!! !!!!!!!!!!
     static string[] Scopes = {
-        //CalendarService.Scope.CalendarReadonly,
         CalendarService.Scope.Calendar,
         CalendarService.Scope.CalendarEvents,
         CalendarService.Scope.CalendarSettingsReadonly
     };
 
-    static string ApplicationName = "Google Calendar API Test"; //dubbelchecken in gCloud services.
+    static string ApplicationName = "Google Calendar API Test";             //dubbelchecken in gCloud services.
     static string CalendarId = "planning.integrationproject.ehb@gmail.com"; //TODO: uit AppSettings halen.
-    static string eventIdMeeting120322 = "0pmjplojtl1hsp897u8s2shns4";      //TODO: uit AppSettings halen.
+    //static string eventIdMeeting120322 = "0pmjplojtl1hsp897u8s2shns4";      
+    static string eventIdMeeting120322 = "aa5uugl3gh8hsmq491a373p87o";
 
     static void Main(string[] args)
     {
+        //Flow
+        /*
+         *          * andere deeltjes *
+         *              rabbitmq
+         *               * wij *
+         *        igoogleCalendarService
+         *            google Calendar
+         */
+
         UserCredential credential;
 
         using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
@@ -67,6 +78,7 @@ class Program
             Attendees = new EventAttendee[] {
                 new EventAttendee
                 {
+                    //Id = Id uit de CRM?????
                     Email = "wouter.anseeuw@student.ehb.be",
                     DisplayName = "Wouter Anseeuw",
                     ResponseStatus = "accepted",
@@ -80,45 +92,82 @@ class Program
                     Organizer = false               //bij ons dus een gast
                     //resource = ????
                 }
-            },
-            Source = new()
-            {
-                Title = "Console App als test"
             }
         };
 
 
-        //service.Events.Insert(newEvent, CalendarId).Execute();
-        ;
 
-        //EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, newEvent, CalendarId);
-        //Event response = request.Execute();
+        try
+        {
+            //EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, newEvent, CalendarId);
+            //Event response = request.Execute();
 
-        //service.Events.Insert(newEvent, CalendarId).Execute();
-        //;
+            //service.Events.Watch()
+
+
+            //watch google calendar for changes
+            var channel = new Channel();
+            
+            //Kestrel is ingesteld op poort 5000 voor http, 7001 voor https.
+            channel.Address = "https://0.0.0.0:7001/";  
+
+            //webhook.site gebruiken als webhook om https callbacks te testen
+            //channel.Address = "https://webhook.site/c9d0cbe8-5f84-4fde-9647-0bf95cf14c96";
+            channel.Id = "5";
+            channel.Type = "web_hook";
+
+            //datetime to unix timestamp
+            var endTimeChannel = DateTime.Now.AddMinutes(10).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+            channel.Expiration = (long)endTimeChannel;        //verloopt binnen een half uur.
+                                                              //channel.Type = "stream";
+
+            var stream = service.Events.Watch(channel, CalendarId).ExecuteAsStream();
+
+            //using (var reader = new StreamReader(stream))
+            //{
+            //    bool watching = true;
+            //    while (watching)
+            //    {
+            //        while (reader.Peek() >= 0)
+            //        {
+            //            var line = reader.ReadLine();
+            //            Console.WriteLine(line);
+            //        }
+            //        Thread.Sleep(1000);
+            //    }
+            //}
+
+            var _ = ShowEvents(service).ConfigureAwait(false);
+            Thread.Sleep(10000);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+
 
 
         //Add an Attendee
         EventAttendee newAttendee = new()
         {
-            Email = "EersteGenodigde@gmail.com",
-            DisplayName = "Eerste Genodigde",
-            Comment = "Ik zal zeker komen"
+            Email = "NieuweGenodigde123456@gmail.com",
+            DisplayName = "Nieuwe Genodigde",
+            Comment = "Welkom"
         };
-        var eventItem = GetEvent(service, eventIdMeeting120322).Result; //.ConfigureAwait(false);
-        if (eventItem is not null)
-            AddAttendee(service, eventItem, newAttendee).ConfigureAwait(false);
 
+        //AddAttendee(service, eventIdMeeting120322, newAttendee).ConfigureAwait(false);
 
+        //Thread.Sleep(5000);
+        //Toon overzicht op scherm.
+        //ShowEvents(service).ConfigureAwait(false);
 
     }
 
     async static Task<Event?> GetEvent(CalendarService service, string eventId)
     {
-        EventsResource.ListRequest request = service.Events.List("primary");
-        //var request = service.Events.Get(CalendarId, eventId);
+        EventsResource.ListRequest request = service.Events.List(CalendarId);
         var req = await request.ExecuteAsync();
-
 
         return req.Items.FirstOrDefault(ev => ev.Id == eventId);
     }
@@ -142,6 +191,7 @@ class Program
         {
             foreach (var eventItem in events.Items)
             {
+                Console.WriteLine($"{Environment.NewLine} -= EVENT =-");
                 string when = eventItem.Start.DateTime.ToString();
                 if (String.IsNullOrEmpty(when))
                 {
@@ -168,16 +218,34 @@ class Program
 
     }
 
-
-    async static Task AddAttendee(CalendarService service, Event eventItem, EventAttendee eventAttendee)
+    async static Task AddAttendee(CalendarService service, string eventId, EventAttendee eventAttendee)
     {
-        eventItem.Attendees.Add(eventAttendee);
-        var updatedEvent = await service.Events.Update(eventItem, CalendarId, eventIdMeeting120322).ExecuteAsync();
+        var eventItem = await GetEvent(service, eventId);
+        if (eventItem is not null && eventItem.Start.DateTime > DateTime.UtcNow)
+        {
+            eventItem.Attendees = eventItem.Attendees ?? new List<EventAttendee>();
+            eventItem.Attendees.Add(eventAttendee);
+            try
+            {
+                var aantalGenodigden = eventItem.Attendees?.Count();
+                var updatedEvent = await service.Events.Update(eventItem, CalendarId, eventIdMeeting120322).ExecuteAsync();
+                var aantalGenodigdenNaInsert = updatedEvent.Attendees?.Count();
 
-        Console.WriteLine($"aantal genodigden: {updatedEvent.Attendees?.Count().ToString() ?? "unavailable"}");
+                Console.WriteLine($"aantal genodigden: {aantalGenodigden.ToString() ?? "unavailable"}");
+
+                bool isGelukt = eventItem.Attendees.First(a => a.Email == eventAttendee.Email) is not null && aantalGenodigdenNaInsert == aantalGenodigden + 1;
+
+                var lijstMetGenodigden = updatedEvent.Attendees!.ToList();
+                ;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        else
+            Console.WriteLine($"Kon geen event in de toekomst vinden met Id {eventId}");
     }
-
-
 
 }
 
