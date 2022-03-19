@@ -82,6 +82,7 @@ class Program
                     Email = "wouter.anseeuw@student.ehb.be",
                     DisplayName = "Wouter Anseeuw",
                     ResponseStatus = "accepted",
+                     
                     Organizer = true                //bij ons de spreker
                 },
                 new EventAttendee
@@ -115,6 +116,7 @@ class Program
             //channel.Address = "https://webhook.site/c9d0cbe8-5f84-4fde-9647-0bf95cf14c96";
             channel.Id = "5";
             channel.Type = "web_hook";
+            channel.Payload = true;
 
             //datetime to unix timestamp
             var endTimeChannel = DateTime.Now.AddMinutes(10).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
