@@ -7,9 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{642DD870-B32
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarWeb", "CalendarWeb\CalendarWeb.csproj", "{34DD357C-A365-4819-8470-3DD9EF84EBF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarServices", "src\CalendarServices\CalendarServices.csproj", "{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarServices", "src\CalendarServices\CalendarServices.csproj", "{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarWorkerService", "src\CalendarWorkerService\CalendarWorkerService.csproj", "{33595602-CA28-4E29-BB90-DBE9B015A4B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33595602-CA28-4E29-BB90-DBE9B015A4B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33595602-CA28-4E29-BB90-DBE9B015A4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33595602-CA28-4E29-BB90-DBE9B015A4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33595602-CA28-4E29-BB90-DBE9B015A4B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +43,7 @@ Global
 		{34DD357C-A365-4819-8470-3DD9EF84EBF3} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
 		{98BE6107-DDAB-4BB4-BA2A-124ABB2A6F24} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
 		{FE6AF8A9-90F6-44EA-9AD5-1ADF3A934A7F} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
+		{33595602-CA28-4E29-BB90-DBE9B015A4B1} = {642DD870-B326-4D3B-9E71-9D2E83F0FA2A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BE603E6D-113C-4951-B1FA-0F1795A2FD9D}

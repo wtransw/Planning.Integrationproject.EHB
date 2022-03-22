@@ -11,7 +11,6 @@ namespace CalendarWeb.Controllers
     public class CalendarController : ControllerBase
     {
         /*
-            Google Calenadar API key: AIzaSyARCOmdho3isu7NeZhZxqj-gnOOaZ9oELU
             TODO: na deployen in een container op EHB de API calendar key restricten op IP adres van de server. 
 
         */
