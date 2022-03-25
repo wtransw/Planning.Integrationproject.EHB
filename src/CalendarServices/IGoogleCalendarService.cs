@@ -28,7 +28,6 @@ namespace CalendarServices
         Task<Event> RemoveAttendeeFromSession(string userGuid, string sessionGuid, string attendeeGuid, string attendeeEmail);
         #endregion
 
-
         #region Sessions
         Task<List<Event>> GetAllUpcomingSessions(string calendarGuid);
         Task<List<Event>> GetAllUpcomingSessionsUntilDate(string calendarGuid, DateTime latestStartTime);
@@ -38,6 +37,7 @@ namespace CalendarServices
         Task<Event> CreateSessionForEvent(string calendarGuid, string eventName, Event session);
         Task<string> DeleteSession(string calendarGuid, string? sessionGuid, string? sessionName);
         Task<Event> UpdateSession(string calendarGuid, Event session);
+        Task<List<EventAttendee>> GetEventAttendees(string calendarGuid, string eventId);
         #endregion
 
         #region Calendars

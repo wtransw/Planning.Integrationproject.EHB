@@ -238,6 +238,12 @@ namespace CalendarServices
                 ApplicationName = ApplicationName,
             });
         }
+
+        public async Task<List<EventAttendee>> GetEventAttendees(string calendarGuid, string eventId)
+        {
+            var session = await GetSession(calendarGuid, eventId);
+            return session.Attendees.ToList();
+        }
     }
 
 }
