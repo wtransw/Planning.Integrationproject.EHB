@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SessionEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="SessionEvent.xsd">
+
+  <Version>1</Version>
+  <Title>CyberSecurity</Title>
+  <StartDateUTC>2022-06-14T09:00:00Z</StartDateUTC>
+  <EndDateUTC>2022-06-14T10:00:00Z</EndDateUTC>
+  <Description>Een interessante sessie over Cybersecurity</Description>
+  <OrganiserUUID>aaaef973-d8ce-4c92-95b4-3635bb2d42d5</OrganiserUUID>
+  <IsActive>0</IsActive>
+
+
+</SessionEvent>
+
+  
+  
