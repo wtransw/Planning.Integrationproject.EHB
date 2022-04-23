@@ -4,6 +4,10 @@ using Google.Apis.Services;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
 using System.IO;
+using System.Xml.Serialization;
+using System.Text;
+using CalendarServices.Models;
+using CalendarServices;
 
 class Program
 {
@@ -33,6 +37,21 @@ class Program
          *        igoogleCalendarService
          *            google Calendar
          */
+
+
+
+        //var brol = testAttendeeXml();
+        try
+        {
+            var brol = ObjectToXmlTest().GetAwaiter().GetResult();
+            Console.WriteLine(brol);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        ;
+        return;
 
         UserCredential credential;
 
@@ -255,5 +274,46 @@ class Program
             Console.WriteLine($"Kon geen event in de toekomst vinden met Id {eventId}");
     }
 
+
+    static string testAttendeeXml()
+    {
+        //var xmlString = File.ReadAllText(@"c:\Users\Wouter A\source\repos\Planning.Integrationproject.EHB.Forked\src\PlanningApi\XMLExamples\AttendeeEvent_1.xml");
+        var xmlString = File.ReadAllText(@"c:\temp\brol.xml");
+        return DeSerializeXml(xmlString);
+    }
+    
+    static string DeSerializeXml(string xmlString)
+    {
+        XmlRootAttribute xRoot = new XmlRootAttribute();
+        xRoot.ElementName = "AttendeeEvent";
+        //xRoot.Namespace = "http://www.brol.com";
+        xRoot.IsNullable = true;
+
+        var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
+        using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(xmlString)));
+        var attendee = (PlanningAttendee)xmlSerializer.Deserialize(reader);
+        return attendee is not null ? (attendee.Name ?? "Doe" + attendee.LastName ?? "John") : "";
+    }
+
+
+    static async Task<string> ObjectToXmlTest()
+    {
+        var logger = new NLog.LogFactory().GetCurrentClassLogger();
+        var pS = new PlanningService(logger);
+
+        object obj;
+        string testUuid = "12345678901234567890123456789012";
+        var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
+        var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
+        var sessionAttendee = new PlanningSessionAttendee(MethodEnum.create, testUuid, testUuid, NotificationStatus.pending);
+
+        obj = attendee;
+        var meh = await pS.ObjectToXml(obj);
+
+        return meh;
+    }
+
+
+    
 }
 
