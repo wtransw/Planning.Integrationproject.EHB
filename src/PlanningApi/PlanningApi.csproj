@@ -7,15 +7,16 @@
     <UserSecretsId>0ea9a5c1-eca1-4ddd-9487-c09b69b6c2e1</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="credentials.json" />
+    <Content Remove="credentialss.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="credentials.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Include="credentialss.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -27,7 +28,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.7.15" />
-    <PackageReference Include="NLog.Web" Version="4.14.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
@@ -37,25 +37,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Crm.Link.RabbitMq">
-      <HintPath>..\..\..\IntegrationProjectCrmApi\ipwt22-crm-api\Crm.Link.RabbitMq\bin\Release\net6.0\Crm.Link.RabbitMq.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="XmlSchemas\AttendeeEvent.xsd">
+    <None Update="XmlSchemas_old\AttendeeEvent.xsd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="XmlSchemas\SessionAttendeeEvent.xsd">
+    <None Update="XmlSchemas_old\SessionAttendeeEvent.xsd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="XmlSchemas\SessionEvent.xsd">
+    <None Update="XmlSchemas_old\SessionEvent.xsd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="XmlSchemas\UUID.xsd">
+    <None Update="XmlSchemas_old\UUID.xsd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="XmlSchemas\UUID_1.xml">
+    <None Update="XmlSchemas_old\UUID_1.xml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
