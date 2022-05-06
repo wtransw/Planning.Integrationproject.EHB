@@ -6,7 +6,7 @@ using NLog.Web;
 using PlanningApi.Configuration;
 using PlanningApi.Configuration.Authentication;
 
-var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+Logger logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Booting Planning API");
 
 try
@@ -26,11 +26,11 @@ try
                     });
     
     builder.Services.AddOpenApi();
-    
-    //// configuration rabbitmq
-    //builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
-    //builder.Services.AddPublisher();
-    
+
+    // configuration rabbitmq
+    builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
+    builder.Services.AddPublisher();
+
     builder.Services.AddSingleton<CalendarOptions>(provider =>
         new CalendarOptions()
         {
@@ -57,7 +57,7 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.IsDevelopment() || true)
     {
         app.UseSwagger();
         app.UseSwaggerUI();

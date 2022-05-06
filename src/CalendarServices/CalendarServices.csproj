@@ -12,14 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Crm.Link.RabbitMq">
-      <HintPath>..\..\..\IntegrationProjectCrmApi\ipwt22-crm-api\Crm.Link.RabbitMq\bin\Release\net6.0\Crm.Link.RabbitMq.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="credentials.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="XmlSchemas\AttendeeEvent.xsd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
