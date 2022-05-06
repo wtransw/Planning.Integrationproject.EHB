@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="SessionEvent">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Version moet hoger dan 0 zijn -->
+                <xs:element name="Version" >
+                    <xs:simpleType>
+                        <xs:restriction base="xs:decimal">
+                            <xs:minExclusive value="0" />
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                <!-- Title max toegelaten karakters = 30 -->
+                <xs:element name="Title">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:maxLength value="30"></xs:maxLength>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                <!-- StartDateUTC volgens dateTime -->
+                <xs:element name="StartDateUTC" >
+                    <xs:simpleType>
+                        <xs:restriction base="xs:dateTime"/>
+                    </xs:simpleType>
+                </xs:element>
+
+                <!-- EndDateUTC volgens dateTime-->
+                <xs:element name="EndDateUTC" >
+                    <xs:simpleType>
+                        <xs:restriction base="xs:dateTime"/>
+                    </xs:simpleType>
+                </xs:element>
+
+                <!-- Description mag max 100 karakters hebben, whitespace = preserved -->
+                <xs:element name="Description">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:maxLength value="75"/> 
+                            <xs:whiteSpace value="preserve"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                 <!-- OrganiserUUID moet min 32 karakters hebben -->
+                 <xs:element name="OrganiserUUID">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:minLength value="32"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                 <!-- IsActive kan enkel 0 of 1 zijn -->
+                 <xs:element name="IsActive">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="0|1"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
