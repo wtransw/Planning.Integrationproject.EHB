@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using System.Timers;
 
 namespace Crm.Link.RabbitMq.Common
 {
@@ -11,16 +12,17 @@ namespace Crm.Link.RabbitMq.Common
         protected readonly string LoggerQueue = $"{VirtualHost}.message";
         protected const string LoggerQueueAndExchangeRoutingKey = "message";
 
-        protected IModel Channel { get; private set; }
-        private IConnection _connection;
-        private readonly IConnectionFactory connectionFactory;
+        protected IModel? Channel { get; private set; }
+        private System.Timers.Timer? _timer;
+        private IConnection? _connection;
+        private readonly ConnectionProvider connectionProvider;
         private readonly ILogger<RabbitMqClientBase> _logger;
 
         protected RabbitMqClientBase(
-            IConnectionFactory connectionFactory,
+            ConnectionProvider connectionProvider,
             ILogger<RabbitMqClientBase> logger)
         {
-            this.connectionFactory = connectionFactory;
+            this.connectionProvider = connectionProvider;
             _logger = logger;
             ConnectToRabbitMq();
         }
@@ -28,24 +30,19 @@ namespace Crm.Link.RabbitMq.Common
         private void ConnectToRabbitMq()
         {
             if (_connection == null || _connection.IsOpen == false)
-            {
-                do
+            {                
+                try
                 {
-                    try
-                    {
-                        _connection = connectionFactory.CreateConnection();
-                    }
-                    catch (BrokerUnreachableException bex)
-                    {
-                        _logger.LogError(bex, "RabbitMq not reachable: ");                    
-                    }
-
-                    Thread.Sleep(1000);
-
-                } while (_connection is null);
+                    _connection = connectionProvider.GetConnection();
+                }
+                catch (BrokerUnreachableException)
+                {
+                    _logger.LogError("RabbitMq not reachable: Timer Active, will retry in 10 sec");
+                    SetTimer();
+                }
             }
 
-            if (Channel == null || Channel.IsOpen == false)
+            if (_connection is not null && (Channel == null || Channel.IsOpen == false))
             {
                 Channel = _connection.CreateModel();
                 Channel.ExchangeDeclare(exchange: LoggerExchange, type: ExchangeType.Direct, durable: true, autoDelete: false);
@@ -53,6 +50,31 @@ namespace Crm.Link.RabbitMq.Common
                 Channel.QueueBind(queue: LoggerQueue, exchange: LoggerExchange, routingKey: LoggerQueueAndExchangeRoutingKey);
             }
         }
+
+        private void SetTimer()
+        {
+            if (_timer == null)
+            {
+                _timer = new System.Timers.Timer(10000);
+
+                _timer.Elapsed += OnTimedEvent;
+                _timer.AutoReset = true;
+                _timer.Enabled = true;
+            }
+        }
+
+        private void OnTimedEvent(Object? source, ElapsedEventArgs e)
+        {
+             ConnectToRabbitMq();
+
+            if (_connection is not null)
+            {
+                _logger.LogError("RabbitMq is reachable: Timer stop and disposed");
+                _timer!.Stop();
+                _timer.Dispose();
+            }
+        }
+
         public void Dispose()
         {
             try
@@ -64,6 +86,9 @@ namespace Crm.Link.RabbitMq.Common
                 _connection?.Close();
                 _connection?.Dispose();
                 _connection = null;
+
+                connectionProvider?.Dispose();
+                _timer?.Dispose();
             }
             catch (Exception ex)
             {

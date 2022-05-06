@@ -11,11 +11,11 @@ namespace Crm.Link.RabbitMq.Consumer
         protected override string QueueName => "CUSTOM_HOST.log.message";
 
         public LogConsumer(
-            ConnectionFactory connectionFactory,
+            ConnectionProvider connectionProvider,
             ILogger<LogConsumer> logConsumerLogger,
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger) :
-            base(connectionFactory, consumerLogger, logger)
+            base(connectionProvider, consumerLogger, logger)
         {
             try
             {

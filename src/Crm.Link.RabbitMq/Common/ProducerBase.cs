@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
-using System.Text;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace Crm.Link.RabbitMq.Common
 {
@@ -16,27 +18,53 @@ namespace Crm.Link.RabbitMq.Common
         protected abstract string RoutingKeyName { get; }
         protected abstract string AppId { get; }
 
+        protected List<T> MessageQueue { get; set; } = new();
+
         protected ProducerBase(
-            ConnectionFactory connectionFactory,
+            ConnectionProvider connectionProvider,
             ILogger<RabbitMqClientBase> logger,
             ILogger<ProducerBase<T>> producerBaseLogger) :
-            base(connectionFactory, logger) => _logger = producerBaseLogger;
+            base(connectionProvider, logger) => _logger = producerBaseLogger;
 
         public virtual void Publish(T @event)
         {
-            try
+            _ = @event ?? throw new ArgumentNullException(nameof(@event));
+
+            MessageQueue.Add(@event);
+            if (Channel is not null)
             {
-                var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event));
-                var properties = Channel.CreateBasicProperties();
-                properties.AppId = AppId;
-                properties.ContentType = "application/json";
-                properties.DeliveryMode = 1; // Doesn't persist to disk
-                properties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-                Channel.BasicPublish(exchange: ExchangeName, routingKey: RoutingKeyName, body: body, basicProperties: properties);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "Error while publishing");
+                foreach (var message in MessageQueue)
+                {
+                    try
+                    {
+                        Console.WriteLine("start");
+                        Console.WriteLine(message);
+                        ReadOnlyMemory<byte> body;
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            XmlSerializer serializer = new XmlSerializer(typeof(T));
+                            serializer.Serialize(ms, @event);
+
+                            body = new ReadOnlyMemory<byte>(ms.ToArray());
+                        }
+
+                        Console.WriteLine("sending");
+                        Console.WriteLine($"message size: {body.Length}");
+
+                        var properties = Channel.CreateBasicProperties();
+                        properties.AppId = AppId;
+                        properties.ContentType = "application/xml";
+                        properties.DeliveryMode = 1; // Doesn't persist to disk
+                        properties.Timestamp = new AmqpTimestamp(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+                        Channel.BasicPublish(exchange: ExchangeName, routingKey: RoutingKeyName, body: body, basicProperties: properties);
+                        Console.WriteLine("published");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogCritical(ex, "Error while publishing");
+                    }
+                }
+                        MessageQueue.Clear();
             }
         }
     }

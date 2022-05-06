@@ -1,42 +1,45 @@
-﻿using Crm.Link.RabbitMq.Common;
+﻿using CalendarServices.Models;
+using Crm.Link.RabbitMq.Common;
 using Crm.Link.RabbitMq.Producer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Crm.Link.RabbitMq.Consumer
 {
-    public class SessionConsumer : ConsumerBase, IHostedService
+    public class PlanningAttendeeConsumer : ConsumerBase, IHostedService
     {
-        private readonly ILogger<SessionConsumer> sessionLogger;
+        protected override string QueueName => "Attendees";
+        private readonly ILogger<PlanningAttendeeConsumer> attendeeLogger;
 
-        protected override string QueueName => "Session";
-
-        public SessionConsumer(
+        public PlanningAttendeeConsumer(
             ConnectionProvider connectionProvider,
-            ILogger<SessionConsumer> sessionLogger,
+            ILogger<PlanningAttendeeConsumer> attendeeLogger,
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger) :
             base(connectionProvider, consumerLogger, logger)
         {
-            this.sessionLogger = sessionLogger;
-            TimerMethode += async () => await StartAsync(new CancellationToken(false)); 
+            this.attendeeLogger = attendeeLogger;
+            TimerMethode += async () => await StartAsync(new CancellationToken(false));
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
             if (Channel is not null)
             {
-                    try
+                try
                 {
                     var consumer = new AsyncEventingBasicConsumer(Channel);
-                    consumer.Received += OnEventReceived<SessionEvent>;
+                    consumer.Received += OnEventReceived<PlanningAttendee>;
                     Channel?.BasicConsume(queue: QueueName, autoAck: false, consumer: consumer);
                 }
                 catch (Exception ex)
                 {
-                    sessionLogger.LogCritical(ex, "Error while consuming message");
+                    attendeeLogger.LogCritical(ex, "Error while consuming message");
                 }
             }
             else
@@ -49,8 +52,6 @@ namespace Crm.Link.RabbitMq.Consumer
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            Channel?.Dispose();
-
             return Task.CompletedTask;
         }
     }

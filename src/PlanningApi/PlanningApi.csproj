@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CalendarServices\CalendarServices.csproj" />
+    <ProjectReference Include="..\Crm.Link.RabbitMq\Crm.Link.RabbitMq.csproj" />
   </ItemGroup>
 
   <ItemGroup>

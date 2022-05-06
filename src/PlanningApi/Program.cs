@@ -1,4 +1,5 @@
 ﻿using CalendarServices;
+using Crm.Link.RabbitMq.Configuration;
 using Newtonsoft.Json.Converters;
 using NLog;
 using NLog.Web;
@@ -25,11 +26,11 @@ try
                     });
     
     builder.Services.AddOpenApi();
-    
-    //// configuration rabbitmq
-    //builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
-    //builder.Services.AddPublisher();
-    
+
+    // configuration rabbitmq
+    builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
+    builder.Services.AddPublisher();
+
     builder.Services.AddSingleton<CalendarOptions>(provider =>
         new CalendarOptions()
         {
