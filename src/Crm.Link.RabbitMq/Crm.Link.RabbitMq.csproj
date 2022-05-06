@@ -18,4 +18,23 @@
     <ProjectReference Include="..\CalendarServices\CalendarServices.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\AttendeeEvent.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Resources\SessionAttendeeEvent.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Resources\SessionEvent.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Resources\UUID.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="SessionAttendeeEvent">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Methode kan enkel create, update of delete zijn -->
+                <xs:element name="Methode">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="create|update|delete"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                  <!-- AccountUUID moet min 32 karakters hebben -->
+                  <xs:element name="AccountUUID">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:minLength value="32"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                  <!-- SessionUUID moet min 32 karakters hebben -->
+                  <xs:element name="SessionUUID">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:minLength value="32"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                    <!-- InvitationStatus kan enkel pending, accepted of declined zijn -->
+                    <xs:element name="InvitationStatus">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:pattern value="pending|accepted|declined"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
