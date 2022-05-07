@@ -40,18 +40,18 @@ class Program
 
 
 
-        //var brol = testAttendeeXml();
-        try
-        {
-            var brol = ObjectToXmlTest().GetAwaiter().GetResult();
-            Console.WriteLine(brol);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        ;
-        return;
+        ////var brol = testAttendeeXml();
+        //try
+        //{
+        //    var brol = ObjectToXmlTest().GetAwaiter().GetResult();
+        //    Console.WriteLine(brol);
+        //}
+        //catch (Exception ex)
+        //{
+        //    Console.WriteLine(ex.Message);
+        //}
+        //;
+        //return;
 
         UserCredential credential;
 
@@ -67,7 +67,10 @@ class Program
                 CancellationToken.None,
                 new FileDataStore(credPath, true)).Result;
             Console.WriteLine("Credential file saved to: " + credPath);
+        //GoogleWebAuthorizationBroker.AuthorizeAsync(GoogleClientSecrets.FromStream(stream).Secrets,
+
         }
+
 
         // Create Google Calendar API service with the credential.
         var service = new CalendarService(new BaseClientService.Initializer()

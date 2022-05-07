@@ -12,12 +12,11 @@ namespace PlanningApi.Controllers
     {
         private readonly ILogger<PlanningController> Logger;
         private readonly IGoogleCalendarService CalendarService;
+        private readonly IPlanningService PlanningService;
         private readonly CalendarOptions CalendarOptions;
         private readonly PlanningAttendeePublisher PlanningAttendeePublisher;
         private readonly PlanningSessionPublisher PlanningSessionPublisher;
         private readonly PlanningSessionAttendeePublisher PlanningSessionAttendeePublisher;
-
-        private readonly PlanningService PlanningService;
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
@@ -25,7 +24,7 @@ namespace PlanningApi.Controllers
             PlanningAttendeePublisher planningAttendeePublisher,
             PlanningSessionPublisher planningSessionPublisher,
             PlanningSessionAttendeePublisher planningSessionAttendeePublisher,
-            PlanningService planningService)
+            IPlanningService planningService)
         {
             this.Logger = logger;
             this.CalendarOptions = calendarOptions; 

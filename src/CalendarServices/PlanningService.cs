@@ -15,11 +15,10 @@ namespace CalendarServices
     public class PlanningService : IPlanningService
     {
         ILogger Logger;
-        
-        public PlanningService(ILogger logger)
+
+        public PlanningService(ILogger? logger)
         {
-            this.Logger = logger;
-            
+            this.Logger = logger; 
         }
 
         /// <summary>
