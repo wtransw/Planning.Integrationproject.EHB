@@ -8,6 +8,9 @@ using System.Xml.Serialization;
 using System.Text;
 using CalendarServices.Models;
 using CalendarServices;
+using Google.GData.Client;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Responses;
 
 class Program
 {
@@ -40,34 +43,106 @@ class Program
 
 
 
-        //var brol = testAttendeeXml();
+        ////var brol = testAttendeeXml();
+        //try
+        //{
+        //    var brol = ObjectToXmlTest().GetAwaiter().GetResult();
+        //    Console.WriteLine(brol);
+        //}
+        //catch (Exception ex)
+        //{
+        //    Console.WriteLine(ex.Message);
+        //}
+        //;
+        //return;
+
+        UserCredential credential = default;
+
+        //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+        //{
+        //    // The file token.json stores the user's access and refresh tokens, and is created
+        //    // automatically when the authorization flow completes for the first time.
+        //    string credPath = "token.json";
+        //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+        //        GoogleClientSecrets.FromStream(stream).Secrets,
+        //        Scopes,
+        //        "user",
+        //        CancellationToken.None,
+        //        new FileDataStore(credPath, true)).Result;
+        //    Console.WriteLine("Credential file saved to: " + credPath);
+        //}
+
+        /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
+	"token_type": "Bearer",
+	"expires_in": 3599,
+	"refresh_token": "1//03Ih4E5jljabiCgYIARAAGAMSNwF-L9IrATlwBwkvY3YOx5UbNR7LKlVpvOeLje6guma2BYwCNt45C3giViPCYNzr62-DTwAkTNk",
+	"scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.settings.readonly",
+	"Issued": "2022-05-06T18:01:27.142+02:00",
+	"IssuedUtc": "2022-05-06T16:01:27.142Z"
+         */
+
+        //Google.GData.Client.RequestSettings settings = new RequestSettings("integrationprojplanningwt2022");
+
+        Google.GData.Client.OAuth2Parameters parameters = new OAuth2Parameters()
+        {
+            ClientId = "281496544249-7l0127vpa5kuetv6r4a10b13g5hd8jia.apps.googleusercontent.com",
+            ClientSecret = "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",
+            AccessToken = "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9", 
+
+            RedirectUri = "urn:ietf:wg:oauth:2.0:oob",
+            RefreshToken = "1//03Ih4E5jljabiCgYIARAAGAMSNwF-L9IrATlwBwkvY3YOx5UbNR7LKlVpvOeLje6guma2BYwCNt45C3giViPCYNzr62-DTwAkTNk",
+            AccessType = "offline",
+            TokenType = "refresh",
+            Scope = "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.settings.readonly" 
+        };
         try
         {
-            var brol = ObjectToXmlTest().GetAwaiter().GetResult();
-            Console.WriteLine(brol);
+
+            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+            ;
+
+
+            var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+            {
+                ClientSecrets = new ClientSecrets
+                {
+                    ClientId = parameters.ClientId,
+                    ClientSecret = parameters.ClientSecret,
+                },
+                Scopes = Scopes,
+                DataStore = new FileDataStore("Store")
+            });
+
+            var token = new TokenResponse
+            {
+                AccessToken = parameters.AccessToken,
+                RefreshToken = parameters.RefreshToken
+            };
+
+            credential = new UserCredential(flow, Environment.UserName, token);
+
+            ;
+
+            //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            //{
+            //    // The file token.json stores the user's access and refresh tokens, and is created
+            //    // automatically when the authorization flow completes for the first time.
+            //    string credPath = "token.json";
+
+            //    var googleClientSecrets = GoogleClientSecrets.FromFile("credentials.json");
+            //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(googleClientSecrets.Secrets, Scopes, "user", CancellationToken.None).GetAwaiter().GetResult();
+
+            //Thread.Sleep(3000);
+            //}
+
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
-        ;
-        return;
 
-        UserCredential credential;
 
-        using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-        {
-            // The file token.json stores the user's access and refresh tokens, and is created
-            // automatically when the authorization flow completes for the first time.
-            string credPath = "token.json";
-            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                GoogleClientSecrets.FromStream(stream).Secrets,
-                Scopes,
-                "user",
-                CancellationToken.None,
-                new FileDataStore(credPath, true)).Result;
-            Console.WriteLine("Credential file saved to: " + credPath);
-        }
+
 
         // Create Google Calendar API service with the credential.
         var service = new CalendarService(new BaseClientService.Initializer()
