@@ -5,6 +5,7 @@ using NLog;
 using NLog.Web;
 using PlanningApi.Configuration;
 using PlanningApi.Configuration.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 
 Logger logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Booting Planning API");
@@ -16,7 +17,7 @@ try
     // Add services to the container.
 
     builder.AddNLog();
-    builder.Services.AddPlanningAuthentication(builder.Configuration);
+    //builder.Services.AddPlanningAuthentication(builder.Configuration);
     
     builder.Services.AddControllers()
                     .AddNewtonsoftJson(options => 
@@ -52,7 +53,12 @@ try
                        .AllowAnyHeader();
             });
     });
-
+    //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+    //{
+    //    var googleSection = builder.Configuration.GetSection("Google");
+    //    googleOptions.ClientId = googleSection.GetValue<string>("ClientId");
+    //    googleOptions.ClientSecret = googleSection.GetValue<string>("client_secret");
+    //});
 
     var app = builder.Build();
 
@@ -66,7 +72,7 @@ try
     app.UseHttpsRedirection();
 
     app.UseAuthorization();
-    app.UseAuthentication();
+    //app.UseAuthentication();
     
     app.MapControllers();
 

@@ -34,6 +34,10 @@ namespace CalendarServices
 
         public string CalendarGuid { get => CalendarId; set => CalendarId = value; }
 
+        //public GoogleCalendarService(CalendarService calendarService)
+        //{
+        //    this.service = calendarService;
+        //}
         public GoogleCalendarService()
         {
             CreateCalendarService();
@@ -221,7 +225,8 @@ namespace CalendarServices
         }
         private void CreateCredential()
         {
-            using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream("LimitedInputCredentials.json", FileMode.Open, FileAccess.Read))
             {
                 // The file token.json stores the user's access and refresh tokens, and is created
                 // automatically when the authorization flow completes for the first time.
@@ -235,6 +240,7 @@ namespace CalendarServices
                 Console.WriteLine("Credential file saved to: " + credPath);
             }
         }
+
         private void CreateCalendarService()
         {
             CreateCredential();
