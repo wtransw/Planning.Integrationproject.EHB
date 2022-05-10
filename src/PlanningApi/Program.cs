@@ -6,6 +6,7 @@ using NLog.Web;
 using PlanningApi.Configuration;
 using PlanningApi.Configuration.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
+using CalendarServices.Models.Configuration;
 
 Logger logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("Booting Planning API");
@@ -31,11 +32,19 @@ try
     // configuration rabbitmq
     builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
     builder.Services.AddPublisher();
-
-    builder.Services.AddSingleton<CalendarOptions>(provider =>
+    var calendarSection = builder.Configuration.GetSection(CalendarOptions.SectionName);
+    builder.Services.AddSingleton<ICalendarOptions>(provider =>
         new CalendarOptions()
         {
-            CalendarGuid = builder.Configuration.GetSection(CalendarOptions.SectionName).GetValue<string>("CalendarGuid"),
+            CalendarGuid = calendarSection.GetValue<string>("CalendarGuid"),
+            AccessToken = calendarSection.GetValue<string>("AccessToken"),
+            AccessType = calendarSection.GetValue<string>("AccessType"),
+            ClientId = calendarSection.GetValue<string>("ClientId"),
+            ClientSecret = calendarSection.GetValue<string>("ClientSecret"),
+            RedirectUri = calendarSection.GetValue<string>("RedirectUri"),
+            RefreshToken = calendarSection.GetValue<string>("RefreshToken"),
+            Scope = calendarSection.GetValue<string>("Scope"),
+            TokenType = calendarSection.GetValue<string>("TokenType")
         });
 
     builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService());
@@ -53,12 +62,6 @@ try
                        .AllowAnyHeader();
             });
     });
-    //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-    //{
-    //    var googleSection = builder.Configuration.GetSection("Google");
-    //    googleOptions.ClientId = googleSection.GetValue<string>("ClientId");
-    //    googleOptions.ClientSecret = googleSection.GetValue<string>("client_secret");
-    //});
 
     var app = builder.Build();
 

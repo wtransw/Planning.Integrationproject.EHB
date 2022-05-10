@@ -1,4 +1,5 @@
-﻿using Google.Apis.Calendar.v3;
+﻿using CalendarServices.Models.Configuration;
+using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using System;
@@ -17,6 +18,8 @@ namespace CalendarServices
         /// deel uitmaakt. 
         /// </summary>
         string CalendarGuid { get; set; }
+        ICalendarOptions CalendarOptions { get; set; }
+        Task CreateCalendarService(ICalendarOptions calendarOptions);
 
         #region Attendees
         //Hier het updated event telkens returnen? 
@@ -27,7 +30,6 @@ namespace CalendarServices
         Task<Event> AddAttendeeToSessionAsync(string sessionGuid, EventAttendee attendee);
         Task<Event> RemoveAttendeeFromSession(string userGuid, string sessionGuid, string attendeeGuid, string attendeeEmail);
         #endregion
-
 
         #region Sessions
         Task<List<Event>> GetAllUpcomingSessions(string calendarGuid);

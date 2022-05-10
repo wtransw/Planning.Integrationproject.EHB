@@ -88,7 +88,6 @@ class Program
             ClientId = "281496544249-7l0127vpa5kuetv6r4a10b13g5hd8jia.apps.googleusercontent.com",
             ClientSecret = "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",
             AccessToken = "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9", 
-
             RedirectUri = "urn:ietf:wg:oauth:2.0:oob",
             RefreshToken = "1//03Ih4E5jljabiCgYIARAAGAMSNwF-L9IrATlwBwkvY3YOx5UbNR7LKlVpvOeLje6guma2BYwCNt45C3giViPCYNzr62-DTwAkTNk",
             AccessType = "offline",
@@ -98,8 +97,7 @@ class Program
         try
         {
 
-            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
-            ;
+            //Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
 
 
             var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
@@ -121,7 +119,6 @@ class Program
 
             credential = new UserCredential(flow, Environment.UserName, token);
 
-            ;
 
             //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             //{
@@ -238,7 +235,33 @@ class Program
             Thread.Sleep(10000);
             */
 
+            var elfMeiEvent = new Event
+            {
+                Summary = "Elf Mei",
+                Location = "Verrassing",
+                Description = "Wortelen planten",
+                Start = new EventDateTime()
+                {
+                    DateTime = DateTime.Parse("2022-05-11T08:00:00-07:00"),
+                    TimeZone = "Europe/Zurich"
+                },
+                End = new EventDateTime()
+                {
+                    DateTime = DateTime.Parse("2022-05-11T17:00:00-07:00"),
+                    TimeZone = "Europe/Zurich"
+                }
+            };
+
+            EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, elfMeiEvent, CalendarId);
+            Event response = request.Execute();
+
+            Thread.Sleep(5000);
+
             var _ = ShowEvents(service).ConfigureAwait(false);
+
+            ;
+
+
 
             Thread.Sleep(10000);
 
@@ -246,6 +269,7 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine(ex.ToString());
+            ;
         }
 
 

@@ -1,6 +1,5 @@
 ﻿using CalendarServices;
-using CalendarServices.Models;
-using Crm.Link.RabbitMq.Producer;
+using CalendarServices.Models.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using PlanningApi.Configuration;
 
@@ -21,6 +20,7 @@ namespace PlanningApi.Controllers
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
+            ICalendarOptions calendarOptions)
             CalendarOptions calendarOptions,
             PlanningAttendeePublisher planningAttendeePublisher,
             PlanningSessionPublisher planningSessionPublisher,
