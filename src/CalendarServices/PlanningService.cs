@@ -107,5 +107,6 @@ namespace CalendarServices
                     throw new InvalidDataException($"XML validation failed. Error: {e.Message}");
             }
         }
+
     }
 }

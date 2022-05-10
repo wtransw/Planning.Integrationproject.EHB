@@ -1,4 +1,5 @@
 ﻿using CalendarServices;
+using CalendarServices.Models.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using PlanningApi.Configuration;
 
@@ -10,16 +11,17 @@ namespace PlanningApi.Controllers
     {
         private readonly ILogger<PlanningController> Logger;
         private readonly IGoogleCalendarService CalendarService;
-        private readonly CalendarOptions CalendarOptions;
+        //private readonly ICalendarOptions CalendarOptions;
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
-            CalendarOptions calendarOptions)
+            ICalendarOptions calendarOptions)
         {
             this.Logger = logger;
-            this.CalendarOptions = calendarOptions; 
+            //this.CalendarOptions = calendarOptions; 
             this.CalendarService = calendarService;
-            CalendarService.CalendarGuid = calendarOptions.CalendarGuid;
+            //CalendarService.CalendarOptions = calendarOptions;
+            CalendarService.CreateCalendarService(calendarOptions);
             Logger.LogInformation("PlanningController created");
         }
 
@@ -35,7 +37,7 @@ namespace PlanningApi.Controllers
         [HttpGet("GetSessions")]    // API/Planning/Getsessions
         public async Task<List<Google.Apis.Calendar.v3.Data.Event>> GetUpcomingSessions()
         {
-            var guid = CalendarOptions.CalendarGuid;
+            //var guid = CalendarOptions.CalendarGuid;
             return await CalendarService.GetAllUpcomingSessions(CalendarService.CalendarGuid);
         }
 

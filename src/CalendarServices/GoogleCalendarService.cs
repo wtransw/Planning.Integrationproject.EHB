@@ -1,8 +1,12 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using CalendarServices.Models.Configuration;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Google.GData.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,28 +28,17 @@ namespace CalendarServices
             CalendarService.Scope.CalendarSettingsReadonly
         };
 
-        static string ApplicationName = "Google Calendar Service for IntegrationProject";             //dubbelchecken in gCloud services.
-        //static string CalendarId = "planning.integrationproject.ehb@gmail.com"; //TODO: uit AppSettings halen.
-        public string CalendarId = string.Empty;
-        //static string eventIdMeeting120322 = "0pmjplojtl1hsp897u8s2shns4";      
-        static string eventIdMeeting120322 = "aa5uugl3gh8hsmq491a373p87o";
+        //static string ApplicationName = "Google Calendar Service for IntegrationProject";             //dubbelchecken in gCloud services.
+        static string ApplicationName = "Google Calendar API Test";
+        static string CalendarId = "planning.integrationproject.ehb@gmail.com";
         private UserCredential credential = null!;
         private CalendarService service = null!;
+        public ICalendarOptions CalendarOptions { get; set; }
+        private OAuth2Parameters parameters = new OAuth2Parameters();
 
         public string CalendarGuid { get => CalendarId; set => CalendarId = value; }
-
-        //public GoogleCalendarService(CalendarService calendarService)
-        //{
-        //    this.service = calendarService;
-        //}
         public GoogleCalendarService()
         {
-            CreateCalendarService();
-        }
-        public GoogleCalendarService(string calendarGuid)
-        {
-            this.CalendarId = calendarGuid;
-            CreateCalendarService();
         }
 
         public async Task<Event> CreateAttendee(string eventGuid, string attendeeId, string email, string displayName, string? responseStatus, bool? optional = false)
@@ -223,10 +216,64 @@ namespace CalendarServices
                 return (await service.Events.List(calendarId).ExecuteAsync()).Items.FirstOrDefault(e => e.Summary == sessionName)?.Id;
             else return null;
         }
+
+        public Task CreateCalendarService(ICalendarOptions calendarOptions)
+        {
+            this.CalendarOptions = calendarOptions;
+            //CreateCredential();
+            GetCredential();
+
+            // Create Google Calendar API service with the credential.
+            service = new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+            return Task.CompletedTask;
+        }
+
+        private void GetCredential()
+        {
+            parameters = GetParameters();
+            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+            var flow = GetFlow();
+            var token = GetToken(); 
+
+            credential = new UserCredential(flow, Environment.UserName, token);
+        }
+
+        private TokenResponse GetToken() => new TokenResponse
+        {
+            AccessToken = parameters.AccessToken,
+            RefreshToken = parameters.RefreshToken
+        };
+
+        private GoogleAuthorizationCodeFlow GetFlow() => new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+        {
+            ClientSecrets = new ClientSecrets
+            {
+                ClientId = parameters.ClientId,
+                ClientSecret = parameters.ClientSecret,
+            },
+            Scopes = Scopes,
+            DataStore = new FileDataStore("Store")
+        });
+
+        private Google.GData.Client.OAuth2Parameters GetParameters() => new OAuth2Parameters()
+        {
+            ClientId = CalendarOptions.ClientId,
+            ClientSecret = CalendarOptions.ClientSecret,
+            AccessToken = CalendarOptions.AccessToken,
+            RedirectUri = CalendarOptions.RedirectUri,
+            RefreshToken = CalendarOptions.RefreshToken,
+            AccessType =   CalendarOptions.AccessType,
+            TokenType =    CalendarOptions.TokenType,
+            Scope = CalendarOptions.Scope
+        };
+
         private void CreateCredential()
         {
-            //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-            using (var stream = new FileStream("LimitedInputCredentials.json", FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
                 // The file token.json stores the user's access and refresh tokens, and is created
                 // automatically when the authorization flow completes for the first time.
@@ -241,17 +288,8 @@ namespace CalendarServices
             }
         }
 
-        private void CreateCalendarService()
-        {
-            CreateCredential();
 
-            // Create Google Calendar API service with the credential.
-            service = new CalendarService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
-        }
+
     }
 
 }
