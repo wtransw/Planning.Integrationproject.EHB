@@ -47,7 +47,7 @@ try
             TokenType = calendarSection.GetValue<string>("TokenType")
         });
 
-    builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService());
+    builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService()) ;
     //builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService(provider.GetService<CalendarOptions>().CalendarGuid));    
 
     logger.Info("Planning API started");
