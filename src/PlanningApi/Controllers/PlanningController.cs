@@ -37,8 +37,18 @@ namespace PlanningApi.Controllers
         [HttpGet("GetSessions")]    // API/Planning/Getsessions
         public async Task<List<Google.Apis.Calendar.v3.Data.Event>> GetUpcomingSessions()
         {
+            try
+            {
+                return await CalendarService.GetAllUpcomingSessions(CalendarService.CalendarGuid);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Logger.LogError(ex.Message);
+                return new List<Google.Apis.Calendar.v3.Data.Event>();
+            }
             //var guid = CalendarOptions.CalendarGuid;
-            return await CalendarService.GetAllUpcomingSessions(CalendarService.CalendarGuid);
         }
 
         [HttpPost("RabbitEndpoint")]

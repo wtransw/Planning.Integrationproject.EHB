@@ -71,7 +71,7 @@ class Program
         //        new FileDataStore(credPath, true)).Result;
         //    Console.WriteLine("Credential file saved to: " + credPath);
         //}
-
+        ;
         /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
 	"token_type": "Bearer",
 	"expires_in": 3599,
@@ -80,25 +80,48 @@ class Program
 	"Issued": "2022-05-06T18:01:27.142+02:00",
 	"IssuedUtc": "2022-05-06T16:01:27.142Z"
          */
-         
+
         //Google.GData.Client.RequestSettings settings = new RequestSettings("integrationprojplanningwt2022");
 
+
+
+        /*
+         * 
+         *     "client_id": "281496544249-7l0127vpa5kuetv6r4a10b13g5hd8jia.apps.googleusercontent.com",
+    "project_id": "integrationprojplanningwt2022",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "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",
+    "redirect_uris": [ "urn:ietf:wg:oauth:2.0:oob", "http://localhost" ]
+         * 
+         */
         Google.GData.Client.OAuth2Parameters parameters = new OAuth2Parameters()
         {
+            //
             ClientId = "281496544249-7l0127vpa5kuetv6r4a10b13g5hd8jia.apps.googleusercontent.com",
             ClientSecret = "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",
-            AccessToken = "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9", 
+            //AccessToken = "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9", 
             RedirectUri = "urn:ietf:wg:oauth:2.0:oob",
-            RefreshToken = "1//03Ih4E5jljabiCgYIARAAGAMSNwF-L9IrATlwBwkvY3YOx5UbNR7LKlVpvOeLje6guma2BYwCNt45C3giViPCYNzr62-DTwAkTNk",
+            //RefreshToken = "1//03Ih4E5jljabiCgYIARAAGAMSNwF-L9IrATlwBwkvY3YOx5UbNR7LKlVpvOeLje6guma2BYwCNt45C3giViPCYNzr62-DTwAkTNk",
+            AccessToken = "ya29.A0ARrdaM_WUj7qGNkBYsB6JTYjEn1aPdbd_G_XEqRwfLJSqIq4PlrwFJjbkOrrSfVagrUfo-UIborBb6lfsYX8nxhalRNwEegRETpJWvXCSapzOR0bP52SuHgbAq79j11vlTiQpVn0_Gd5_MctmuAcpYFjTqxc",
+            RefreshToken = "1//090RvMrP4CCcrCgYIARAAGAkSNwF-L9IrbV2F5zg1gzlBZE3x3JoPJCdyFXaFHDWBCFmdPHrRQgP5GcEZ9WRBbQ1exfh4ByewbMM",
             AccessType = "offline",
             TokenType = "refresh",
-            Scope = "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.settings.readonly" 
+            Scope = "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.settings.readonly",
+             //ApprovalPrompt = "none",
+              AuthUri = "https://accounts.google.com/o/oauth2/auth",
+               TokenUri = "https://oauth2.googleapis.com/token",
+                TokenExpiry = DateTime.Parse("2022-05-09T21:19:55.758+02:00").AddSeconds(3599),
+                 ResponseType = "code",
+                  
+
         };
         try
         {
-
-            //Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
-
+            ;
+            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+            ;
 
             var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
             {
@@ -136,6 +159,7 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+            ;
         }
 
 

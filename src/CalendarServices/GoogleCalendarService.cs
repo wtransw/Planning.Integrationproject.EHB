@@ -7,6 +7,7 @@ using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Google.GData.Client;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,11 +34,12 @@ namespace CalendarServices
         static string CalendarId = "planning.integrationproject.ehb@gmail.com";
         private UserCredential credential = null!;
         private CalendarService service = null!;
+        ILogger Logger; 
         public ICalendarOptions CalendarOptions { get; set; }
         private OAuth2Parameters parameters = new OAuth2Parameters();
 
         public string CalendarGuid { get => CalendarId; set => CalendarId = value; }
-        public GoogleCalendarService()
+        public GoogleCalendarService( )
         {
         }
 
@@ -234,12 +236,19 @@ namespace CalendarServices
 
         private void GetCredential()
         {
-            parameters = GetParameters();
-            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
-            var flow = GetFlow();
-            var token = GetToken(); 
+            try
+            {
+                parameters = GetParameters();
+                Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+                var flow = GetFlow();
+                var token = GetToken(); 
 
-            credential = new UserCredential(flow, Environment.UserName, token);
+                credential = new UserCredential(flow, Environment.UserName, token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private TokenResponse GetToken() => new TokenResponse
@@ -268,7 +277,14 @@ namespace CalendarServices
             RefreshToken = CalendarOptions.RefreshToken,
             AccessType =   CalendarOptions.AccessType,
             TokenType =    CalendarOptions.TokenType,
-            Scope = CalendarOptions.Scope
+            Scope = CalendarOptions.Scope,
+            //Scope = "http://www.google.com/calendar/feeds/default/",
+            //TokenExpiry = DateTime.Parse("2022-05-09T19:19:55.758Z").AddSeconds(3599)
+            AuthUri = "https://accounts.google.com/o/oauth2/auth",
+            TokenUri = "https://oauth2.googleapis.com/token",
+            TokenExpiry = DateTime.Parse("2022-05-09T21:19:55.758+02:00").AddSeconds(3599),
+            ResponseType = "code",
+
         };
 
         private void CreateCredential()
