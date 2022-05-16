@@ -1,4 +1,5 @@
-﻿using CalendarServices.Models;
+﻿using CalendarServices;
+using CalendarServices.Models;
 using Crm.Link.RabbitMq.Common;
 using Crm.Link.RabbitMq.Producer;
 using Microsoft.Extensions.Hosting;
@@ -20,15 +21,18 @@ namespace Crm.Link.RabbitMq.Consumer
     {
         protected override string QueueName => "Attendees";
         private readonly ILogger<PlanningAttendeeConsumer> attendeeLogger;
-
+        private readonly IGoogleCalendarService CalendarService;
         public PlanningAttendeeConsumer(
             ConnectionProvider connectionProvider,
             ILogger<PlanningAttendeeConsumer> attendeeLogger,
             ILogger<ConsumerBase> consumerLogger,
-            ILogger<RabbitMqClientBase> logger) :
+            ILogger<RabbitMqClientBase> logger,
+            IGoogleCalendarService calendarService
+            ) :
             base(connectionProvider, consumerLogger, logger)
         {
             this.attendeeLogger = attendeeLogger;
+            this.CalendarService = calendarService;
             TimerMethode += async () => await StartAsync(new CancellationToken(false));
         }
 
@@ -104,9 +108,27 @@ namespace Crm.Link.RabbitMq.Consumer
             }
         }
 
-        public async Task HandleAttendee(PlanningAttendee? attendee)
+        public async Task HandleAttendee(PlanningAttendee attendee)
         {
-            //doe iets
+            //de attendee die je hier binnen krijgt heeft ook een versienummer, bijvoorbeeld 4.
+            //je moet op de UUID master gaan zoeken naar die zelfde Attendee, en in de search meegeven dat je die van planning wilt (SourceType.Planning).
+
+            //verbind met de UUID master API, /search met de parameters meegegeven (entitytype, enum sourcetype, ...)
+            // EntityType is een string (waarschijnlijk "AttendeeEvent" zoals de base van de XML,
+            // maar je zult kunnen zien wat er al bestaat met /get
+
+            // Als versienummer van die op 3 staat, dan weet je dat we hem moeten updaten in google Calendar.
+
+            //maak een google attendee
+            // Haal eerst de onze op, en update hem dan. De EventGuid haal je uit de onze. 
+            var sessieVanOnzeAttendee = CalendarService.GetSession(null, "eventId van de onze");
+
+            //Misschien nog beter: maak een methode GetAttendeeByEmail in GoogleCalendarService, en vraag hem zo op.
+            // of je kan direct een UpdateAttendeeWithEmail maken die kijkt op email.
+
+            //als ie niet bestaat doe je een create, anders een update.
+
+
             ;
         }
 
