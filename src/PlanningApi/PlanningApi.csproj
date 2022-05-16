@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="credentials.json" />
+    <Content Remove="credentialss.json" />
     <Content Remove="credentials_sa05.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="credentials.json">
+    <None Include="credentialss.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="credentials_sa05.json">
