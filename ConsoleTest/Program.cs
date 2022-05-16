@@ -59,19 +59,19 @@ class Program
 
         UserCredential credential = default;
 
-        //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-        //{
-        //    // The file token.json stores the user's access and refresh tokens, and is created
-        //    // automatically when the authorization flow completes for the first time.
-        //    string credPath = "token.json";
-        //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-        //        GoogleClientSecrets.FromStream(stream).Secrets,
-        //        Scopes,
-        //        "user",
-        //        CancellationToken.None,
-        //        new FileDataStore(credPath, true)).Result;
-        //    Console.WriteLine("Credential file saved to: " + credPath);
-        //}
+        using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+        {
+            // The file token.json stores the user's access and refresh tokens, and is created
+            // automatically when the authorization flow completes for the first time.
+            string credPath = "token.json";
+            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                GoogleClientSecrets.FromStream(stream).Secrets,
+                Scopes,
+                "user",
+                CancellationToken.None,
+                new FileDataStore(credPath, true)).Result;
+            Console.WriteLine("Credential file saved to: " + credPath);
+        }
         ;
         /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
 	"token_type": "Bearer",
