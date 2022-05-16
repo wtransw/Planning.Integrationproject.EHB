@@ -3,11 +3,16 @@ using Crm.Link.RabbitMq.Common;
 using Crm.Link.RabbitMq.Producer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Toolkit.HighPerformance;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Crm.Link.RabbitMq.Consumer
 {
@@ -54,5 +59,56 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             return Task.CompletedTask;
         }
+
+        public override async Task OnEventReceived<T>(object sender, BasicDeliverEventArgs @event)
+        {
+            var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
+            try
+            {
+                Console.WriteLine(basePath);
+
+                XmlReader reader = new XmlTextReader(@event.Body.AsStream());
+                XmlDocument document = new();
+                document.Load(reader);
+
+                // xsd for validation
+                XmlSchemaSet xmlSchemaSet = new();
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/UUID.xsd");
+
+                document.Schemas.Add(xmlSchemaSet);
+                ValidationEventHandler eventHandler = new(ValidationEventHandler);
+
+                document.Validate(eventHandler);
+
+                XmlRootAttribute xRoot = new XmlRootAttribute();
+                xRoot.ElementName = PlanningAttendee.XmlElementName;
+                xRoot.IsNullable = true;
+
+                var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
+                var attendee = xmlSerializer.Deserialize(@event.Body.AsStream());
+
+
+                if (attendee != null)
+                    await HandleAttendee((PlanningAttendee)attendee);
+            }
+            catch (Exception ex)
+            {
+                attendeeLogger.LogCritical(ex, "Error while retrieving message from queue.");
+            }
+            finally
+            {
+                Channel!.BasicAck(@event.DeliveryTag, false);
+            }
+        }
+
+        public async Task HandleAttendee(PlanningAttendee? attendee)
+        {
+            //doe iets
+            ;
+        }
+
     }
 }

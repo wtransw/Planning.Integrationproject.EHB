@@ -1,5 +1,7 @@
 ﻿using CalendarServices;
+using CalendarServices.Models;
 using CalendarServices.Models.Configuration;
+using Crm.Link.RabbitMq.Producer;
 using Microsoft.AspNetCore.Mvc;
 using PlanningApi.Configuration;
 
@@ -109,6 +111,28 @@ namespace PlanningApi.Controllers
             return BadRequest();
 
         }
+
+
+        [HttpGet("PublishTest")]    // API/Planning/PublishTest
+        public IActionResult PublishTest()
+        {
+            try
+            {
+                //maak een attendee
+                //publish dat ding
+                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
+                planningAttendeePublisher.Publish(attendee);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Logger.LogError(ex.Message);
+                return UnprocessableEntity(ex);
+            }
+            //var guid = CalendarOptions.CalendarGuid;
+        }
+
 
     }
 }
