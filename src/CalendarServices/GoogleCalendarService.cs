@@ -247,7 +247,37 @@ namespace CalendarServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine("Error getting credential: " + ex);
+                //Console.WriteLine(ex + " Retry with v3 now.");
+                //retryWithV3();
+            }
+        }
+
+        private void retryWithV3()
+        {
+            try
+            {
+
+                using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+                {
+                    // The file token.json stores the user's access and refresh tokens, and is created
+                    // automatically when the authorization flow completes for the first time.
+                    string credPath = "token.json";
+                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                        GoogleClientSecrets.FromStream(stream).Secrets,
+                        Scopes,
+                        "user",
+                        CancellationToken.None,
+                        new FileDataStore(credPath, true)).Result;
+                    Console.WriteLine("Credential file saved to: " + credPath);
+
+                    parameters.AccessToken = credential.Token.AccessToken;
+                    parameters.RefreshToken = credential.Token.RefreshToken;    
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Retry with v3 failed: " + ex);
             }
         }
 
