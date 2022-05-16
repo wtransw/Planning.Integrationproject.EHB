@@ -1,5 +1,7 @@
 ﻿using CalendarServices;
+using CalendarServices.Models;
 using CalendarServices.Models.Configuration;
+using Crm.Link.RabbitMq.Producer;
 using Microsoft.AspNetCore.Mvc;
 using PlanningApi.Configuration;
 
@@ -11,11 +13,17 @@ namespace PlanningApi.Controllers
     {
         private readonly ILogger<PlanningController> Logger;
         private readonly IGoogleCalendarService CalendarService;
+        private readonly PlanningAttendeePublisher planningAttendeePublisher;
+        private readonly PlanningSessionAttendeePublisher planningSessionAttendeePublisher;
+        private readonly PlanningSessionPublisher planningSessionPublisher;
         //private readonly ICalendarOptions CalendarOptions;
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
-            ICalendarOptions calendarOptions)
+            ICalendarOptions calendarOptions,
+            PlanningSessionPublisher planningSessionPublisher, 
+            PlanningSessionAttendeePublisher planningSessionAttendeePublisher, 
+            PlanningAttendeePublisher planningAttendeePublisher)
         {
             this.Logger = logger;
             //this.CalendarOptions = calendarOptions; 
@@ -23,6 +31,9 @@ namespace PlanningApi.Controllers
             //CalendarService.CalendarOptions = calendarOptions;
             CalendarService.CreateCalendarService(calendarOptions);
             Logger.LogInformation("PlanningController created");
+            this.planningAttendeePublisher = planningAttendeePublisher;
+            this.planningSessionAttendeePublisher = planningSessionAttendeePublisher;
+            this.planningSessionPublisher = planningSessionPublisher;
         }
 
 
@@ -57,6 +68,28 @@ namespace PlanningApi.Controllers
             Logger.LogInformation("RabbitEndpoint called");
             return Ok();
         }
+
+
+        [HttpGet("PublishTest")]    // API/Planning/PublishTest
+        public IActionResult PublishTest()
+        {
+            try
+            {
+                //maak een attendee
+                //publish dat ding
+                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
+                planningAttendeePublisher.Publish(attendee);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Logger.LogError(ex.Message);
+                return UnprocessableEntity(ex);
+            }
+            //var guid = CalendarOptions.CalendarGuid;
+        }
+
 
     }
 }

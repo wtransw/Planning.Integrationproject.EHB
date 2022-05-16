@@ -14,7 +14,7 @@ namespace CalendarServices.Models
         public string Email { get; set; }
 
         public string VatNumber { get; set; }
-        const string XmlElementName = "AttendeeEvent";
+        public static string XmlElementName = "AttendeeEvent";
         public PlanningAttendee()
         {
         }
