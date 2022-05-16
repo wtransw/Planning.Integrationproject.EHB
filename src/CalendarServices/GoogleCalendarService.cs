@@ -178,7 +178,11 @@ namespace CalendarServices
 
         public async Task<Event> GetSession(string calendarId, string eventId)
         {
-            return await service.Events.Get(calendarId, eventId).ExecuteAsync();
+            if (!string.IsNullOrEmpty(calendarId))
+                return await service.Events.Get(calendarId, eventId).ExecuteAsync();
+
+            else 
+                return await service.Events.Get(CalendarId, eventId).ExecuteAsync();
         }
 
         public Channel CreateChannel(string address, string? id, int? ttlMinutes)
