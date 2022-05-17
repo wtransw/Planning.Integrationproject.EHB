@@ -58,7 +58,7 @@ class Program
         //return;
 
         UserCredential credential = default;
-
+/*
         using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
         {
             // The file token.json stores the user's access and refresh tokens, and is created
@@ -72,6 +72,7 @@ class Program
                 new FileDataStore(credPath, true)).Result;
             Console.WriteLine("Credential file saved to: " + credPath);
         }
+*/
         ;
         /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
 	"token_type": "Bearer",
@@ -105,8 +106,8 @@ class Program
             //AccessToken = "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9", 
             RedirectUri = "urn:ietf:wg:oauth:2.0:oob",
             //RefreshToken = "1//03Ih4E5jljabiCgYIARAAGAMSNwF-L9IrATlwBwkvY3YOx5UbNR7LKlVpvOeLje6guma2BYwCNt45C3giViPCYNzr62-DTwAkTNk",
-            AccessToken = "ya29.A0ARrdaM_WUj7qGNkBYsB6JTYjEn1aPdbd_G_XEqRwfLJSqIq4PlrwFJjbkOrrSfVagrUfo-UIborBb6lfsYX8nxhalRNwEegRETpJWvXCSapzOR0bP52SuHgbAq79j11vlTiQpVn0_Gd5_MctmuAcpYFjTqxc",
-            RefreshToken = "1//090RvMrP4CCcrCgYIARAAGAkSNwF-L9IrbV2F5zg1gzlBZE3x3JoPJCdyFXaFHDWBCFmdPHrRQgP5GcEZ9WRBbQ1exfh4ByewbMM",
+            AccessToken = "ya29.A0ARrdaM_LVBKkYZQ5GThtoEd7JsgyN65cTDgaJpZ_DTY0s6NVWstRbdOErPGKRxq-A0BJVQpRrNlGztE9WRtXbBl27fEENHvSwRXbwO-Wdz40U8kpyhUejKctx1-yBX4I8xW3qJEmbt5hBoX3AZuJDed0S2fTxw",
+            RefreshToken = "1//099dYhxDE0AE4CgYIARAAGAkSNwF-L9Ir5h8jYPv_sKWIX7ERmLOGax1ie6id05E14mCUc7jO9NQOtRMf6r3u30tFAv7PMhbPsfE",
             AccessType = "offline",
             TokenType = "refresh",
             Scope = "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.settings.readonly",
@@ -276,20 +277,20 @@ class Program
                     TimeZone = "Europe/Zurich"
                 }
             };
-
+            /*
             EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, elfMeiEvent, CalendarId);
             Event response = request.Execute();
 
             Thread.Sleep(5000);
 
             var _ = ShowEvents(service).ConfigureAwait(false);
-
+            
             ;
 
 
-
             Thread.Sleep(10000);
-
+            */
+         testAttendeeXml();
         }
         catch (Exception ex)
         {
@@ -312,8 +313,9 @@ class Program
         //Thread.Sleep(5000);
         //Toon overzicht op scherm.
         //ShowEvents(service).ConfigureAwait(false);
+       
 
-    }
+    }//--------- end static main
 
     async static Task<Event?> GetEvent(CalendarService service, string eventId)
     {
@@ -398,14 +400,21 @@ class Program
             Console.WriteLine($"Kon geen event in de toekomst vinden met Id {eventId}");
     }
 
-
+    
     static string testAttendeeXml()
     {
         //var xmlString = File.ReadAllText(@"c:\Users\Wouter A\source\repos\Planning.Integrationproject.EHB.Forked\src\PlanningApi\XMLExamples\AttendeeEvent_1.xml");
-        var xmlString = File.ReadAllText(@"c:\temp\brol.xml");
+        
+        var xmlPath = @"C:\Users\Jan Met Pet\Source\Repos\Planning.Integrationproject.EHB\src\PlanningApi\XmlSchemas_old\AttendeeEvent_1.xml";
+
+        //  var xmlString = File.ReadAllText(@"c:\temp\brol.xml");
+        // return DeSerializeXml(xmlString);
+
+        var xmlString = File.ReadAllText(xmlPath);
         return DeSerializeXml(xmlString);
     }
-    
+
+    //void 
     static string DeSerializeXml(string xmlString)
     {
         XmlRootAttribute xRoot = new XmlRootAttribute();
@@ -416,8 +425,29 @@ class Program
         var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
         using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(xmlString)));
         var attendee = (PlanningAttendee)xmlSerializer.Deserialize(reader);
+
+        //handle attendee metode 
+        // HandleAttendee(attendee);
+
+        HandleAttendee(attendee);
+
         return attendee is not null ? (attendee.Name ?? "Doe" + attendee.LastName ?? "John") : "";
     }
+
+    static void HandleAttendee(PlanningAttendee attendee)
+    {
+        var eventId = "aa5uugl3gh8hsmq491a373p87o";
+        Console.WriteLine("\n" +attendee.Name+ " "+attendee.Email+ " "+attendee.Version);
+
+        var gcal = new GoogleCalendarService();
+        Console.WriteLine(gcal.GetSession(null, eventId));
+       // Console.WriteLine(gcal.GetAttendeeByEmail("aa5uugl3gh8hsmq491a373p87o", "nieuwegenodigde123456@gmail.com"));
+       // Console.WriteLine(gcal);
+    }
+   
+
+
+
 
 
     static async Task<string> ObjectToXmlTest()

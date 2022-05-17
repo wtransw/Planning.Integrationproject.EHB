@@ -110,6 +110,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
         public async Task HandleAttendee(PlanningAttendee attendee)
         {
+            var versionNr = attendee.Version;
             //de attendee die je hier binnen krijgt heeft ook een versienummer, bijvoorbeeld 4.
             //je moet op de UUID master gaan zoeken naar die zelfde Attendee, en in de search meegeven dat je die van planning wilt (SourceType.Planning).
 
