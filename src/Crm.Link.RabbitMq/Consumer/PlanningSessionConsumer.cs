@@ -13,7 +13,7 @@ namespace Crm.Link.RabbitMq.Consumer
 {
     public class PlanningSessionConsumer : ConsumerBase, IHostedService
     {
-        protected override string QueueName => "Sessions";
+        protected override string QueueName => "PlanningSession";
         private readonly ILogger<PlanningSessionConsumer> sessionLogger;
 
         public PlanningSessionConsumer(

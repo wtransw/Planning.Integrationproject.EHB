@@ -19,7 +19,7 @@ namespace Crm.Link.RabbitMq.Consumer
 {
     public class PlanningAttendeeConsumer : ConsumerBase, IHostedService
     {
-        protected override string QueueName => "Attendees";
+        protected override string QueueName => "PlanningAttendee";
         private readonly ILogger<PlanningAttendeeConsumer> attendeeLogger;
         private readonly IGoogleCalendarService CalendarService;
         public PlanningAttendeeConsumer(
