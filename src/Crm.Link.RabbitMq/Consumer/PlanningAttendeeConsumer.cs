@@ -69,18 +69,17 @@ namespace Crm.Link.RabbitMq.Consumer
             var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
             try
             {
-                Console.WriteLine(basePath);
-
+                attendeeLogger.LogInformation($"Base path: {basePath}");
                 XmlReader reader = new XmlTextReader(@event.Body.AsStream());
                 XmlDocument document = new();
                 document.Load(reader);
 
                 // xsd for validation
                 XmlSchemaSet xmlSchemaSet = new();
-                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/UUID.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_v3.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_v3.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_v3.xsd");
+                //xmlSchemaSet.Add("", $"{basePath}/Resources/UUID.xsd");
 
                 document.Schemas.Add(xmlSchemaSet);
                 ValidationEventHandler eventHandler = new(ValidationEventHandler);
@@ -92,6 +91,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 xRoot.IsNullable = true;
 
                 var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
+                attendeeLogger.LogInformation("deserializing planning attendee");
                 var attendee = xmlSerializer.Deserialize(@event.Body.AsStream());
 
 
@@ -110,6 +110,8 @@ namespace Crm.Link.RabbitMq.Consumer
 
         public async Task HandleAttendee(PlanningAttendee attendee)
         {
+            attendeeLogger.LogInformation($"Handling planning attendee {attendee.Email}");
+
             var versionNr = attendee.Version;
             //de attendee die je hier binnen krijgt heeft ook een versienummer, bijvoorbeeld 4.
             //je moet op de UUID master gaan zoeken naar die zelfde Attendee, en in de search meegeven dat je die van planning wilt (SourceType.Planning).
@@ -122,7 +124,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
             //maak een google attendee
             // Haal eerst de onze op, en update hem dan. De EventGuid haal je uit de onze. 
-            var sessieVanOnzeAttendee = CalendarService.GetSession(null, "eventId van de onze");
+            //var sessieVanOnzeAttendee = CalendarService.GetSession(null, "eventId van de onze");
 
             //Misschien nog beter: maak een methode GetAttendeeByEmail in GoogleCalendarService, en vraag hem zo op.
             // of je kan direct een UpdateAttendeeWithEmail maken die kijkt op email.
