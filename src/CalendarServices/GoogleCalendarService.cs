@@ -42,6 +42,10 @@ namespace CalendarServices
         public GoogleCalendarService( )
         {
         }
+        public GoogleCalendarService(CalendarService calendarservice)
+        {
+            this.service = calendarservice;
+        }
 
         public async Task<Event> CreateAttendee(string eventGuid, string attendeeId, string email, string displayName, string? responseStatus, bool? optional = false)
         {
@@ -117,6 +121,7 @@ namespace CalendarServices
 
         public async Task<string> DeleteSession(string calendarGuid, string? sessionGuid, string? sessionName)
         {
+            calendarGuid = !string.IsNullOrEmpty(calendarGuid) ? calendarGuid : CalendarGuid;
             sessionGuid = sessionGuid ?? await GetEventId(calendarGuid, sessionName);
             if (sessionGuid != null)
             {
@@ -133,13 +138,24 @@ namespace CalendarServices
 
         public async Task<List<Event>> GetAllUpcomingSessions(string calendarGuid)
         {
-            var allSessions = await service.Events.List(calendarGuid).ExecuteAsync();
-            return allSessions.Items.ToList();  //sws deze in de toekomst of hier nog een filter op toevoegen?
+            try
+            {
+                var meh = service;
+                var allSessions = await service.Events.List(calendarGuid).ExecuteAsync();
+                var sessionList = allSessions.Items.Where(i => i.Start.DateTime > DateTime.UtcNow).ToList();
+                //return allSessions.Items.ToList();  //sws deze in de toekomst of hier nog een filter op toevoegen?
+                return sessionList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public async Task<List<Event>> GetAllUpcomingSessionsUntilDate(string calendarGuid, DateTime latestStartTime)
         {
-            var allSessions = await service.Events.List(calendarGuid).ExecuteAsync();
+            var allSessions = await service.Events.List(!string.IsNullOrEmpty(calendarGuid) ? calendarGuid : CalendarGuid).ExecuteAsync();
             return allSessions.Items.Where(x => x.Start.DateTime < latestStartTime).ToList();
         }
 
@@ -151,21 +167,21 @@ namespace CalendarServices
         }
 
         // get attendeeby email
-        //public async Task<EventAttendee> GetAttendeeByEmail(string userGuid, string sessionGuid, string attendeeGuid, string attendeeEmail)
-        public async Task <EventAttendee> GetAttendeeByEmail(string sessionGuid, string attendeeEmail)
+        public async Task <EventAttendee?> GetAttendeeByEmail(string attendeeEmail)
         {
-           // var allSessions = await service.Events.List(CalendarId).ExecuteAsync();
-          //  var sessionsWithThisAttendee = allSessions.Items.Where(x => x.Attendees.Any(y => y.Email== attendeeEmail));
-            //return allSessions;
-            var session=await GetSession(CalendarId, sessionGuid);
-            //var attendee = session.Attendees.FirstOrDefault(x => x.Email == attendeeEmail);
-            var attendee = session.Attendees.FirstOrDefault(x => x.Email.StartsWith("b"));
-            return attendee;
+            var allSessions = await GetAllUpcomingSessions(CalendarGuid);
+
+            //var sessionsWithOurAttendee = allSessions.Where(session => session.Attendees != null && session.Attendees.Any(attendee => attendee.Email.ToLower() == attendeeEmail.ToLower())).ToList();
+            var firstSessionWithOurAttendee = allSessions.FirstOrDefault(session => session.Attendees != null && session.Attendees.Any(attendee => attendee.Email.ToLower() == attendeeEmail.ToLower()));
+            //var firstSessionWithOurAttendee = sessionsWithOurAttendee.FirstOrDefault();
+
+            return firstSessionWithOurAttendee != null ? firstSessionWithOurAttendee.Attendees.First(a => a.Email.ToLower() == attendeeEmail.ToLower()) : null;
         }
 
 
         public async Task<Event> AddAttendeeToSessionAsync(string sessionGuid, EventAttendee attendee)
         {
+            attendee.Id ??= Guid.NewGuid().ToString();
             var session = await GetSession(CalendarId, sessionGuid);
             session.Attendees = session.Attendees ?? new List<EventAttendee>();
             session.Attendees.Add(attendee);
@@ -174,13 +190,15 @@ namespace CalendarServices
 
         public async Task<EventAttendee> UpdateAttendee(EventAttendee attendee)
         {
-            var allSessions = await service.Events.List(CalendarId).ExecuteAsync();
-            var sessionsWithThisAttendee = allSessions.Items.Where(x => x.Attendees.Any(y => y.Id == attendee.Id));
+            //attendee.Id ??= Guid.NewGuid().ToString();
+            var allSessions = await this.GetAllUpcomingSessions(CalendarId);
+            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Id == attendee.Id || y.Email.ToLower() == attendee.Email.ToLower())).ToList(); ;
             foreach (var session in sessionsWithThisAttendee)
             {
-                session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id).ToList();
+                session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();
                 session.Attendees.Add(attendee);
-                await UpdateSession(CalendarId, session);
+                var updateSession = await UpdateSession(CalendarId, session);
+                ;
             }
             return attendee;
         }

@@ -11,6 +11,7 @@ using CalendarServices;
 using Google.GData.Client;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
+using CalendarServices.Models.Configuration;
 
 class Program
 {
@@ -24,7 +25,7 @@ class Program
         CalendarService.Scope.CalendarEvents,
         CalendarService.Scope.CalendarSettingsReadonly
     };
-
+    static CalendarService service;
     static string ApplicationName = "Google Calendar API Test";             //dubbelchecken in gCloud services.
     static string CalendarId = "planning.integrationproject.ehb@gmail.com"; //TODO: uit AppSettings halen.
     //static string eventIdMeeting120322 = "0pmjplojtl1hsp897u8s2shns4";      
@@ -73,7 +74,6 @@ class Program
             Console.WriteLine("Credential file saved to: " + credPath);
         }
 */
-        ;
         /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
 	"token_type": "Bearer",
 	"expires_in": 3599,
@@ -168,7 +168,7 @@ class Program
 
 
         // Create Google Calendar API service with the credential.
-        var service = new CalendarService(new BaseClientService.Initializer()
+        service = new CalendarService(new BaseClientService.Initializer()
         {
             HttpClientInitializer = credential,
             ApplicationName = ApplicationName,
@@ -401,21 +401,23 @@ class Program
     }
 
     
-    static string testAttendeeXml()
+    static void testAttendeeXml()
     {
-        //var xmlString = File.ReadAllText(@"c:\Users\Wouter A\source\repos\Planning.Integrationproject.EHB.Forked\src\PlanningApi\XMLExamples\AttendeeEvent_1.xml");
+        
+
+        var xmlString = File.ReadAllText(@"C:\Users\woute\Source\Repos\Planning.Integrationproject.EHB.Forked\src\PlanningApi\XmlSchemas_old\AttendeeEvent_1.xml");
         
         var xmlPath = @"C:\Users\Jan Met Pet\Source\Repos\Planning.Integrationproject.EHB\src\PlanningApi\XmlSchemas_old\AttendeeEvent_1.xml";
 
         //  var xmlString = File.ReadAllText(@"c:\temp\brol.xml");
         // return DeSerializeXml(xmlString);
 
-        var xmlString = File.ReadAllText(xmlPath);
-        return DeSerializeXml(xmlString);
+        //var xmlString = File.ReadAllText(xmlPath);
+        DeSerializeXml(xmlString);
     }
 
     //void 
-    static string DeSerializeXml(string xmlString)
+    static void DeSerializeXml(string xmlString)
     {
         XmlRootAttribute xRoot = new XmlRootAttribute();
         xRoot.ElementName = "AttendeeEvent";
@@ -426,21 +428,65 @@ class Program
         using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(xmlString)));
         var attendee = (PlanningAttendee)xmlSerializer.Deserialize(reader);
 
-        //handle attendee metode 
-        // HandleAttendee(attendee);
-
         HandleAttendee(attendee);
 
-        return attendee is not null ? (attendee.Name ?? "Doe" + attendee.LastName ?? "John") : "";
+        //return attendee is not null ? (attendee.Name ?? "Doe" + attendee.LastName ?? "John") : "";
     }
 
-    static void HandleAttendee(PlanningAttendee attendee)
+    static async void HandleAttendee(PlanningAttendee attendee)
     {
-        var eventId = "aa5uugl3gh8hsmq491a373p87o";
-        Console.WriteLine("\n" +attendee.Name+ " "+attendee.Email+ " "+attendee.Version);
+        try
+        {
+            Console.WriteLine(Environment.NewLine + "Getting attendee with email " + attendee.Email);
+            var gcal = new GoogleCalendarService(service);
 
-        var gcal = new GoogleCalendarService();
-        Console.WriteLine(gcal.GetSession(null, eventId));
+            var calOptions = new CalendarOptions()
+            {
+                CalendarGuid = "planning.integrationproject.ehb@gmail.com",
+                ClientId = "281496544249-7l0127vpa5kuetv6r4a10b13g5hd8jia.apps.googleusercontent.com",
+                ClientSecret = "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",
+                AccessToken = "ya29.A0ARrdaM88oOwgA7BctBiK6gH5a0ZpH6IgoQe5JBcFV6l1GaZjflkY5q1BPMstQnqSDlL0cXpyl-J9sHaNWwik8Bs4-ha3mdPveR1l-FJTObvvGfe-xzVkX1-VgrPbhbY3sr_CyOS1T9DQ4vgfIRlxX_QXfvNG",
+                RedirectUri = "urn:ietf:wg:oauth:2.0:oob",
+                RefreshToken = "1//033VPyDOCwwmGCgYIARAAGAMSNwF-L9IrXqh9ANuGlCrQBTPiVejDId4Gx-r0gHySPRmB8C9gpnNtDhEaLIAYw0AZmDi7bnacUHc",
+                AccessType = "offline",
+                TokenType = "refresh",
+                Scope = "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.settings.readonly"
+            };
+            await gcal.CreateCalendarService(calOptions);
+
+            var allSessions = await gcal.GetAllUpcomingSessions(gcal.CalendarGuid);
+
+            var firstSession = allSessions.FirstOrDefault();
+            var legeAttendee = new EventAttendee() { Email = "Rogekepateeke@rogeke.com", DisplayName = "Geen idee wat mijn naam is." };
+
+            if (firstSession != null)
+                await gcal.AddAttendeeToSessionAsync(firstSession.Id, legeAttendee);
+
+
+            ;
+
+
+
+            var attendeeUitGoogleCalendar = await gcal.GetAttendeeByEmail(attendee.Email);
+
+            //updaten wat we moeten updaten, bijvoorbeeld zijn naam
+            if (attendeeUitGoogleCalendar is not null)
+            {
+                attendeeUitGoogleCalendar.DisplayName = attendee.LastName + attendee.Name;
+                attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
+
+                await gcal.UpdateAttendee(attendeeUitGoogleCalendar);
+            }
+
+
+        }
+        catch (Exception ex)    
+        { 
+            Console.WriteLine(ex.Message); 
+        }
+
+
+
        // Console.WriteLine(gcal.GetAttendeeByEmail("aa5uugl3gh8hsmq491a373p87o", "nieuwegenodigde123456@gmail.com"));
        // Console.WriteLine(gcal);
     }
