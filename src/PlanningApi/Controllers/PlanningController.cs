@@ -62,6 +62,48 @@ namespace PlanningApi.Controllers
             //var guid = CalendarOptions.CalendarGuid;
         }
 
+        [HttpGet("HandleAttendee")]    // API/Planning/HandleAttendee
+        public async Task HandleAttendeeTest(string naam, string email, string? vatNumber)
+        {
+            try
+            {
+                var testAttendee = new Google.Apis.Calendar.v3.Data.EventAttendee() { Email = email, DisplayName = naam };
+
+                var attendeeUitGoogleCalendar = await CalendarService.GetAttendeeByEmail(testAttendee.Email);
+
+                if (attendeeUitGoogleCalendar == null)      //Rogerke aanmaken
+                {
+                    var upcomingSessions =  await CalendarService.GetAllUpcomingSessions(CalendarService.CalendarGuid);
+                    var firstSession = upcomingSessions.FirstOrDefault();
+                    if (firstSession != null)
+                    {
+                        var eventWithAddedAttendee = await CalendarService.AddAttendeeToSessionAsync(firstSession.Id, testAttendee);
+                        var addedAttendee = eventWithAddedAttendee.Attendees.First(a => a.DisplayName == naam);
+                        Console.WriteLine(naam + " is aangemaakt en toegevoegd aan " + firstSession.Description + " en heeft id " + addedAttendee.Id);
+                    }
+                }
+
+                else //Rogerke updaten
+                {
+                    attendeeUitGoogleCalendar.DisplayName = naam; 
+                    if (!string.IsNullOrEmpty(vatNumber))
+                        attendeeUitGoogleCalendar.Comment = vatNumber;
+
+                    await CalendarService.UpdateAttendee(attendeeUitGoogleCalendar);
+                }
+                Console.WriteLine("Rogerke is updated");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Logger.LogError(ex.Message);
+            }
+            //var guid = CalendarOptions.CalendarGuid;
+        }
+
+
+
         [HttpPost("RabbitEndpoint")]
         public async Task<IActionResult> RabbitEndpoint([FromBody] string message)
         {

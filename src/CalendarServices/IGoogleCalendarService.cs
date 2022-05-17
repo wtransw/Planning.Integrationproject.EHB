@@ -30,6 +30,7 @@ namespace CalendarServices
         Task<EventAttendee> UpdateAttendee(EventAttendee attendee);
         Task<Event> AddAttendeeToSessionAsync(string sessionGuid, EventAttendee attendee);
         Task<Event> RemoveAttendeeFromSession(string userGuid, string sessionGuid, string attendeeGuid, string attendeeEmail);
+        Task<EventAttendee> GetAttendeeByEmail(string attendeeEmail);
         #endregion
 
         #region Sessions
