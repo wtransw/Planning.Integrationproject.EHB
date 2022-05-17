@@ -32,9 +32,6 @@ namespace Crm.Link.RabbitMq.Configuration
 
         public static IServiceCollection AddPublisher(this IServiceCollection services)
         {
-            //services.AddSingleton<AccountPublisher>();
-            //services.AddSingleton<SessionPublisher>();
-
             //planning models
             services.AddSingleton<PlanningAttendeePublisher>();
             services.AddSingleton<PlanningSessionAttendeePublisher>();
