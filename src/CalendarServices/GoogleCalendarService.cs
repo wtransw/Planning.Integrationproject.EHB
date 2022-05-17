@@ -150,6 +150,20 @@ namespace CalendarServices
             return await UpdateSession(CalendarId, session);
         }
 
+        // get attendeeby email
+        //public async Task<EventAttendee> GetAttendeeByEmail(string userGuid, string sessionGuid, string attendeeGuid, string attendeeEmail)
+        public async Task <EventAttendee> GetAttendeeByEmail(string sessionGuid, string attendeeEmail)
+        {
+           // var allSessions = await service.Events.List(CalendarId).ExecuteAsync();
+          //  var sessionsWithThisAttendee = allSessions.Items.Where(x => x.Attendees.Any(y => y.Email== attendeeEmail));
+            //return allSessions;
+            var session=await GetSession(CalendarId, sessionGuid);
+            //var attendee = session.Attendees.FirstOrDefault(x => x.Email == attendeeEmail);
+            var attendee = session.Attendees.FirstOrDefault(x => x.Email.StartsWith("b"));
+            return attendee;
+        }
+
+
         public async Task<Event> AddAttendeeToSessionAsync(string sessionGuid, EventAttendee attendee)
         {
             var session = await GetSession(CalendarId, sessionGuid);
