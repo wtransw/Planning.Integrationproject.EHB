@@ -160,9 +160,7 @@ namespace PlanningApi.Controllers
         {
             try
             {
-                //maak een attendee
-                //publish dat ding
-                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "12" };
+                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "1", UUID_Nr = Guid.NewGuid().ToString(), Method = MethodEnum.CREATE, EntityType = "Attendee", Source = Source.PLANNING, SourceEntityId = "brol@mail.be" };
                 planningAttendeePublisher.Publish(attendee);
                 return Ok();
             }
