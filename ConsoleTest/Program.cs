@@ -473,7 +473,7 @@ class Program
             if (attendeeUitGoogleCalendar is not null)
             {
                 attendeeUitGoogleCalendar.DisplayName = attendee.LastName + attendee.Name;
-                attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
+                //attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
 
                 await gcal.UpdateAttendee(attendeeUitGoogleCalendar);
             }
@@ -503,9 +503,10 @@ class Program
 
         object obj;
         string testUuid = "12345678901234567890123456789012";
-        var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
+        //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
+        var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "12" };
         var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
-        var sessionAttendee = new PlanningSessionAttendee(MethodEnum.create, testUuid, testUuid, NotificationStatus.pending);
+        var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
 
         obj = attendee;
         var meh = await pS.ObjectToXml(obj);

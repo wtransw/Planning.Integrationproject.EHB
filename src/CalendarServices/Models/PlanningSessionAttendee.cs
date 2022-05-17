@@ -11,7 +11,7 @@ namespace CalendarServices.Models
         public MethodEnum Methode { get; set; }
         public string AccountUUID { get; set; } = "";
         public string SessionUUID { get; set; } = "";
-        public NotificationStatus InvitationStatus { get; set; } = NotificationStatus.pending;
+        public NotificationStatus InvitationStatus { get; set; } = NotificationStatus.PENDING;
 
         public PlanningSessionAttendee()
         { }
