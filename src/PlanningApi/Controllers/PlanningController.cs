@@ -119,7 +119,7 @@ namespace PlanningApi.Controllers
             {
                 //maak een attendee
                 //publish dat ding
-                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
+                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "12" };
                 planningAttendeePublisher.Publish(attendee);
                 return Ok();
             }
