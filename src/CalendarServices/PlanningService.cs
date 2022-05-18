@@ -69,14 +69,19 @@ namespace CalendarServices
                 var xmlSchemaSet = new XmlSchemaSet();
                 
                 //string basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string basePath = @"..\..\..\..\src\CalendarServices";
-                
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\AttendeeEvent.xsd");
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionAttendeeEvent.xsd");
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionEvent.xsd");
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\UUID.xsd");
+                string basePath = @"..\..\..\..\src\PlanningApi";
+
+                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\AttendeeEvent.xsd");
+                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionAttendeeEvent.xsd");
+                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionEvent.xsd");
+                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\UUID.xsd");
+
+
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_j.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_v3.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_v3.xsd");
                 #endregion
-                
+
                 document.Schemas.Add(xmlSchemaSet);
                 ValidationEventHandler eventHandler = new ValidationEventHandler(ValidationEventHandler);
 

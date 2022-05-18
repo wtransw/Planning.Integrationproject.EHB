@@ -15,7 +15,7 @@ namespace CalendarServices.Models
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.210.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute("AttendeeEventSource", Namespace = "")]
-    public enum Source
+    public enum SourceEnum
     {
 
         FRONTEND,

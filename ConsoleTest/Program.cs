@@ -401,19 +401,23 @@ class Program
     }
 
     
-    static void testAttendeeXml()
+    static async void testAttendeeXml()
     {
         
 
         var xmlString = File.ReadAllText(@"C:\Users\woute\Source\Repos\Planning.Integrationproject.EHB.Forked\src\PlanningApi\XmlSchemas_old\AttendeeEvent_1.xml");
         
-        var xmlPath = @"C:\Users\Jan Met Pet\Source\Repos\Planning.Integrationproject.EHB\src\PlanningApi\XmlSchemas_old\AttendeeEvent_1.xml";
+        //var xmlPath = @"C:\Users\Jan Met Pet\Source\Repos\Planning.Integrationproject.EHB\src\PlanningApi\XmlSchemas_old\AttendeeEvent_1.xml";
 
         //  var xmlString = File.ReadAllText(@"c:\temp\brol.xml");
         // return DeSerializeXml(xmlString);
 
         //var xmlString = File.ReadAllText(xmlPath);
-        DeSerializeXml(xmlString);
+        //DeSerializeXml(xmlString);
+
+        var objectje = await ObjectToXmlTest();
+        DeSerializeXml(objectje);
+
     }
 
     //void 
@@ -504,7 +508,19 @@ class Program
         object obj;
         string testUuid = "12345678901234567890123456789012";
         //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
-        var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "12" };
+        //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "12" };
+        var attendee = new PlanningAttendee()
+        {
+            Email = "no@email.yet",
+            EntityVersion = 1,
+            Name = "Jean",
+            LastName = "Avec la casquette",
+            Method = MethodEnum.CREATE,
+            Source = SourceEnum.PLANNING,
+            SourceEntityId = "no@email.yet",
+            UUID_Nr = Guid.NewGuid().ToString()
+        };
+
         var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
         var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
 

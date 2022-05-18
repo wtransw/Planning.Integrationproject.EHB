@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-<xs:element name="AttendeeEvent">
-<xs:complexType>
-<xs:sequence>
+	<xs:element name="AttendeeEvent">
+		<xs:complexType>
+			<xs:sequence>
 
-
-
-<!-- GUID moet min bestaan uit 32 karakters -->
-<xs:element name="UUID_nr" >
-<xs:simpleType>
-<xs:restriction base="xs:string">
-<xs:minLength value="32"/>
-</xs:restriction>
-</xs:simpleType>
-</xs:element>
+				<!-- GUID moet min bestaan uit 32 karakters -->
+				<xs:element name="UUID_nr" >
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="32"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 
 
 
