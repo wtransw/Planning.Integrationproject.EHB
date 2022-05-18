@@ -15,16 +15,28 @@
 					</xs:simpleType>
 				</xs:element>
 
-
+				<!-- EntityType max toegelaten karakters = 30 -->
+				<xs:element name="EntityType" >
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="30"></xs:maxLength>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 
 				<!-- SourceEntityId moet hoger dan 0 zijn -->
-				<xs:element name="SourceEntityId" type ="xs:positiveInteger" />
+				<xs:element name="SourceEntityId" type ="xs:string" />
 
 
 
 				<!-- EntityVersion moet hoger zijn dan 0 -->
-				<xs:element name="EntityVersion" type ="xs:positiveInteger" />
-
+				<xs:element name="EntityVersion" type ="xs:positiveInteger" >
+					<xs:simpleType>
+						<xs:restriction base="xs:nonNegativeInteger">
+							<xs:minInclusive value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 
 
 				<!-- Source kan enkel frontend, crm of planning bevatten -->

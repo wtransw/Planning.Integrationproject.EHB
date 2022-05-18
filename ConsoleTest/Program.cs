@@ -414,9 +414,13 @@ class Program
 
         //var xmlString = File.ReadAllText(xmlPath);
         //DeSerializeXml(xmlString);
+        Console.WriteLine(SourceEnum.PLANNING.ToString());
 
         var objectje = await ObjectToXmlTest();
-        DeSerializeXml(objectje);
+        if (!objectje.StartsWith("Error"))
+            DeSerializeXml(objectje);
+        else
+            Console.WriteLine($"Object was null, kon niet afhandelen: {objectje}.");
 
     }
 
@@ -424,13 +428,15 @@ class Program
     static void DeSerializeXml(string xmlString)
     {
         XmlRootAttribute xRoot = new XmlRootAttribute();
-        xRoot.ElementName = "AttendeeEvent";
+        //xRoot.ElementName = "AttendeeEvent";
+        xRoot.ElementName = "SessionAttendeeEvent";
         //xRoot.Namespace = "http://www.brol.com";
         xRoot.IsNullable = true;
 
         var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
         using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(xmlString)));
         var attendee = (PlanningAttendee)xmlSerializer.Deserialize(reader);
+
 
         HandleAttendee(attendee);
 
@@ -520,14 +526,39 @@ class Program
             SourceEntityId = "no@email.yet",
             UUID_Nr = Guid.NewGuid().ToString()
         };
-
-        var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
-        var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
+        var session = new PlanningSession()
+        {
+            Title = "eerste sessie",
+            StartDateUTC = new DateTime(2022, 12, 01),
+            EndDateUTC = new DateTime(2022, 12, 02),
+            EntityType = "SessionEvent",
+            IsActive = true,
+            //EntityVersion = 2,
+            Method = MethodEnum.UPDATE,
+            OrganiserUUID = testUuid,
+            SourceEntityId = "ikgebruikeenemail@als.id",
+            Source = SourceEnum.PLANNING,
+            UUID_Nr = Guid.NewGuid().ToString()
+        };
+        var sessionAttendee = new PlanningAttendee()
+        {
+            UUID_Nr = Guid.NewGuid().ToString(),
+            Email = "Anouk.Vantoogh@gmail.com",
+            EntityVersion = 1,
+            LastName = "Vantoogh",
+            Name = "Anouk",
+            Method = MethodEnum.CREATE,
+            Source = SourceEnum.PLANNING,
+            SourceEntityId = "Anouk.Vantoogh@gmail.com"  
+        };
+        //var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
+        //var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
 
         obj = attendee;
-        var meh = await pS.ObjectToXml(obj);
 
-        return meh;
+            var meh = await pS.ObjectToXml(obj);
+            return meh;
+
     }
 
 

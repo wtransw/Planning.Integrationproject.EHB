@@ -25,6 +25,7 @@ namespace CalendarServices.Models
         public string SourceEntityId { get; set; }
 
         [System.Xml.Serialization.XmlElementAttribute("EntityVersion", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.ComponentModel.DataAnnotations.Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
         public int EntityVersion { get; set; }
 
         [System.Xml.Serialization.XmlElementAttribute("Source", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]

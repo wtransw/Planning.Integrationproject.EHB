@@ -21,7 +21,14 @@
 
 
 <!-- EntityVersion moet hoger zijn dan 0 -->
-<xs:element name="EntityVersion" type ="xs:positiveInteger" />
+<!--<xs:element name="EntityVersion" type ="xs:positiveinteger" />-->
+				<xs:element name="EntityVersion" type ="xs:positiveInteger" >
+					<xs:simpleType>
+						<xs:restriction base="xs:nonNegativeInteger">
+							<xs:minInclusive value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
 
 <!-- Source kan enkel frontend, crm of planning bevatten -->
 <xs:element name="Source">

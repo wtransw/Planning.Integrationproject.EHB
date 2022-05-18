@@ -112,7 +112,10 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             attendeeLogger.LogInformation($"Handling planning attendee {attendee.Email}");
 
-            var versionNr = attendee.EntityVersion;
+
+            //UuidMaster.GetAttendee(source: SourceEnum.PLANNING.ToString()
+
+
             //de attendee die je hier binnen krijgt heeft ook een versienummer, bijvoorbeeld 4.
             //je moet op de UUID master gaan zoeken naar die zelfde Attendee, en in de search meegeven dat je die van planning wilt (SourceType.Planning).
 

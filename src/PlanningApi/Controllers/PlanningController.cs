@@ -161,7 +161,16 @@ namespace PlanningApi.Controllers
             try
             {
                 //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "1", UUID_Nr = Guid.NewGuid().ToString(), Method = MethodEnum.CREATE, EntityType = "Attendee", Source = Source.PLANNING, SourceEntityId = "brol@mail.be" };
-                var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "1", UUID_Nr = Guid.NewGuid().ToString(), Method = MethodEnum.CREATE, EntityType = null, Source = Source.PLANNING, SourceEntityId = null }; 
+                var attendee = new PlanningAttendee { 
+                    Name = "Wouter", 
+                    LastName = "A", 
+                    Email = "my@mail.here", 
+                    EntityVersion = 1, 
+                    UUID_Nr = Guid.NewGuid().ToString(), 
+                    Method = MethodEnum.CREATE, 
+                    Source = SourceEnum.PLANNING, 
+                    SourceEntityId = "my@mail.here"
+                }; 
 
 
                 planningAttendeePublisher.Publish(attendee);
