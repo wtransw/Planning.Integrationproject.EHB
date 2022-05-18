@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="AttendeeEvent">
+<xs:complexType>
+<xs:sequence>
+
+
+
+<!-- GUID moet min bestaan uit 32 karakters -->
+<xs:element name="UUID_nr" >
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:minLength value="32"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+
+
+<!-- SourceEntityId moet hoger dan 0 zijn -->
+<xs:element name="SourceEntityId" type="xs:string" />
+
+
+
+<!-- EntityVersion moet hoger zijn dan 0 -->
+<xs:element name="EntityVersion" type ="xs:positiveInteger" />
+
+<!-- Source kan enkel frontend, crm of planning bevatten -->
+<xs:element name="Source">
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:enumeration value="FRONTEND" />
+<xs:enumeration value="CRM" />
+<xs:enumeration value="PLANNING" />
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+
+
+<!-- Method kan enkel CRUD bevatten -->
+<xs:element name="Method">
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:enumeration value="CREATE" />
+<xs:enumeration value="UPDATE" />
+<xs:enumeration value="DELETE" />
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+<!-- Name max toegelaten karakters = 30 -->
+<xs:element name="Name" type ="xs:string" />
+
+
+
+<!-- LastName max toegelaten karakters = 50 -->
+<xs:element name="LastName" type ="xs:string" />
+
+
+
+<!-- Email volgens email pattern-->
+<xs:element name="Email" >
+<xs:simpleType>
+<xs:restriction base="xs:string">
+<xs:pattern value="[^@]+@[^\.]+\..+"/>
+</xs:restriction>
+</xs:simpleType>
+</xs:element>
+
+
+
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema>
