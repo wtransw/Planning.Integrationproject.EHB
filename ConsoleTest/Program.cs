@@ -43,8 +43,6 @@ class Program
          *            google Calendar
          */
 
-
-
         ////var brol = testAttendeeXml();
         //try
         //{
@@ -59,21 +57,23 @@ class Program
         //return;
 
         UserCredential credential = default;
-/*
-        using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
-        {
-            // The file token.json stores the user's access and refresh tokens, and is created
-            // automatically when the authorization flow completes for the first time.
-            string credPath = "token.json";
-            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                GoogleClientSecrets.FromStream(stream).Secrets,
-                Scopes,
-                "user",
-                CancellationToken.None,
-                new FileDataStore(credPath, true)).Result;
-            Console.WriteLine("Credential file saved to: " + credPath);
-        }
-*/
+
+        //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+        //{
+        //    // The file token.json stores the user's access and refresh tokens, and is created
+        //    // automatically when the authorization flow completes for the first time.
+        //    string credPath = "token.json";
+        //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+        //        GoogleClientSecrets.FromStream(stream).Secrets,
+        //        Scopes,
+        //        "user",
+        //        CancellationToken.None,
+        //        new FileDataStore(credPath, true)).Result;
+        //    Console.WriteLine("Credential file saved to: " + credPath);
+        //}
+
+        
+
         /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
 	"token_type": "Bearer",
 	"expires_in": 3599,
@@ -530,6 +530,8 @@ class Program
         string testUuid = "12345678901234567890123456789012";
         //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
         //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "12" };
+
+
         var attendee = new PlanningAttendee()
         {
             Email = "no@email.yet",
@@ -556,7 +558,6 @@ class Program
             Source = SourceEnum.PLANNING,
             UUID_Nr = Guid.NewGuid().ToString()
         };
-
         var sessionAttendee = new PlanningSessionAttendee()
         {
             UUID_Nr = Guid.NewGuid().ToString(),
@@ -569,6 +570,8 @@ class Program
             InvitationStatus = NotificationStatus.PENDING,
             SessionUUID = testUuid
         };
+
+
         //var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
         //var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
 
