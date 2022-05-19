@@ -13,7 +13,7 @@ namespace PlanningApi.Controllers
     {
         private readonly ILogger<PlanningController> Logger;
         private readonly IGoogleCalendarService CalendarService;
-        private readonly CalendarOptions CalendarOptions;
+        private readonly ICalendarOptions CalendarOptions;
         private readonly PlanningAttendeePublisher PlanningAttendeePublisher;
         private readonly PlanningSessionPublisher PlanningSessionPublisher;
         private readonly PlanningSessionAttendeePublisher PlanningSessionAttendeePublisher;
@@ -22,7 +22,7 @@ namespace PlanningApi.Controllers
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
-            CalendarOptions calendarOptions,
+            ICalendarOptions calendarOptions,
             PlanningAttendeePublisher planningAttendeePublisher,
             PlanningSessionPublisher planningSessionPublisher,
             PlanningSessionAttendeePublisher planningSessionAttendeePublisher,
