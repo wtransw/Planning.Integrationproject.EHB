@@ -23,21 +23,15 @@ namespace Crm.Link.RabbitMq.Configuration
 
             services.AddSingleton<ConnectionProvider>();
 
-            //services.AddHostedService<AccountConsumer>();
-            //services.AddHostedService<SessionConsumer>();
-
-            services.AddHostedService<PlanningSessionConsumer>();
             services.AddHostedService<PlanningAttendeeConsumer>();
             services.AddHostedService<PlanningSessionAttendeeConsumer>();
+            services.AddHostedService<PlanningSessionConsumer>();
 
             return services;
         }
 
         public static IServiceCollection AddPublisher(this IServiceCollection services)
         {
-            //services.AddSingleton<AccountPublisher>();
-            //services.AddSingleton<SessionPublisher>();
-
             //planning models
             services.AddSingleton<PlanningAttendeePublisher>();
             services.AddSingleton<PlanningSessionAttendeePublisher>();

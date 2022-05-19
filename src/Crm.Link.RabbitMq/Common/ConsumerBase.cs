@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CalendarServices.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.HighPerformance;
 using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
@@ -26,7 +27,7 @@ namespace Crm.Link.RabbitMq.Common
             _logger = consumerLogger;
         }
 
-        protected virtual async Task OnEventReceived<T>(object sender, BasicDeliverEventArgs @event)
+        public virtual async Task OnEventReceived<T>(object sender, BasicDeliverEventArgs @event)
         {
             var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
             try
@@ -39,20 +40,25 @@ namespace Crm.Link.RabbitMq.Common
 
                 // xsd for validation
                 XmlSchemaSet xmlSchemaSet = new();
-                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/UUID.xsd");
+                //xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent.xsd");
+                //xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent.xsd");
+                //xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent.xsd");
+                //xmlSchemaSet.Add("", $"{basePath}/Resources/UUID.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_j.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_v3.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_v3.xsd");
 
 
                 document.Schemas.Add(xmlSchemaSet);
                 ValidationEventHandler eventHandler = new (ValidationEventHandler);
 
-                document.Validate(eventHandler);                
-               
+                document.Validate(eventHandler);
+
                 var serializer = new XmlSerializer(typeof(T));
                 var test = serializer.Deserialize(@event.Body.AsStream());
 
+                XmlRootAttribute xRoot = new XmlRootAttribute();
+                
             }
             catch (Exception ex)
             {
@@ -64,7 +70,7 @@ namespace Crm.Link.RabbitMq.Common
             }
         }
 
-        private void ValidationEventHandler(object? sender, ValidationEventArgs e)
+        internal void ValidationEventHandler(object? sender, ValidationEventArgs e)
         {
             switch (e.Severity)
             {

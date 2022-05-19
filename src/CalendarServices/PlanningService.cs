@@ -69,18 +69,17 @@ namespace CalendarServices
                 var xmlSchemaSet = new XmlSchemaSet();
                 
                 //string basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string basePath = @"..\..\..\..\src\CalendarServices";
-                
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\AttendeeEvent.xsd");
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionAttendeeEvent.xsd");
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionEvent.xsd");
-                xmlSchemaSet.Add("", basePath + @"\XmlSchemas\UUID.xsd");
+                string basePath = @"..\..\..\..\src\PlanningApi";
+
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_w.xsd");
                 #endregion
-                
+
                 document.Schemas.Add(xmlSchemaSet);
                 ValidationEventHandler eventHandler = new ValidationEventHandler(ValidationEventHandler);
 
-                // Will throw if validation fails.
+                // Will throw if validation fails!
                 document.Validate(eventHandler);
 
                 returnString = stringske;
@@ -107,5 +106,6 @@ namespace CalendarServices
                     throw new InvalidDataException($"XML validation failed. Error: {e.Message}");
             }
         }
+
     }
 }

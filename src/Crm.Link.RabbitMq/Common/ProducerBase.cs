@@ -28,11 +28,13 @@ namespace Crm.Link.RabbitMq.Common
 
         public virtual void Publish(T @event)
         {
+            _logger.LogDebug("Publishing event.");
             _ = @event ?? throw new ArgumentNullException(nameof(@event));
 
             MessageQueue.Add(@event);
             if (Channel is not null)
             {
+                _logger.LogDebug("Publishing messages.");
                 foreach (var message in MessageQueue)
                 {
                     try
@@ -65,6 +67,11 @@ namespace Crm.Link.RabbitMq.Common
                     }
                 }
                         MessageQueue.Clear();
+            }
+            else
+            {
+                Console.WriteLine("Channel is null!");
+                _logger.LogError("Channel is null!");
             }
         }
     }

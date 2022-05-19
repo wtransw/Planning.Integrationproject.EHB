@@ -4,16 +4,39 @@ using System.Text;
 
 namespace CalendarServices.Models
 {
-    public enum MethodEnum
-    {
-        create = 0,
-        update = 1,
-        delete = 2
-    }
     public enum NotificationStatus
     {
-        pending = 0,
-        accepted = 1,
-        declined = 2
+        PENDING = 0,
+        ACCEPTED = 1,
+        DECLINED = 2
     }
+
+
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.210.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute("AttendeeEventSource", Namespace = "")]
+    public enum SourceEnum
+    {
+
+        FRONTEND,
+
+        CRM,
+
+        PLANNING,
+    }
+
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.210.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute("AttendeeEventMethod", Namespace = "")]
+    public enum MethodEnum
+    {
+
+        CREATE,
+
+        UPDATE,
+
+        DELETE,
+    }
+
+
 }
