@@ -71,15 +71,9 @@ namespace CalendarServices
                 //string basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string basePath = @"..\..\..\..\src\PlanningApi";
 
-                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\AttendeeEvent.xsd");
-                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionAttendeeEvent.xsd");
-                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\SessionEvent.xsd");
-                //xmlSchemaSet.Add("", basePath + @"\XmlSchemas\UUID.xsd");
-
-
-                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_j.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_v3.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_v3.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_w.xsd");
                 #endregion
 
                 document.Schemas.Add(xmlSchemaSet);

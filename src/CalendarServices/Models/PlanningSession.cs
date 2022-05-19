@@ -16,7 +16,7 @@ namespace CalendarServices.Models
         public static string XmlElementName = "SessionEvent";
 
         [System.ComponentModel.DataAnnotations.MinLengthAttribute(32)]
-        [System.Xml.Serialization.XmlElementAttribute("UUID_nr", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.Xml.Serialization.XmlElementAttribute("UUID_Nr", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string UUID_Nr { get; set; }
 
         [System.Xml.Serialization.XmlElementAttribute("SourceEntityId", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
@@ -26,9 +26,9 @@ namespace CalendarServices.Models
         [System.Xml.Serialization.XmlElementAttribute("EntityType", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public string EntityType { get; set; }
 
-        //[System.Xml.Serialization.XmlElementAttribute("EntityVersion", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
-        //[System.ComponentModel.DataAnnotations.Range(1, uint.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
-        //public uint EntityVersion { get; set; }
+        [System.Xml.Serialization.XmlElementAttribute("EntityVersion", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
+        [System.ComponentModel.DataAnnotations.Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
+        public int EntityVersion { get; set; }
 
         [System.Xml.Serialization.XmlElementAttribute("Source", Form = System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public SourceEnum Source { get; set; }
@@ -54,36 +54,6 @@ namespace CalendarServices.Models
         public bool IsActive { get; set; }
     }
 
-    
 
-
-
-
-
-
-
-    /*
-    public int Version { get; set; }
-    public string Title { get; set; }
-    public DateTime StartDateUTC { get; set; }
-    public DateTime EndDateUTC { get; set; }
-    public string Description { get; set; }
-    public string OrganiserUUID { get; set; }
-    public string IsActive { get; set; }
-
-    public PlanningSession()
-    { }
-
-    public PlanningSession(string title, DateTime startDateUtc, DateTime endDateUtc, string description, string organiserUuid, int version = 0,string isactive = "1")
-    {
-        this.Version = version;
-        this.Title = title;
-        this.StartDateUTC = startDateUtc;
-        this.EndDateUTC = endDateUtc;
-        this.Description = description;
-        this.OrganiserUUID = organiserUuid;
-        this.IsActive = isactive;
-    }
-    */
 }
 
