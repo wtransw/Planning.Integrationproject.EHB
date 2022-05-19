@@ -79,7 +79,7 @@ namespace CalendarServices
                 document.Schemas.Add(xmlSchemaSet);
                 ValidationEventHandler eventHandler = new ValidationEventHandler(ValidationEventHandler);
 
-                // Will throw if validation fails.
+                // Will throw if validation fails!
                 document.Validate(eventHandler);
 
                 returnString = stringske;
