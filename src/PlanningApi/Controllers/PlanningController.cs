@@ -22,7 +22,6 @@ namespace PlanningApi.Controllers
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
-            ICalendarOptions calendarOptions)
             CalendarOptions calendarOptions,
             PlanningAttendeePublisher planningAttendeePublisher,
             PlanningSessionPublisher planningSessionPublisher,
@@ -107,28 +106,62 @@ namespace PlanningApi.Controllers
         }
 
 
-
-        [HttpPost("RabbitEndpoint")]
-        public async Task<IActionResult> RabbitEndpoint([FromBody] string message)
-        {
-            Logger.LogInformation("RabbitEndpoint called");
-            return Ok();
-        }
+        //[HttpPost("RabbitEndpoint")]
+        //public async Task<IActionResult> RabbitEndpoint([FromBody] string message)
+        //{
+        //    Logger.LogInformation("RabbitEndpoint called");
+        //    return Ok();
+        //}
 
         [HttpPost("PublishOnRabbitMqTest")]
         public async Task<IActionResult> PublishOnRabbitMqTest(int objectNumber)
         {
             object obj;
             string testUuid = "12345678901234567890123456789012";
-            var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", VatNumber = "", Version = 12 };
-            var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
-            var sessionAttendee = new PlanningSessionAttendee(MethodEnum.create, testUuid, testUuid, NotificationStatus.pending);
+
+            var attendee = new PlanningAttendee()
+            {
+                Email = "no@email.yet",
+                EntityVersion = 1,
+                Name = "Jean",
+                LastName = "Avec la casquette",
+                Method = MethodEnum.CREATE,
+                Source = SourceEnum.PLANNING,
+                SourceEntityId = "no@email.yet",
+                UUID_Nr = Guid.NewGuid().ToString(),
+                EntityType = "Attendee"
+            };
+            var session = new PlanningSession()
+            {
+                Title = "eerste sessie",
+                StartDateUTC = new DateTime(2022, 12, 01),
+                EndDateUTC = new DateTime(2022, 12, 02),
+                EntityType = "SessionEvent",
+                IsActive = true,
+                EntityVersion = 2,
+                Method = MethodEnum.UPDATE,
+                OrganiserUUID = testUuid,
+                SourceEntityId = "ikgebruikeenemail@als.id",
+                Source = SourceEnum.PLANNING,
+                UUID_Nr = Guid.NewGuid().ToString()
+            };
+            var sessionAttendee = new PlanningSessionAttendee()
+            {
+                UUID_Nr = Guid.NewGuid().ToString(),
+                EntityVersion = 1,
+                Method = MethodEnum.CREATE,
+                Source = SourceEnum.PLANNING,
+                SourceEntityId = "Anouk.Vantoogh@gmail.com",
+                AttendeeUUID = Guid.NewGuid().ToString(),
+                EntityType = "SessionAttendee",
+                InvitationStatus = NotificationStatus.PENDING,
+                SessionUUID = testUuid
+            };
 
             obj = attendee;
 
             try
             {
-
                 switch (objectNumber)
                 {
                     case 1:
@@ -155,35 +188,35 @@ namespace PlanningApi.Controllers
         }
 
 
-        [HttpGet("PublishTest")]    // API/Planning/PublishTest
-        public IActionResult PublishTest()
-        {
-            try
-            {
-                //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "1", UUID_Nr = Guid.NewGuid().ToString(), Method = MethodEnum.CREATE, EntityType = "Attendee", Source = Source.PLANNING, SourceEntityId = "brol@mail.be" };
-                var attendee = new PlanningAttendee { 
-                    Name = "Wouter", 
-                    LastName = "A", 
-                    Email = "my@mail.here", 
-                    EntityVersion = 1, 
-                    UUID_Nr = Guid.NewGuid().ToString(), 
-                    Method = MethodEnum.CREATE, 
-                    Source = SourceEnum.PLANNING, 
-                    SourceEntityId = "my@mail.here"
-                }; 
+        //[HttpGet("PublishTest")]    // API/Planning/PublishTest
+        //public IActionResult PublishTest()
+        //{
+        //    try
+        //    {
+        //        //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "1", UUID_Nr = Guid.NewGuid().ToString(), Method = MethodEnum.CREATE, EntityType = "Attendee", Source = Source.PLANNING, SourceEntityId = "brol@mail.be" };
+        //        var attendee = new PlanningAttendee { 
+        //            Name = "Wouter", 
+        //            LastName = "A", 
+        //            Email = "my@mail.here", 
+        //            EntityVersion = 1, 
+        //            UUID_Nr = Guid.NewGuid().ToString(), 
+        //            Method = MethodEnum.CREATE, 
+        //            Source = SourceEnum.PLANNING, 
+        //            SourceEntityId = "my@mail.here"
+        //        }; 
 
 
-                planningAttendeePublisher.Publish(attendee);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Logger.LogError(ex.Message);
-                return UnprocessableEntity(ex);
-            }
-            //var guid = CalendarOptions.CalendarGuid;
-        }
+        //        planningAttendeePublisher.Publish(attendee);
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        Logger.LogError(ex.Message);
+        //        return UnprocessableEntity(ex);
+        //    }
+        //    //var guid = CalendarOptions.CalendarGuid;
+        //}
 
 
     }
