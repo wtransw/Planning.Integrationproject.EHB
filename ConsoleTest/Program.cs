@@ -434,21 +434,21 @@ class Program
     static void DeSerializeXml(string xmlString)
     {
         XmlRootAttribute xRoot = new XmlRootAttribute();
-        //xRoot.ElementName = "AttendeeEvent";
-        xRoot.ElementName = "SessionAttendeeEvent";
+        xRoot.ElementName = "AttendeeEvent";
+        //xRoot.ElementName = "SessionAttendeeEvent";
         //xRoot.ElementName = "SessionEvent";
 
         //xRoot.Namespace = "http://www.brol.com";
         xRoot.IsNullable = true;
 
-        //var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
+        var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
         //var xmlSerializer = new XmlSerializer(typeof(PlanningSession), xRoot);
-        var xmlSerializer = new XmlSerializer(typeof(PlanningSessionAttendee), xRoot);
+        //var xmlSerializer = new XmlSerializer(typeof(PlanningSessionAttendee), xRoot);
 
         using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(xmlString)));
 
-        //var mijnModel = (PlanningAttendee)xmlSerializer.Deserialize(reader);
-        var mijnModel = (PlanningSessionAttendee)xmlSerializer.Deserialize(reader);
+        var mijnModel = (PlanningAttendee)xmlSerializer.Deserialize(reader);
+        //var mijnModel = (PlanningSessionAttendee)xmlSerializer.Deserialize(reader);
         //var mijnModel = (PlanningSession)xmlSerializer.Deserialize(reader);
 
         ;
@@ -575,7 +575,7 @@ class Program
         //var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
         //var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
 
-        obj = sessionAttendee;
+        obj = attendee;
 
             var meh = await pS.ObjectToXml(obj);
             return meh;

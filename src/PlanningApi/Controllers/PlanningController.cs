@@ -159,7 +159,6 @@ namespace PlanningApi.Controllers
                 SessionUUID = testUuid
             };
 
-            obj = attendee;
 
             try
             {
