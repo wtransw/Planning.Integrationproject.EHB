@@ -24,7 +24,6 @@ namespace Crm.Link.RabbitMq.Consumer
     {
         protected override string QueueName => "PlanningAttendee";
         private readonly ILogger<PlanningAttendeeConsumer> attendeeLogger;
-        private readonly IGoogleCalendarService CalendarService;
         private readonly IUUIDGateAway UuidMaster;
         private readonly IGoogleCalendarService GoogleCalendarService;
         public PlanningAttendeeConsumer(
@@ -40,7 +39,6 @@ namespace Crm.Link.RabbitMq.Consumer
             base(connectionProvider, consumerLogger, logger)
         {
             this.attendeeLogger = attendeeLogger;
-            this.CalendarService = calendarService;
             this.UuidMaster = uuidMaster;
             this.GoogleCalendarService = googleCalendarService;
             googleCalendarService.CreateCalendarService(calendarOptions);
