@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SessionAttendeeEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="SessionAttendeeEvent.xsd">
+
+  <Methode>create</Methode>
+  <AccountUUID>aaaef973-d8ce-4c92-95b4-3635bb2d42d5</AccountUUID>
+  <SessionUUID>bbbef973-d8cf-4c93-95b5-3635bb2d43e6</SessionUUID>
+  <InvitationStatus>accepted</InvitationStatus>
+
+</SessionAttendeeEvent>
+
+  
+  

@@ -9,7 +9,6 @@ namespace PlanningApi.Configuration
             builder.Logging.ClearProviders();
             builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
             builder.Host.UseNLog();
-
             return builder;
         }
 

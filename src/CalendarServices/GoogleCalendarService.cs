@@ -1,8 +1,13 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using CalendarServices.Models.Configuration;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Google.GData.Client;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,24 +29,22 @@ namespace CalendarServices
             CalendarService.Scope.CalendarSettingsReadonly
         };
 
-        static string ApplicationName = "Google Calendar Service for IntegrationProject";             //dubbelchecken in gCloud services.
-        //static string CalendarId = "planning.integrationproject.ehb@gmail.com"; //TODO: uit AppSettings halen.
-        public string CalendarId = string.Empty;
-        //static string eventIdMeeting120322 = "0pmjplojtl1hsp897u8s2shns4";      
-        static string eventIdMeeting120322 = "aa5uugl3gh8hsmq491a373p87o";
+        //static string ApplicationName = "Google Calendar Service for IntegrationProject";             //dubbelchecken in gCloud services.
+        static string ApplicationName = "Google Calendar API Test";
+        static string CalendarId = "planning.integrationproject.ehb@gmail.com";
         private UserCredential credential = null!;
         private CalendarService service = null!;
+        ILogger Logger; 
+        public ICalendarOptions CalendarOptions { get; set; }
+        private OAuth2Parameters parameters = new OAuth2Parameters();
 
         public string CalendarGuid { get => CalendarId; set => CalendarId = value; }
-
-        public GoogleCalendarService()
+        public GoogleCalendarService( )
         {
-            CreateCalendarService();
         }
-        public GoogleCalendarService(string calendarGuid)
+        public GoogleCalendarService(CalendarService calendarservice)
         {
-            this.CalendarId = calendarGuid;
-            CreateCalendarService();
+            this.service = calendarservice;
         }
 
         public async Task<Event> CreateAttendee(string eventGuid, string attendeeId, string email, string displayName, string? responseStatus, bool? optional = false)
@@ -118,6 +121,7 @@ namespace CalendarServices
 
         public async Task<string> DeleteSession(string calendarGuid, string? sessionGuid, string? sessionName)
         {
+            calendarGuid = !string.IsNullOrEmpty(calendarGuid) ? calendarGuid : CalendarGuid;
             sessionGuid = sessionGuid ?? await GetEventId(calendarGuid, sessionName);
             if (sessionGuid != null)
             {
@@ -134,13 +138,24 @@ namespace CalendarServices
 
         public async Task<List<Event>> GetAllUpcomingSessions(string calendarGuid)
         {
-            var allSessions = await service.Events.List(calendarGuid).ExecuteAsync();
-            return allSessions.Items.ToList();  //sws deze in de toekomst of hier nog een filter op toevoegen?
+            try
+            {
+                var meh = service;
+                var allSessions = await service.Events.List(calendarGuid).ExecuteAsync();
+                var sessionList = allSessions.Items.Where(i => i.Start.DateTime > DateTime.UtcNow).ToList();
+                //return allSessions.Items.ToList();  //sws deze in de toekomst of hier nog een filter op toevoegen?
+                return sessionList;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         public async Task<List<Event>> GetAllUpcomingSessionsUntilDate(string calendarGuid, DateTime latestStartTime)
         {
-            var allSessions = await service.Events.List(calendarGuid).ExecuteAsync();
+            var allSessions = await service.Events.List(!string.IsNullOrEmpty(calendarGuid) ? calendarGuid : CalendarGuid).ExecuteAsync();
             return allSessions.Items.Where(x => x.Start.DateTime < latestStartTime).ToList();
         }
 
@@ -151,8 +166,22 @@ namespace CalendarServices
             return await UpdateSession(CalendarId, session);
         }
 
+        // get attendeeby email
+        public async Task <EventAttendee?> GetAttendeeByEmail(string attendeeEmail)
+        {
+            var allSessions = await GetAllUpcomingSessions(CalendarGuid);
+
+            //var sessionsWithOurAttendee = allSessions.Where(session => session.Attendees != null && session.Attendees.Any(attendee => attendee.Email.ToLower() == attendeeEmail.ToLower())).ToList();
+            var firstSessionWithOurAttendee = allSessions.FirstOrDefault(session => session.Attendees != null && session.Attendees.Any(attendee => attendee.Email.ToLower() == attendeeEmail.ToLower()));
+            //var firstSessionWithOurAttendee = sessionsWithOurAttendee.FirstOrDefault();
+
+            return firstSessionWithOurAttendee != null ? firstSessionWithOurAttendee.Attendees.First(a => a.Email.ToLower() == attendeeEmail.ToLower()) : null;
+        }
+
+
         public async Task<Event> AddAttendeeToSessionAsync(string sessionGuid, EventAttendee attendee)
         {
+            attendee.Id ??= Guid.NewGuid().ToString();
             var session = await GetSession(CalendarId, sessionGuid);
             session.Attendees = session.Attendees ?? new List<EventAttendee>();
             session.Attendees.Add(attendee);
@@ -161,13 +190,15 @@ namespace CalendarServices
 
         public async Task<EventAttendee> UpdateAttendee(EventAttendee attendee)
         {
-            var allSessions = await service.Events.List(CalendarId).ExecuteAsync();
-            var sessionsWithThisAttendee = allSessions.Items.Where(x => x.Attendees.Any(y => y.Id == attendee.Id));
+            //attendee.Id ??= Guid.NewGuid().ToString();
+            var allSessions = await this.GetAllUpcomingSessions(CalendarId);
+            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Id == attendee.Id || y.Email.ToLower() == attendee.Email.ToLower())).ToList(); ;
             foreach (var session in sessionsWithThisAttendee)
             {
-                session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id).ToList();
+                session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();
                 session.Attendees.Add(attendee);
-                await UpdateSession(CalendarId, session);
+                var updateSession = await UpdateSession(CalendarId, session);
+                ;
             }
             return attendee;
         }
@@ -179,7 +210,11 @@ namespace CalendarServices
 
         public async Task<Event> GetSession(string calendarId, string eventId)
         {
-            return await service.Events.Get(calendarId, eventId).ExecuteAsync();
+            if (!string.IsNullOrEmpty(calendarId))
+                return await service.Events.Get(calendarId, eventId).ExecuteAsync();
+
+            else 
+                return await service.Events.Get(CalendarId, eventId).ExecuteAsync();
         }
 
         public Channel CreateChannel(string address, string? id, int? ttlMinutes)
@@ -219,6 +254,105 @@ namespace CalendarServices
                 return (await service.Events.List(calendarId).ExecuteAsync()).Items.FirstOrDefault(e => e.Summary == sessionName)?.Id;
             else return null;
         }
+
+        public Task CreateCalendarService(ICalendarOptions calendarOptions)
+        {
+            this.CalendarOptions = calendarOptions;
+            //CreateCredential();
+            GetCredential();
+
+            // Create Google Calendar API service with the credential.
+            service = new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+            return Task.CompletedTask;
+        }
+
+        private void GetCredential()
+        {
+            try
+            {
+                parameters = GetParameters();
+                Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+                var flow = GetFlow();
+                var token = GetToken(); 
+
+                credential = new UserCredential(flow, Environment.UserName, token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error getting credential: " + ex);
+                //Console.WriteLine(ex + " Retry with v3 now.");
+                //retryWithV3();
+            }
+        }
+
+        private void retryWithV3()
+        {
+            try
+            {
+
+                using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+                {
+                    // The file token.json stores the user's access and refresh tokens, and is created
+                    // automatically when the authorization flow completes for the first time.
+                    string credPath = "token.json";
+                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                        GoogleClientSecrets.FromStream(stream).Secrets,
+                        Scopes,
+                        "user",
+                        CancellationToken.None,
+                        new FileDataStore(credPath, true)).Result;
+                    Console.WriteLine("Credential file saved to: " + credPath);
+
+                    parameters.AccessToken = credential.Token.AccessToken;
+                    parameters.RefreshToken = credential.Token.RefreshToken;    
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Retry with v3 failed: " + ex);
+            }
+        }
+
+        private TokenResponse GetToken() => new TokenResponse
+        {
+            AccessToken = parameters.AccessToken,
+            RefreshToken = parameters.RefreshToken
+        };
+
+        private GoogleAuthorizationCodeFlow GetFlow() => new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+        {
+            ClientSecrets = new ClientSecrets
+            {
+                ClientId = parameters.ClientId,
+                ClientSecret = parameters.ClientSecret,
+            },
+            Scopes = Scopes,
+            DataStore = new FileDataStore("Store")
+        });
+
+        private Google.GData.Client.OAuth2Parameters GetParameters() => new OAuth2Parameters()
+        {
+            ClientId = CalendarOptions.ClientId,
+            ClientSecret = CalendarOptions.ClientSecret,
+            AccessToken = CalendarOptions.AccessToken,
+            RedirectUri = CalendarOptions.RedirectUri,
+            RefreshToken = CalendarOptions.RefreshToken,
+            AccessType =   CalendarOptions.AccessType,
+            TokenType =    CalendarOptions.TokenType,
+            Scope = CalendarOptions.Scope,
+            //Scope = "http://www.google.com/calendar/feeds/default/",
+            //TokenExpiry = DateTime.Parse("2022-05-09T19:19:55.758Z").AddSeconds(3599)
+            AuthUri = "https://accounts.google.com/o/oauth2/auth",
+            TokenUri = "https://oauth2.googleapis.com/token",
+            TokenExpiry = DateTime.Parse("2022-05-09T21:19:55.758+02:00").AddSeconds(3599),
+            ResponseType = "code",
+
+        };
+
         private void CreateCredential()
         {
             using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
@@ -235,17 +369,9 @@ namespace CalendarServices
                 Console.WriteLine("Credential file saved to: " + credPath);
             }
         }
-        private void CreateCalendarService()
-        {
-            CreateCredential();
 
-            // Create Google Calendar API service with the credential.
-            service = new CalendarService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
-        }
+
+
     }
 
 }

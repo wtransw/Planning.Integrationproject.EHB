@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AttendeeEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="AttendeeEvent.xsd">
+
+  <Version>1</Version>
+  <Name>Roger</Name>
+  <LastName>Van Pimperzele</LastName>
+  <Email>Rogekepateeke@rogeke.com</Email>
+  <VatNumber>BE 0123 456 789</VatNumber>
+
+</AttendeeEvent>
+
+  
+  

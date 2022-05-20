@@ -8,6 +8,8 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/PlanningApi/PlanningApi.csproj", "src/PlanningApi/"]
+COPY ["src/CalendarServices/CalendarServices.csproj", "src/CalendarServices/"]
+COPY ["src/Crm.Link.RabbitMq/Crm.Link.RabbitMq.csproj", "src/Crm.Link.RabbitMq/"]
 RUN dotnet restore "src/PlanningApi/PlanningApi.csproj"
 COPY . .
 WORKDIR "/src/src/PlanningApi"
