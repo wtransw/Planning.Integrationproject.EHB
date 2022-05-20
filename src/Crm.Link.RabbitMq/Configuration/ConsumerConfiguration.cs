@@ -18,6 +18,7 @@ namespace Crm.Link.RabbitMq.Configuration
                 {
                     Uri = uri,
                     DispatchConsumersAsync = true,
+                    HostName = "rabbitmq"
                 };
             });
 

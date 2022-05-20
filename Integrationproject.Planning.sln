@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{27A07E1B-03E6-469C-9AE6-308C3C766583}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{08F6BB83-79A1-4AFE-8DFA-FA751EFEFF3D}"
+	ProjectSection(SolutionItems) = preProject
+		src\docker-compose.yaml = src\docker-compose.yaml
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crm.Link.RabbitMq", "src\Crm.Link.RabbitMq\Crm.Link.RabbitMq.csproj", "{24BB4DAB-05DF-4D3F-A785-D4E025C7C7CB}"
 EndProject
