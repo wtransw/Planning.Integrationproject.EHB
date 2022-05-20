@@ -23,7 +23,7 @@ namespace Crm.Link.UUID
         {
             var response = await _httpClient.GetAsync($"resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
 
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode != HttpStatusCode.OK)
             {
                 _logger.LogError($"{nameof(GetGuid)} failed: {response.StatusCode}");
                 return null;
