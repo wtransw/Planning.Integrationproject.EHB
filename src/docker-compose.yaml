@@ -22,7 +22,7 @@ networks:
   #  name: frontend
   #  driver: bridge
   #rabbitmq:
-  #  external: true
+  #  external: true 
   #uuidmasterapi:
   #  external: true
   planning:
