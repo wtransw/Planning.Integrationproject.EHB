@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ipwt22-crm-api\Crm.Link.UUID\Crm.Link.UUID.csproj" />
     <ProjectReference Include="..\CalendarServices\CalendarServices.csproj" />
     <ProjectReference Include="..\Crm.Link.RabbitMq\Crm.Link.RabbitMq.csproj" />
   </ItemGroup>
