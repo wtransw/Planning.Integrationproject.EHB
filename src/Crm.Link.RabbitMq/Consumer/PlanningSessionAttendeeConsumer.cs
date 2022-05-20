@@ -119,9 +119,9 @@ namespace Crm.Link.RabbitMq.Consumer
         public async Task HandlePlanningSessionAttendee(PlanningSessionAttendee planningSessionAttendee)
         {
             sessionAttendeeLogger.LogInformation($"Handling planning Session attendee {planningSessionAttendee.AttendeeUUID}");
-            var maxRetries = 5;
+            var maxRetries = 10;
 
-            //haal de session op (met 5 retries)
+            //haal de session op (met retries)
             //update de attendee voor die session, of create hem.
             for (int i = 0; i < maxRetries; i++)
             {
@@ -173,29 +173,10 @@ namespace Crm.Link.RabbitMq.Consumer
                     }
                 }
 
+                // anders 2 minuten wachten, en opnieuw proberen. Eerst moet de sessie aangemaakt worden, en dan pas kunnen we een attendee linken. 
                 else
-                {
-                    //beter wachten tot de sessie is aangemaakt...
-
-
-
-                    //session aanmaken. 
-                    try
-                    {
-
-                        GoogleCalendarService.CreateSessionForEvent(GoogleCalendarService.CalendarGuid, planningSessionAttendee.SessionUUID, session);
-                    }
-                    catch (Exception ex)
-                    {
-                        sessionAttendeeLogger.LogError($"Error while handling Attendee {planningSessionAttendee.UUID_Nr}: {ex.Message}", ex);
-                        i++;
-                    }
-
-                }
+                    await Task.Delay(2 * 60 * 1000);
             }
-
-
-
 
 
         }

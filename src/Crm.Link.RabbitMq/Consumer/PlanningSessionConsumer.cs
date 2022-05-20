@@ -122,16 +122,30 @@ namespace Crm.Link.RabbitMq.Consumer
             }
         }
 
-        private async Task UpdateAttendeeInGoogleCalendar(PlanningSession planningSession)
+        private async Task UpdateSessionInGoogleCalendar(PlanningSession planningSession)
         {
+            //TODO: de user ophalen of aanmaken die organizer is.
+            //var organizer = 
+
+            var startDate = new EventDateTime()
+            {
+                Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = planningSession.StartDateUTC
+            };
+            var endDate = new EventDateTime()
+            {
+                Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = planningSession.EndDateUTC
+            };
+
             var sessionEvent = new Event()
             {
-                // welke fields is hier nodig?
                 Id = planningSession.SourceEntityId,
                 Description = planningSession.Title,
-                Organizer = planningSession.OrganiserUUID,
-                Start = planningSession.StartDateUTC,
-                End = planningSession.EndDateUTC
+                //Organizer = organizer,
+                Start = startDate,
+                End = endDate,
+                Summary = planningSession.UUID_Nr
             };
 
 
@@ -142,20 +156,18 @@ namespace Crm.Link.RabbitMq.Consumer
 
         public async Task HandleSession(PlanningSession planningSession)
         {
-            //attendeeLogger.LogInformation($"Handling planning attendee {attendee.Email}");
             var maxRetries = 5;
             sessionLogger.LogInformation($"Handling planning session {planningSession.Title}");
 
             //Kijken welke versie wij hebben van dit object.
             var uuidData = await UuidMaster.GetGuid(planningSession.Title, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Session);
 
-
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
             if (uuidData != null && uuidData.EntityVersion < planningSession.EntityVersion)
             {
                 try
                 {
-                    await UpdateAttendeeInGoogleCalendar(planningSession);
+                    await UpdateSessionInGoogleCalendar(planningSession);
                 }
                 catch (Exception ex)
                 {
@@ -164,30 +176,42 @@ namespace Crm.Link.RabbitMq.Consumer
             }
 
 
-            // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
-            // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
+            // We krijgen een Session binnen die nog niet bestaat. Create dus.
             else if (uuidData == null)
             {
-                //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
-
                 for (int i = 0; i < maxRetries; i++)
                 {
-                    //Als we al een sessionAttendee gekregen hebben vanuit de queue, dan bestaat ie in google calendar, dus kunnen we ook gewoon updaten.
                     try
                     {
-                        await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
-                            uuidData = await UuidMaster.GetGuid(planningSession.Title, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Session));
-
-                        if (uuidData != null && uuidData.EntityVersion < planningSession.EntityVersion)
+                        var startDate = new EventDateTime()
                         {
-                            await UpdateAttendeeInGoogleCalendar(planningSession);
-                            i = maxRetries;
-                        }
-                        i++;
+                            Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                            DateTime = planningSession.StartDateUTC
+                        };
+                        var endDate = new EventDateTime()
+                        {
+                            Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                            DateTime = planningSession.EndDateUTC
+                        };
+
+                        var session = new Event()
+                        {
+                            Id = planningSession.SourceEntityId,
+                            Description = planningSession.Title,
+                            //Organizer = organizer,
+                            Start = startDate,
+                            End = endDate,
+                            Summary = planningSession.UUID_Nr
+                        };
+
+                        await GoogleCalendarService.CreateSessionForEvent(GoogleCalendarService.CalendarGuid, planningSession.Title, session);
+                        i = maxRetries;
                     }
                     catch (Exception ex)
                     {
                         sessionLogger.LogError($"Error while handling Session {planningSession.Title}: {ex.Message}", ex);
+                        await Task.Delay(2 * 60 * 1000);
+                        i++;
                     }
 
                 }
