@@ -6,7 +6,7 @@ services:
       # - wordpress
       - rabbitmq # Not possible to depend on service defined in other file.
     build:
-      context: ./PlanningApi
+      context: .
       dockerfile: Dockerfile
     ports: # replace by expose
       - "5002:5000"
