@@ -81,8 +81,7 @@ namespace Crm.Link.RabbitMq.Consumer
             var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
             try
             {
-                //attendeeLogger.LogInformation($"Base path: {basePath}");
-                sessionLogger.LogInformation($"Base path: {basePath}");
+                sessionLogger.LogInformation($"Received Planning Attendee Event");
                 XmlReader reader = new XmlTextReader(@event.Body.AsStream());
                 XmlDocument document = new();
                 document.Load(reader);
