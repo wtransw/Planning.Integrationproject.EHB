@@ -5,7 +5,6 @@ using System.Xml.Serialization;
 
 namespace CalendarServices.Models
 {
-
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XmlSchemaClassGenerator", "2.0.210.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute("SessionEvent", Namespace = "", AnonymousType = true)]

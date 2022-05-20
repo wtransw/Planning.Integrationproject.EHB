@@ -13,7 +13,7 @@ namespace PlanningApi.Controllers
     {
         private readonly ILogger<PlanningController> Logger;
         private readonly IGoogleCalendarService CalendarService;
-        private readonly CalendarOptions CalendarOptions;
+        //private readonly ICalendarOptions CalendarOptions;
         private readonly PlanningAttendeePublisher PlanningAttendeePublisher;
         private readonly PlanningSessionPublisher PlanningSessionPublisher;
         private readonly PlanningSessionAttendeePublisher PlanningSessionAttendeePublisher;
@@ -22,21 +22,22 @@ namespace PlanningApi.Controllers
         public PlanningController(
             ILogger<PlanningController> logger, 
             IGoogleCalendarService calendarService,
-            CalendarOptions calendarOptions,
+            ICalendarOptions calendarOptions,
             PlanningAttendeePublisher planningAttendeePublisher,
             PlanningSessionPublisher planningSessionPublisher,
-            PlanningSessionAttendeePublisher planningSessionAttendeePublisher,
-            PlanningService planningService)
+            PlanningSessionAttendeePublisher planningSessionAttendeePublisher)
+            //PlanningService planningService)
         {
             this.Logger = logger;
-            this.CalendarOptions = calendarOptions; 
+            //this.CalendarOptions = calendarOptions; 
             this.CalendarService = calendarService;
-            CalendarService.CalendarGuid = calendarOptions.CalendarGuid;
+            calendarService.CreateCalendarService(calendarOptions);
+            //CalendarService.CalendarGuid = calendarOptions.CalendarGuid;
             Logger.LogInformation("PlanningController created");
             this.PlanningAttendeePublisher = planningAttendeePublisher;
             this.PlanningSessionPublisher = planningSessionPublisher;
             this.PlanningSessionAttendeePublisher = planningSessionAttendeePublisher;
-            this.PlanningService = planningService;
+            //this.PlanningService = planningService;
         }
 
 
@@ -158,7 +159,6 @@ namespace PlanningApi.Controllers
                 SessionUUID = testUuid
             };
 
-            obj = attendee;
 
             try
             {
