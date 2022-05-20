@@ -3,11 +3,15 @@ using Crm.Link.RabbitMq.Common;
 using Crm.Link.RabbitMq.Producer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Toolkit.HighPerformance;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Crm.Link.RabbitMq.Consumer
 {
@@ -54,5 +58,56 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             return Task.CompletedTask;
         }
+
+        public override async Task OnEventReceived<T>(object sender, BasicDeliverEventArgs @event)
+        {
+            var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
+            try
+            {
+                sessionAttendeeLogger.LogInformation($"Base path: {basePath}");
+                XmlReader reader = new XmlTextReader(@event.Body.AsStream());
+                XmlDocument document = new();
+                document.Load(reader);
+
+                // xsd for validation
+                XmlSchemaSet xmlSchemaSet = new();
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_w.xsd");
+
+                document.Schemas.Add(xmlSchemaSet);
+                ValidationEventHandler eventHandler = new(ValidationEventHandler);
+
+                document.Validate(eventHandler);
+
+                XmlRootAttribute xRoot = new XmlRootAttribute();
+                xRoot.ElementName = PlanningSessionAttendee.XmlElementName;
+                xRoot.IsNullable = true;
+
+                var xmlSerializer = new XmlSerializer(typeof(PlanningSessionAttendee), xRoot);
+                sessionAttendeeLogger.LogInformation("deserializing planning attendee");
+                var planningSessionAttendee = xmlSerializer.Deserialize(@event.Body.AsStream());
+
+
+                if (planningSessionAttendee != null)
+                    await HandlePlanningSessionAttendee((PlanningSessionAttendee)planningSessionAttendee);
+            }
+            catch (Exception ex)
+            {
+                sessionAttendeeLogger.LogCritical(ex, "Error while retrieving message from queue.");
+            }
+            finally
+            {
+                Channel!.BasicAck(@event.DeliveryTag, false);
+            }
+        }
+
+
+        public async Task HandlePlanningSessionAttendee(PlanningSessionAttendee planningSessionAttendee)
+        {
+           //sessionAttendeeLogger.LogInformation($"Handling planning attendee {attendee.Email}");
+        }
+
+
+        }
     }
-}
