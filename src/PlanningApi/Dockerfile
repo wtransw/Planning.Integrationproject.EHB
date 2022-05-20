@@ -13,7 +13,7 @@ COPY ["Crm.Link.RabbitMq/Crm.Link.RabbitMq.csproj", "src/Crm.Link.RabbitMq/"]
 COPY ["Crm.Link.UUID/Crm.Link.UUID.csproj", "src/Crm.Link.UUID/"]
 RUN dotnet restore "src/PlanningApi/PlanningApi.csproj"
 COPY . .
-WORKDIR "/src/src/PlanningApi"
+WORKDIR "/src/PlanningApi"
 RUN dotnet build "PlanningApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
