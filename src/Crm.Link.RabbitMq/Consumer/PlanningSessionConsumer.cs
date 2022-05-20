@@ -87,15 +87,11 @@ namespace Crm.Link.RabbitMq.Consumer
                 xRoot.ElementName = PlanningSession.XmlElementName;
                 xRoot.IsNullable = true;
 
-                // var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
                 var xmlSerializer = new XmlSerializer(typeof(PlanningSession), xRoot);
-                // attendeeLogger.LogInformation("deserializing planning attendee");
                 sessionLogger.LogInformation("deserializing planning attendee");
-                // var attendee = xmlSerializer.Deserialize(@event.Body.AsStream());
                 var planningSession = xmlSerializer.Deserialize(@event.Body.AsStream());
 
                 if (planningSession != null)
-                    //await HandleAttendee((PlanningAttendee)attendee);
                     await HandleSession((PlanningSession)planningSession);
             }
             catch (Exception ex)

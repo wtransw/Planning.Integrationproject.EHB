@@ -1,7 +1,10 @@
 ﻿using CalendarServices;
 using CalendarServices.Models;
+using CalendarServices.Models.Configuration;
 using Crm.Link.RabbitMq.Common;
 using Crm.Link.RabbitMq.Producer;
+using Crm.Link.UUID;
+using Google.Apis.Calendar.v3.Data;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.HighPerformance;
@@ -22,17 +25,25 @@ namespace Crm.Link.RabbitMq.Consumer
         protected override string QueueName => "PlanningAttendee";
         private readonly ILogger<PlanningAttendeeConsumer> attendeeLogger;
         private readonly IGoogleCalendarService CalendarService;
+        private readonly IUUIDGateAway UuidMaster;
+        private readonly IGoogleCalendarService GoogleCalendarService;
         public PlanningAttendeeConsumer(
             ConnectionProvider connectionProvider,
             ILogger<PlanningAttendeeConsumer> attendeeLogger,
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger,
-            IGoogleCalendarService calendarService
+            IGoogleCalendarService calendarService,
+            IUUIDGateAway uuidMaster,
+            IGoogleCalendarService googleCalendarService,
+            ICalendarOptions calendarOptions
             ) :
             base(connectionProvider, consumerLogger, logger)
         {
             this.attendeeLogger = attendeeLogger;
             this.CalendarService = calendarService;
+            this.UuidMaster = uuidMaster;
+            this.GoogleCalendarService = googleCalendarService;
+            googleCalendarService.CreateCalendarService(calendarOptions);
             TimerMethode += async () => await StartAsync(new CancellationToken(false));
         }
 
@@ -107,12 +118,75 @@ namespace Crm.Link.RabbitMq.Consumer
             }
         }
 
-        public async Task HandleAttendee(PlanningAttendee attendee)
+        private async Task UpdateAttendeeInGoogleCalendar(PlanningAttendee planningAttendee)
         {
-            attendeeLogger.LogInformation($"Handling planning attendee {attendee.Email}");
+            var eventAttendee = new EventAttendee()
+            {
+                Id = planningAttendee.Email,
+                DisplayName = planningAttendee.LastName + planningAttendee.Name,
+                Email = planningAttendee.Email,
+                Comment = planningAttendee.UUID_Nr ?? ""
+            };
+
+            await GoogleCalendarService.UpdateAttendee(eventAttendee);
+
+            await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+        }
+
+        public async Task HandleAttendee(PlanningAttendee planningAttendee)
+        {
+            var maxRetries = 5;    
+            attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
+
+            //Kijken welke versie wij hebben van dit object.
+            var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+
+            
+            //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
+            if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+            {
+                try
+                {
+                    await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                }
+                catch (Exception ex)
+                {
+                    attendeeLogger.LogError($"Error while handling Attendee {planningAttendee.Email}: {ex.Message}", ex);
+                }
+            }
 
 
-            //UuidMaster.GetAttendee(source: SourceEnum.PLANNING.ToString()
+            // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
+            // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
+            else if (uuidData == null)
+            {
+                //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
+
+                for (int i = 0; i < maxRetries; i++)
+                {
+                    //Als we al een sessionAttendee gekregen hebben vanuit de queue, dan bestaat ie in google calendar, dus kunnen we ook gewoon updaten.
+                    try
+                    {
+                        await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
+                            uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
+
+                        if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+                        {
+                            await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                            i = maxRetries;
+                        }
+                        i++;
+                    }
+                    catch (Exception ex)
+                    {
+                        attendeeLogger.LogError($"Error while handling Attendee {planningAttendee.Email}: {ex.Message}", ex);
+                    }
+
+                }
+
+            }
+
+
 
 
             //de attendee die je hier binnen krijgt heeft ook een versienummer, bijvoorbeeld 4.
