@@ -119,6 +119,8 @@ namespace PlanningApi.Controllers
         {
             object obj;
             string testUuid = "12345678901234567890123456789012";
+            string testUuidAttendee = "12345678901234567890123456789015";
+
 
             var attendee = new PlanningAttendee()
             {
@@ -129,7 +131,7 @@ namespace PlanningApi.Controllers
                 Method = MethodEnum.CREATE,
                 Source = SourceEnum.PLANNING,
                 SourceEntityId = "no@email.yet",
-                UUID_Nr = Guid.NewGuid().ToString(),
+                UUID_Nr = testUuidAttendee,
                 EntityType = "Attendee"
             };
             var session = new PlanningSession()
@@ -142,9 +144,9 @@ namespace PlanningApi.Controllers
                 EntityVersion = 2,
                 Method = MethodEnum.UPDATE,
                 OrganiserUUID = testUuid,
-                SourceEntityId = "ikgebruikeenemail@als.id",
+                SourceEntityId = "testUuid",
                 Source = SourceEnum.PLANNING,
-                UUID_Nr = Guid.NewGuid().ToString()
+                UUID_Nr = testUuid
             };
             var sessionAttendee = new PlanningSessionAttendee()
             {
@@ -153,7 +155,7 @@ namespace PlanningApi.Controllers
                 Method = MethodEnum.CREATE,
                 Source = SourceEnum.PLANNING,
                 SourceEntityId = "Anouk.Vantoogh@gmail.com",
-                AttendeeUUID = Guid.NewGuid().ToString(),
+                AttendeeUUID = testUuidAttendee,
                 EntityType = "SessionAttendee",
                 InvitationStatus = NotificationStatus.PENDING,
                 SessionUUID = testUuid
