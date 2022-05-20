@@ -7,10 +7,10 @@ namespace Crm.Link.RabbitMq.Common
 {
     public class RabbitMqClientBase : IDisposable
     {
-        protected const string VirtualHost = "INTEGRATION_HOST";
-        protected readonly string LoggerExchange = $"{VirtualHost}.Exchange";
-        protected readonly string LoggerQueue = $"{VirtualHost}.message";
-        protected const string LoggerQueueAndExchangeRoutingKey = "message";
+        //protected const string VirtualHost = "INTEGRATION_HOST";
+        //protected readonly string LoggerExchange = $"{VirtualHost}.Exchange";
+        //protected readonly string LoggerQueue = $"{VirtualHost}.message";
+        //protected const string LoggerQueueAndExchangeRoutingKey = "message";
 
         protected IModel? Channel { get; private set; }
         private System.Timers.Timer? _timer;
@@ -48,9 +48,9 @@ namespace Crm.Link.RabbitMq.Common
                 _logger.LogInformation($"Opening Channel because {channelMsg}");
                 Console.WriteLine($"Opening Channel because {channelMsg}");
                 Channel = _connection.CreateModel();
-                Channel.ExchangeDeclare(exchange: LoggerExchange, type: ExchangeType.Direct, durable: true, autoDelete: false);
-                Channel.QueueDeclare(queue: LoggerQueue, durable: false, exclusive: false, autoDelete: false);
-                Channel.QueueBind(queue: LoggerQueue, exchange: LoggerExchange, routingKey: LoggerQueueAndExchangeRoutingKey);
+                //Channel.ExchangeDeclare(exchange: LoggerExchange, type: ExchangeType.Direct, durable: true, autoDelete: false);
+                //Channel.QueueDeclare(queue: LoggerQueue, durable: false, exclusive: false, autoDelete: false);
+                //Channel.QueueBind(queue: LoggerQueue, exchange: LoggerExchange, routingKey: LoggerQueueAndExchangeRoutingKey);
             }
         }
 
