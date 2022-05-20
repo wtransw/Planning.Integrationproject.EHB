@@ -11,7 +11,7 @@ namespace Crm.Link.RabbitMq.Producer
             ILogger<RabbitMqClientBase> logger,
             ILogger<ProducerBase<PlanningAttendee>> producerBaseLogger)
             : base(connectionProvider, logger, producerBaseLogger)
-        {
+        { 
         }
 
         protected override string ExchangeName => "PlanningAttendee";
