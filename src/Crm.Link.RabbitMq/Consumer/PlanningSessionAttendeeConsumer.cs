@@ -32,7 +32,7 @@ namespace Crm.Link.RabbitMq.Consumer
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger,
             IUUIDGateAway uuidMaster,
-            GoogleCalendarService googleCalendarService,
+            IGoogleCalendarService googleCalendarService,
             ICalendarOptions calendarOptions
             ) :
             base(connectionProvider, consumerLogger, logger)

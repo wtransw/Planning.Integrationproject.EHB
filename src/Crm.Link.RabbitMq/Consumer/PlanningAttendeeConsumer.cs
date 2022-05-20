@@ -31,7 +31,6 @@ namespace Crm.Link.RabbitMq.Consumer
             ILogger<PlanningAttendeeConsumer> attendeeLogger,
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger,
-            IGoogleCalendarService calendarService,
             IUUIDGateAway uuidMaster,
             IGoogleCalendarService googleCalendarService,
             ICalendarOptions calendarOptions
