@@ -123,29 +123,21 @@ namespace Crm.Link.RabbitMq.Consumer
 
         private async Task UpdateSessionInGoogleCalendar(PlanningSession planningSession)
         {
-            //TODO: de user ophalen of aanmaken die organizer is.
-            //var organizer = 
-
-            var startDate = new EventDateTime()
-            {
-                //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
-                DateTime = planningSession.StartDateUTC,
-                TimeZone = "Europe/Zurich"
-            };
-            var endDate = new EventDateTime()
-            {
-                //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
-                DateTime = planningSession.EndDateUTC,
-                TimeZone = "Europe/Zurich"
-            };
-
             var sessionEvent = new Event()
             {
-                //Id = planningSession.SourceEntityId,
                 Description = planningSession.Title,
-                //Organizer = organizer,
-                Start = startDate,
-                End = endDate,
+                Start = new EventDateTime()
+                {
+                    //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                    DateTime = planningSession.StartDateUTC,
+                    TimeZone = "Europe/Zurich"
+                },
+                End = new EventDateTime()
+                {
+                    //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                    DateTime = planningSession.EndDateUTC,
+                    TimeZone = "Europe/Zurich"
+                },
                 Summary = planningSession.UUID_Nr,
                 Location = "Koln",
                 //Attendees = new List<EventAttendee>()
