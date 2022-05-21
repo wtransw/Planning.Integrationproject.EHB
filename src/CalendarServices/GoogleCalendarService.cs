@@ -111,7 +111,7 @@ namespace CalendarServices
 
         public async Task<Event> CreateSessionForEvent(string calendarGuid, string eventName, Event session)
         {
-            session.Summary = $"[{eventName}] {session.Summary}";
+            //session.Summary = $"[{eventName}] {session.Summary}";
             return await service.Events.Insert(session, calendarGuid).ExecuteAsync();
 
             // Alternatieve methode:
