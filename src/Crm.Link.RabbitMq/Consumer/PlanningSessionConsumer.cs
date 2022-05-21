@@ -176,6 +176,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 catch (Exception ex)
                 {
                     sessionLogger.LogError($"Error while handling Session {planningSession.Title}: {ex.Message}", ex);
+                    SetTimer();
                 }
             }
 

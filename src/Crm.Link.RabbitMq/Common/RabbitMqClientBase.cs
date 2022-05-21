@@ -48,6 +48,7 @@ namespace Crm.Link.RabbitMq.Common
                 _logger.LogInformation($"Opening Channel because {channelMsg}");
                 Console.WriteLine($"Opening Channel because {channelMsg}");
                 Channel = _connection.CreateModel();
+                
                 //Channel.ExchangeDeclare(exchange: LoggerExchange, type: ExchangeType.Direct, durable: true, autoDelete: false);
                 //Channel.QueueDeclare(queue: LoggerQueue, durable: false, exclusive: false, autoDelete: false);
                 //Channel.QueueBind(queue: LoggerQueue, exchange: LoggerExchange, routingKey: LoggerQueueAndExchangeRoutingKey);
