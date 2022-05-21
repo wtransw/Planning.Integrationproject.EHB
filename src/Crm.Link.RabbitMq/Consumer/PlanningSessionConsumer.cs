@@ -157,7 +157,7 @@ namespace Crm.Link.RabbitMq.Consumer
                                     Organizer = true                //bij ons de spreker
                                 }
                             }
-            }
+            };
 
 
             await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, sessionEvent);
