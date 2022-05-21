@@ -147,9 +147,17 @@ namespace Crm.Link.RabbitMq.Consumer
                 Start = startDate,
                 End = endDate,
                 Summary = planningSession.UUID_Nr,
-                Attendees = new List<EventAttendee>(),
-                Location = "Desiderius"
-            };
+                //Attendees = new List<EventAttendee>()
+                Attendees = new EventAttendee[] {
+                                new EventAttendee
+                                {
+                                    Email = "dummy@default.com",
+                                    DisplayName = "Organizer",
+                                    ResponseStatus = "accepted",
+                                    Organizer = true                //bij ons de spreker
+                                }
+                            }
+            }
 
 
             await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, sessionEvent);
