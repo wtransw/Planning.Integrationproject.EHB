@@ -16,7 +16,7 @@ namespace Crm.Link.RabbitMq.Configuration
                 var uri = new Uri(connectionstring);
                 return new ConnectionFactory
                 {
-                    Uri = uri,
+                    //Uri = uri,        //<sarcasm> Bedankt, front end...  </sarcasm>
                     DispatchConsumersAsync = true,
                     HostName = "rabbitmq"
                 };
