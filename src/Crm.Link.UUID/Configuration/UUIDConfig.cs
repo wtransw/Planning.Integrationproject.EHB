@@ -8,7 +8,7 @@ namespace Crm.Link.UUID.Configuration
         public static IServiceCollection UseUUID(this IServiceCollection service)
         {
             service.AddHttpClient("UuidMasterApi", httpClient => {
-                httpClient.BaseAddress = new Uri("http://uuidmasterapi-api-1.uuidmasterapi");
+                httpClient.BaseAddress = new Uri("http://uuidmasterapi-api-1.uuidmasterapi:5000");
                 httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             });
 
