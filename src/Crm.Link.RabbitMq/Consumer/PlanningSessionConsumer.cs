@@ -128,23 +128,27 @@ namespace Crm.Link.RabbitMq.Consumer
 
             var startDate = new EventDateTime()
             {
-                Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
-                DateTime = planningSession.StartDateUTC
+                //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = planningSession.StartDateUTC,
+                TimeZone = "Europe/Zurich"
             };
             var endDate = new EventDateTime()
             {
-                Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
-                DateTime = planningSession.EndDateUTC
+                //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = planningSession.EndDateUTC,
+                TimeZone = "Europe/Zurich"
             };
 
             var sessionEvent = new Event()
             {
-                Id = planningSession.SourceEntityId,
+                //Id = planningSession.SourceEntityId,
                 Description = planningSession.Title,
                 //Organizer = organizer,
                 Start = startDate,
                 End = endDate,
-                Summary = planningSession.UUID_Nr
+                Summary = planningSession.UUID_Nr,
+                Attendees = new List<EventAttendee>(),
+                Location = "Desiderius"
             };
 
 
