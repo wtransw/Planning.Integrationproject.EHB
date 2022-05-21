@@ -7,13 +7,13 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/PlanningApi/PlanningApi.csproj", "src/PlanningApi/"]
-COPY ["src/CalendarServices/CalendarServices.csproj", "src/CalendarServices/"]
-COPY ["src/Crm.Link.RabbitMq/Crm.Link.RabbitMq.csproj", "src/Crm.Link.RabbitMq/"]
-COPY ["src/Crm.Link.UUID/Crm.Link.UUID.csproj", "src/Crm.Link.UUID/"]
+COPY ["PlanningApi/PlanningApi.csproj", "src/PlanningApi/"]
+COPY ["CalendarServices/CalendarServices.csproj", "src/CalendarServices/"]
+COPY ["Crm.Link.RabbitMq/Crm.Link.RabbitMq.csproj", "src/Crm.Link.RabbitMq/"]
+COPY ["Crm.Link.UUID/Crm.Link.UUID.csproj", "src/Crm.Link.UUID/"]
 RUN dotnet restore "src/PlanningApi/PlanningApi.csproj"
 COPY . .
-WORKDIR "/src/src/PlanningApi"
+WORKDIR "/src/PlanningApi"
 RUN dotnet build "PlanningApi.csproj" -c Release -o /app/build
 
 FROM build AS publish

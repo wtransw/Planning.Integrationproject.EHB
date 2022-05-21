@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["PlanningApi/PlanningApi.csproj", "src/PlanningApi/"]
 COPY ["CalendarServices/CalendarServices.csproj", "src/CalendarServices/"]
 COPY ["Crm.Link.RabbitMq/Crm.Link.RabbitMq.csproj", "src/Crm.Link.RabbitMq/"]
+COPY ["Crm.Link.UUID/Crm.Link.UUID.csproj", "src/Crm.Link.UUID/"]
 RUN dotnet restore "src/PlanningApi/PlanningApi.csproj"
 COPY . .
 WORKDIR "/src/PlanningApi"

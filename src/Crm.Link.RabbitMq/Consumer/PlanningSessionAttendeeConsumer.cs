@@ -32,7 +32,7 @@ namespace Crm.Link.RabbitMq.Consumer
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger,
             IUUIDGateAway uuidMaster,
-            GoogleCalendarService googleCalendarService,
+            IGoogleCalendarService googleCalendarService,
             ICalendarOptions calendarOptions
             ) :
             base(connectionProvider, consumerLogger, logger)
@@ -57,6 +57,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 catch (Exception ex)
                 {
                     sessionAttendeeLogger.LogCritical(ex, "Error while consuming message");
+                    SetTimer(); 
                 }
             }
             else
@@ -77,7 +78,7 @@ namespace Crm.Link.RabbitMq.Consumer
             var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
             try
             {
-                sessionAttendeeLogger.LogInformation($"Base path: {basePath}");
+                sessionAttendeeLogger.LogInformation($"Received Planning Session Attendee Event");
                 XmlReader reader = new XmlTextReader(@event.Body.AsStream());
                 XmlDocument document = new();
                 document.Load(reader);

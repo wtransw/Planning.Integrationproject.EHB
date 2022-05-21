@@ -81,8 +81,7 @@ namespace Crm.Link.RabbitMq.Consumer
             var basePath = System.AppDomain.CurrentDomain.BaseDirectory;
             try
             {
-                //attendeeLogger.LogInformation($"Base path: {basePath}");
-                sessionLogger.LogInformation($"Base path: {basePath}");
+                sessionLogger.LogInformation($"Received Planning Attendee Event");
                 XmlReader reader = new XmlTextReader(@event.Body.AsStream());
                 XmlDocument document = new();
                 document.Load(reader);
@@ -124,28 +123,33 @@ namespace Crm.Link.RabbitMq.Consumer
 
         private async Task UpdateSessionInGoogleCalendar(PlanningSession planningSession)
         {
-            //TODO: de user ophalen of aanmaken die organizer is.
-            //var organizer = 
-
-            var startDate = new EventDateTime()
-            {
-                Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
-                DateTime = planningSession.StartDateUTC
-            };
-            var endDate = new EventDateTime()
-            {
-                Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
-                DateTime = planningSession.EndDateUTC
-            };
-
             var sessionEvent = new Event()
             {
-                Id = planningSession.SourceEntityId,
                 Description = planningSession.Title,
-                //Organizer = organizer,
-                Start = startDate,
-                End = endDate,
-                Summary = planningSession.UUID_Nr
+                Start = new EventDateTime()
+                {
+                    //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                    DateTime = planningSession.StartDateUTC,
+                    TimeZone = "Europe/Zurich"
+                },
+                End = new EventDateTime()
+                {
+                    //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                    DateTime = planningSession.EndDateUTC,
+                    TimeZone = "Europe/Zurich"
+                },
+                Summary = planningSession.UUID_Nr,
+                Location = "Koln",
+                //Attendees = new List<EventAttendee>()
+                Attendees = new EventAttendee[] {
+                                new EventAttendee
+                                {
+                                    Email = "dummy@default.com",
+                                    DisplayName = "Organizer",
+                                    ResponseStatus = "accepted",
+                                    Organizer = true                //bij ons de spreker
+                                }
+                            }
             };
 
 
@@ -172,6 +176,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 catch (Exception ex)
                 {
                     sessionLogger.LogError($"Error while handling Session {planningSession.Title}: {ex.Message}", ex);
+                    SetTimer();
                 }
             }
 
@@ -183,28 +188,36 @@ namespace Crm.Link.RabbitMq.Consumer
                 {
                     try
                     {
-                        var startDate = new EventDateTime()
+                        var newSession = new Event()
                         {
-                            Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
-                            DateTime = planningSession.StartDateUTC
-                        };
-                        var endDate = new EventDateTime()
-                        {
-                            Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
-                            DateTime = planningSession.EndDateUTC
-                        };
-
-                        var session = new Event()
-                        {
-                            Id = planningSession.SourceEntityId,
                             Description = planningSession.Title,
-                            //Organizer = organizer,
-                            Start = startDate,
-                            End = endDate,
-                            Summary = planningSession.UUID_Nr
+                            Start = new EventDateTime()
+                            {
+                                //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                                DateTime = planningSession.StartDateUTC,
+                                TimeZone = "Europe/Zurich"
+                            },
+                            End = new EventDateTime()
+                            {
+                                //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                                DateTime = planningSession.EndDateUTC,
+                                TimeZone = "Europe/Zurich"
+                            },
+                            Summary = planningSession.UUID_Nr,
+                            Location = "Koln",
+                            //Attendees = new List<EventAttendee>()
+                            Attendees = new EventAttendee[] {
+                                new EventAttendee
+                                {
+                                    Email = "dummy@default.com",
+                                    DisplayName = "Organizer",
+                                    ResponseStatus = "accepted",
+                                    Organizer = true                //bij ons de spreker
+                                }
+                            }
                         };
 
-                        await GoogleCalendarService.CreateSessionForEvent(GoogleCalendarService.CalendarGuid, planningSession.Title, session);
+                        await GoogleCalendarService.CreateSessionForEvent(GoogleCalendarService.CalendarGuid, planningSession.Title, newSession);
                         i = maxRetries;
                     }
                     catch (Exception ex)
