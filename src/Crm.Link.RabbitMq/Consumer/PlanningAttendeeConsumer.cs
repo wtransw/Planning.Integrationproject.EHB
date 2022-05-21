@@ -58,6 +58,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 {
                     attendeeLogger.LogCritical(ex, "Error while consuming message");
                     SetTimer();
+                    ConnectToRabbitMq();
                 }
             }
             else
