@@ -147,6 +147,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 Start = startDate,
                 End = endDate,
                 Summary = planningSession.UUID_Nr,
+                Location = "Koln",
                 //Attendees = new List<EventAttendee>()
                 Attendees = new EventAttendee[] {
                                 new EventAttendee
