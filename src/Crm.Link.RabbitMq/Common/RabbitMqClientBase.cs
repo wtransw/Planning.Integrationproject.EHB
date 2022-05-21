@@ -27,7 +27,7 @@ namespace Crm.Link.RabbitMq.Common
             ConnectToRabbitMq();
         }
 
-        private void ConnectToRabbitMq()
+        protected void ConnectToRabbitMq()
         {
             if (_connection == null || _connection.IsOpen == false)
             {                
