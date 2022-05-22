@@ -19,7 +19,7 @@
             {"FrontSession", new[] { "CrmSession", "PlanningSession" } },
             {"FrontAttendee", new[] { "CrmAttendee", "PlanningAttendee" } },
             {"FrontAccountSession", new[] { "CrmAccountSession" } },
-            {"FrontAttendeeSession", new[] { "CrmAttendeeSession", "PlanningAttendeeSession "} }
+            {"FrontAttendeeSession", new[] { "CrmAttendeeSession", "PlanningAttendeeSession"} }
         };
     }
 }
