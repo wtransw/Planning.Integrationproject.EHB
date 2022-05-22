@@ -44,15 +44,17 @@ namespace Crm.Link.RabbitMq.Common
 
             string channelInfo = Channel != null ? $"Channel open? {Channel.IsOpen}" : "Channel is null";
             channelInfo += _connection != null ? " - connection is niet null" : " - connection is null.";
-            _logger.LogError(channelInfo);
+            _logger.LogInformation(channelInfo);
 
             if (_connection is not null && (Channel == null || !Channel.IsOpen))
             {
-                var channelMsg = Channel != null ? "Channel was not open" : "Channel was null";
-                _logger.LogInformation($"Opening Channel because {channelMsg}");
-                Console.WriteLine($"Opening Channel because {channelMsg}");
-                Channel = _connection.CreateModel();
+                //var channelMsg = Channel != null ? "Channel was not open" : "Channel was null";
+                //_logger.LogInformation($"Opening Channel because {channelMsg}");
+                //Console.WriteLine($"Opening Channel because {channelMsg}");
                 
+                Channel = _connection.CreateModel();
+                Channels.Create(Channel);
+
                 //Channel.ExchangeDeclare(exchange: LoggerExchange, type: ExchangeType.Direct, durable: true, autoDelete: false);
                 //Channel.QueueDeclare(queue: LoggerQueue, durable: false, exclusive: false, autoDelete: false);
                 //Channel.QueueBind(queue: LoggerQueue, exchange: LoggerExchange, routingKey: LoggerQueueAndExchangeRoutingKey);
