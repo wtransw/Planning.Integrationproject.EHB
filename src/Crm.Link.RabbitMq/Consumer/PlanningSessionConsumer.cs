@@ -24,7 +24,7 @@ namespace Crm.Link.RabbitMq.Consumer
         protected override string QueueName => "PlanningSession";
         private readonly ILogger<PlanningSessionConsumer> sessionLogger;
 
-        private readonly IGoogleCalendarService CalendarService;
+        //private readonly IGoogleCalendarService CalendarService;
         private readonly IUUIDGateAway UuidMaster;
         private readonly IGoogleCalendarService GoogleCalendarService;
 
@@ -33,7 +33,7 @@ namespace Crm.Link.RabbitMq.Consumer
             ILogger<PlanningSessionConsumer> sessionLogger,
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger,
-            IGoogleCalendarService calendarService,
+            //IGoogleCalendarService calendarService,
             IUUIDGateAway uuidMaster,
             IGoogleCalendarService googleCalendarService,
             ICalendarOptions calendarOptions
@@ -41,7 +41,7 @@ namespace Crm.Link.RabbitMq.Consumer
             base(connectionProvider, consumerLogger, logger)
         {
             this.sessionLogger = sessionLogger;
-            this.CalendarService = calendarService;
+            //this.CalendarService = calendarService;
             this.UuidMaster = uuidMaster;
             this.GoogleCalendarService = googleCalendarService;
             googleCalendarService.CreateCalendarService(calendarOptions);
@@ -224,7 +224,7 @@ namespace Crm.Link.RabbitMq.Consumer
                     }
                     catch (Exception ex)
                     {
-                        sessionLogger.LogError($"Error while handling Session {planningSession.Title}: {ex.Message}", ex);
+                        sessionLogger.LogError($"Error while handling Session {planningSession.Title}: {ex.Message}. Retry in 2 minutes ({i}/{maxRetries}).", ex);
                         await Task.Delay(2 * 60 * 1000);
                         i++;
                     }
