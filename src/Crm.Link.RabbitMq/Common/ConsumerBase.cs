@@ -40,13 +40,10 @@ namespace Crm.Link.RabbitMq.Common
 
                 // xsd for validation
                 XmlSchemaSet xmlSchemaSet = new();
-                //xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent.xsd");
-                //xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent.xsd");
-                //xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent.xsd");
-                //xmlSchemaSet.Add("", $"{basePath}/Resources/UUID.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_j.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_v3.xsd");
-                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_v3.xsd");
+
+                xmlSchemaSet.Add("", $"{basePath}/Resources/AttendeeEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionEvent_w.xsd");
+                xmlSchemaSet.Add("", $"{basePath}/Resources/SessionAttendeeEvent_w.xsd");
 
 
                 document.Schemas.Add(xmlSchemaSet);
@@ -63,11 +60,11 @@ namespace Crm.Link.RabbitMq.Common
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Error while retrieving message from queue.");
+                return;     //don't send ack
             }
-            finally
-            {
-                Channel!.BasicAck(@event.DeliveryTag, false);
-            }
+
+            Channel!.BasicAck(@event.DeliveryTag, false);
+
         }
 
         internal void ValidationEventHandler(object? sender, ValidationEventArgs e)

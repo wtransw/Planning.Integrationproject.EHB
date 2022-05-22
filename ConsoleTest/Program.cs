@@ -174,7 +174,7 @@ class Program
             ApplicationName = ApplicationName,
         });
 
-        var newEvent = new Event()
+        var newEventKerst = new Event()
         {
             Summary = "Kersttrip 2022",
             Location = "Koln",
@@ -213,6 +213,51 @@ class Program
             }
         };
 
+        /*
+         * <SessionEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	            <UUID_Nr>12345678901234567890123456789012</UUID_Nr>
+	            <SourceEntityId>testUuid</SourceEntityId>
+	            <EntityType>SessionEvent</EntityType>
+	            <EntityVersion>2</EntityVersion>
+	            <Source>PLANNING</Source>
+	            <Method>UPDATE</Method>
+	            <Title>eerste sessie</Title>
+	            <StartDateUTC>2022-12-01T00:00:00</StartDateUTC>
+	            <EndDateUTC>2022-12-02T00:00:00</EndDateUTC>
+	            <OrganiserUUID>12345678901234567890123456789012</OrganiserUUID>
+	            <IsActive>true</IsActive>
+            </SessionEvent>
+         * */
+
+
+        var sessieMetJeremy = new Event()
+        {
+            Description = "eerste sessie",
+            Start = new EventDateTime()
+            {
+                //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = DateTime.Parse("2022-12-01T00:00:00"),
+                TimeZone = "Europe/Zurich"
+            },
+            End = new EventDateTime()
+            {
+                //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = DateTime.Parse("2022-12-02T00:00:00"),
+                TimeZone = "Europe/Zurich"
+            },
+            Summary = "12345678901234567890123456789012",
+            Location = "Koln",
+            //Attendees = new List<EventAttendee>()
+            Attendees = new EventAttendee[] {
+                                new EventAttendee
+                                {
+                                    Email = "dummy@default.com",
+                                    DisplayName = "Organizer",
+                                    ResponseStatus = "accepted",
+                                    Organizer = true                //bij ons de spreker
+                                }
+                            }
+        };
 
         try
         {
@@ -277,20 +322,20 @@ class Program
                     TimeZone = "Europe/Zurich"
                 }
             };
-            /*
-            EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, elfMeiEvent, CalendarId);
+
+            EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, sessieMetJeremy, CalendarId);
             Event response = request.Execute();
 
             Thread.Sleep(5000);
 
             var _ = ShowEvents(service).ConfigureAwait(false);
-            
+
             ;
 
 
             Thread.Sleep(10000);
-            */
-         testAttendeeXml();
+
+            //testAttendeeXml();
         }
         catch (Exception ex)
         {
@@ -434,21 +479,21 @@ class Program
     static void DeSerializeXml(string xmlString)
     {
         XmlRootAttribute xRoot = new XmlRootAttribute();
-        //xRoot.ElementName = "AttendeeEvent";
-        xRoot.ElementName = "SessionAttendeeEvent";
+        xRoot.ElementName = "AttendeeEvent";
+        //xRoot.ElementName = "SessionAttendeeEvent";
         //xRoot.ElementName = "SessionEvent";
 
         //xRoot.Namespace = "http://www.brol.com";
         xRoot.IsNullable = true;
 
-        //var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
+        var xmlSerializer = new XmlSerializer(typeof(PlanningAttendee), xRoot);
         //var xmlSerializer = new XmlSerializer(typeof(PlanningSession), xRoot);
-        var xmlSerializer = new XmlSerializer(typeof(PlanningSessionAttendee), xRoot);
+        //var xmlSerializer = new XmlSerializer(typeof(PlanningSessionAttendee), xRoot);
 
         using var reader = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(xmlString)));
 
-        //var mijnModel = (PlanningAttendee)xmlSerializer.Deserialize(reader);
-        var mijnModel = (PlanningSessionAttendee)xmlSerializer.Deserialize(reader);
+        var mijnModel = (PlanningAttendee)xmlSerializer.Deserialize(reader);
+        //var mijnModel = (PlanningSessionAttendee)xmlSerializer.Deserialize(reader);
         //var mijnModel = (PlanningSession)xmlSerializer.Deserialize(reader);
 
         ;
@@ -575,7 +620,7 @@ class Program
         //var session = new PlanningSession("eerste sessie", new DateTime(2022, 12, 01), new DateTime(2022, 12, 2), "Omschrijving van de eerste sessie", testUuid);
         //var sessionAttendee = new PlanningSessionAttendee(MethodEnum.CREATE, testUuid, testUuid, NotificationStatus.PENDING);
 
-        obj = sessionAttendee;
+        obj = attendee;
 
             var meh = await pS.ObjectToXml(obj);
             return meh;

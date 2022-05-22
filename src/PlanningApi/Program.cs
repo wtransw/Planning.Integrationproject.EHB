@@ -7,6 +7,7 @@ using PlanningApi.Configuration;
 using PlanningApi.Configuration.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using CalendarServices.Models.Configuration;
+using Crm.Link.UUID.Configuration;
 
 Logger logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
@@ -16,6 +17,9 @@ logger.Debug("Booting Planning API");
 
 try
 {
+    // Boot order. Waiting for queues to be created.
+    await Task.Delay(TimeSpan.FromSeconds(90));
+
     var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
@@ -31,6 +35,7 @@ try
                     });
     
     builder.Services.AddOpenApi();
+    builder.Services.UseUUID();
 
     // configuration rabbitmq
     builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
@@ -50,11 +55,9 @@ try
             TokenType = calendarSection.GetValue<string>("TokenType")
         });
 
-    builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService()) ;
+    builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService());
     //builder.Services.AddSingleton<IGoogleCalendarService>(provider => new GoogleCalendarService(provider.GetService<CalendarOptions>().CalendarGuid));    
 
-    logger.Info("Planning API started");
-    
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowAll",
@@ -67,6 +70,7 @@ try
     });
 
     var app = builder.Build();
+    logger.Info("Planning API started");
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment() || true)
