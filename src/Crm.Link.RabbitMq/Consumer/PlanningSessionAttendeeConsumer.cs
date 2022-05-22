@@ -25,6 +25,7 @@ namespace Crm.Link.RabbitMq.Consumer
         private readonly ILogger<PlanningSessionAttendeeConsumer> sessionAttendeeLogger;
         private readonly IUUIDGateAway UuidMaster;
         private readonly IGoogleCalendarService GoogleCalendarService;
+        private bool StartedAlready = false;
 
         public PlanningSessionAttendeeConsumer(
             ConnectionProvider connectionProvider,
@@ -48,6 +49,12 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             if (Channel is not null)
             {
+                if (!StartedAlready)
+                {
+                    attendeeLogger.LogInformation("Waiting for queues to be created.");
+                    Thread.Sleep(TimeSpan.FromSeconds(90));
+                    StartedAlready = true;
+                }
                 try
                 {
                     var consumer = new AsyncEventingBasicConsumer(Channel);
