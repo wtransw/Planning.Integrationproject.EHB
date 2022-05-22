@@ -57,7 +57,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 }
                 catch (Exception ex)
                 {
-                    sessionLogger.LogCritical(ex, "Error while consuming message");
+                    sessionLogger.LogCritical(ex, "Error while binding to queue.");
                     SetTimer();
                     ConnectToRabbitMq();
                 }

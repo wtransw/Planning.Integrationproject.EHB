@@ -15,9 +15,6 @@ logger.Debug("Booting Planning API");
 
 try
 {
-    // Boot order. Waiting for queues to be created.
-    await Task.Delay(TimeSpan.FromSeconds(90));
-
     var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
