@@ -12,7 +12,7 @@ using Crm.Link.UUID.Configuration;
 Logger logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
 logger.Debug("Waiting for queues to be created, booting delayed.");
-await Task.Delay(TimeSpan.FromSeconds(150));
+Thread.Sleep(TimeSpan.FromSeconds(150));
 logger.Debug("Booting Planning API");
 
 try
