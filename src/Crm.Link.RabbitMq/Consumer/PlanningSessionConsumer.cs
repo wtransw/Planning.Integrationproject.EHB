@@ -24,17 +24,14 @@ namespace Crm.Link.RabbitMq.Consumer
         protected override string QueueName => "PlanningSession";
         private readonly ILogger<PlanningSessionConsumer> sessionLogger;
 
-        //private readonly IGoogleCalendarService CalendarService;
         private readonly IUUIDGateAway UuidMaster;
         private readonly IGoogleCalendarService GoogleCalendarService;
-        private bool StartedAlready = false;
 
         public PlanningSessionConsumer(
             ConnectionProvider connectionProvider,
             ILogger<PlanningSessionConsumer> sessionLogger,
             ILogger<ConsumerBase> consumerLogger,
             ILogger<RabbitMqClientBase> logger,
-            //IGoogleCalendarService calendarService,
             IUUIDGateAway uuidMaster,
             IGoogleCalendarService googleCalendarService,
             ICalendarOptions calendarOptions
@@ -42,7 +39,6 @@ namespace Crm.Link.RabbitMq.Consumer
             base(connectionProvider, consumerLogger, logger)
         {
             this.sessionLogger = sessionLogger;
-            //this.CalendarService = calendarService;
             this.UuidMaster = uuidMaster;
             this.GoogleCalendarService = googleCalendarService;
             googleCalendarService.CreateCalendarService(calendarOptions);
@@ -53,12 +49,6 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             if (Channel is not null)
             {
-                if (!StartedAlready)
-                {
-                    attendeeLogger.LogInformation("Waiting for queues to be created.");
-                    Thread.Sleep(TimeSpan.FromSeconds(90));
-                    StartedAlready = true;
-                }
                 try
                 {
                     var consumer = new AsyncEventingBasicConsumer(Channel);
