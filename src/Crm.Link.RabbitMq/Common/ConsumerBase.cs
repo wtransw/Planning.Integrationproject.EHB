@@ -60,11 +60,11 @@ namespace Crm.Link.RabbitMq.Common
             catch (Exception ex)
             {
                 _logger.LogCritical(ex, "Error while retrieving message from queue.");
+                return;     //don't send ack
             }
-            finally
-            {
-                Channel!.BasicAck(@event.DeliveryTag, false);
-            }
+
+            Channel!.BasicAck(@event.DeliveryTag, false);
+
         }
 
         internal void ValidationEventHandler(object? sender, ValidationEventArgs e)
