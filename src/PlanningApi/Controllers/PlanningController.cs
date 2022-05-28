@@ -136,7 +136,7 @@ namespace PlanningApi.Controllers
             };
             var session = new PlanningSession()
             {
-                Title = "Test sessie voor Jeremy (Sinterklaas)",
+                Title = "Test sessie Sinterklaas",
                 StartDateUTC = new DateTime(2022, 12, 06,08,00,00),
                 EndDateUTC = new DateTime(2022, 12, 06, 17,00,00),
                 EntityType = "SessionEvent",
