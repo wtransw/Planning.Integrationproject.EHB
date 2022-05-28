@@ -167,7 +167,6 @@ namespace Crm.Link.RabbitMq.Consumer
                         }
 
                         await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
-                        UuidMaster.
                         i = maxRetries;
                     }
                     catch (Exception ex)
