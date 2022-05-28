@@ -118,9 +118,9 @@ namespace PlanningApi.Controllers
         public async Task<IActionResult> PublishOnRabbitMqTest(int objectNumber)
         {
             object obj;
-            string testUuid = "12345678901234567890123456789012";
+            string testUuidSession = "12345678901234567890123456789012";
             string testUuidAttendee = "12345678901234567890123456789015";
-
+            string testUuidAttendeeGuest = "23456789012345678901234567890156";
 
             var attendee = new PlanningAttendee()
             {
@@ -136,17 +136,17 @@ namespace PlanningApi.Controllers
             };
             var session = new PlanningSession()
             {
-                Title = "eerste sessie",
-                StartDateUTC = new DateTime(2022, 12, 01),
-                EndDateUTC = new DateTime(2022, 12, 02),
+                Title = "Test sessie voor Jeremy (Sinterklaas)",
+                StartDateUTC = new DateTime(2022, 12, 06,08,00,00),
+                EndDateUTC = new DateTime(2022, 12, 06, 17,00,00),
                 EntityType = "SessionEvent",
                 IsActive = true,
-                EntityVersion = 2,
+                EntityVersion = 1,
                 Method = MethodEnum.UPDATE,
-                OrganiserUUID = testUuid,
+                OrganiserUUID = testUuidAttendee,
                 SourceEntityId = "testUuid",
                 Source = SourceEnum.PLANNING,
-                UUID_Nr = testUuid
+                UUID_Nr = testUuidSession
             };
             var sessionAttendee = new PlanningSessionAttendee()
             {
@@ -154,26 +154,72 @@ namespace PlanningApi.Controllers
                 EntityVersion = 1,
                 Method = MethodEnum.CREATE,
                 Source = SourceEnum.PLANNING,
-                SourceEntityId = "Anouk.Vantoogh@gmail.com",
+                SourceEntityId = "no@email.yet",
                 AttendeeUUID = testUuidAttendee,
                 EntityType = "SessionAttendee",
                 InvitationStatus = NotificationStatus.PENDING,
-                SessionUUID = testUuid
+                SessionUUID = testUuidSession
             };
 
+            var attendeeGuest = new PlanningAttendee()
+            {
+                Email = "Benny@gmail.meh",
+                EntityVersion = 1,
+                Name = "Benny",
+                LastName = "Van Ghisteren",
+                Method = MethodEnum.CREATE,
+                Source = SourceEnum.PLANNING,
+                SourceEntityId = "Benny@gmail.meh",
+                UUID_Nr = testUuidAttendeeGuest,
+                EntityType = "Attendee"
+            };
+            var sessionAttendeeGuest = new PlanningSessionAttendee()
+            {
+                UUID_Nr = Guid.NewGuid().ToString(),
+                EntityVersion = 1,
+                Method = MethodEnum.CREATE,
+                Source = SourceEnum.PLANNING,
+                SourceEntityId = "Benny@gmail.meh",
+                AttendeeUUID = testUuidAttendeeGuest,
+                EntityType = "SessionAttendee",
+                InvitationStatus = NotificationStatus.PENDING,
+                SessionUUID = testUuidSession
+            };
+
+            var sessionAttendeeGuestAltered = new PlanningSessionAttendee()
+            {
+                UUID_Nr = Guid.NewGuid().ToString(),
+                EntityVersion = 2,
+                Method = MethodEnum.UPDATE,
+                Source = SourceEnum.PLANNING,
+                SourceEntityId = "Benny@gmail.meh",
+                AttendeeUUID = testUuidAttendeeGuest,
+                EntityType = "SessionAttendee",
+                InvitationStatus = NotificationStatus.ACCEPTED,
+                SessionUUID = testUuidSession
+            };
 
             try
             {
                 switch (objectNumber)
                 {
                     case 1:
-                        PlanningAttendeePublisher.Publish(attendee);
+                        PlanningSessionPublisher.Publish(session);
                         break;
                     case 2:
-                        PlanningSessionPublisher.Publish(session);
+                        PlanningAttendeePublisher.Publish(attendee);
                         break;
                     case 3:
                         PlanningSessionAttendeePublisher.Publish(sessionAttendee);
+                        break;
+                    case 4:
+                        PlanningAttendeePublisher.Publish(attendeeGuest);
+                        break;
+                    case 5:
+                        PlanningSessionAttendeePublisher.Publish(sessionAttendeeGuest);
+                        break;
+                    case 6:
+                        PlanningSessionAttendeePublisher.Publish(sessionAttendeeGuestAltered);
                         break;
                     default:
                         break;

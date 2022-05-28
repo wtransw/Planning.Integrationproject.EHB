@@ -110,6 +110,8 @@ namespace Crm.Link.RabbitMq.Consumer
             catch (Exception ex)
             {
                 attendeeLogger.LogCritical(ex, "Error while retrieving message from queue.");
+                //Channel!.BasicNack(@event.DeliveryTag, false, true);
+                return;
             }
             finally
             {
