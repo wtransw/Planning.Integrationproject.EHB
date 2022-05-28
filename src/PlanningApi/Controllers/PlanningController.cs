@@ -142,7 +142,7 @@ namespace PlanningApi.Controllers
                 EntityType = "SessionEvent",
                 IsActive = true,
                 EntityVersion = 1,
-                Method = MethodEnum.UPDATE,
+                Method = MethodEnum.CREATE,
                 OrganiserUUID = testUuidAttendee,
                 SourceEntityId = "testUuid",
                 Source = SourceEnum.PLANNING,

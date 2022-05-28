@@ -191,7 +191,7 @@ namespace Crm.Link.RabbitMq.Consumer
                     {
                         var newSession = new Event()
                         {
-                            Description = planningSession.Title,
+                            Description = planningSession.UUID_Nr,
                             Start = new EventDateTime()
                             {
                                 //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
@@ -204,7 +204,7 @@ namespace Crm.Link.RabbitMq.Consumer
                                 DateTime = planningSession.EndDateUTC,
                                 TimeZone = "Europe/Zurich"
                             },
-                            Summary = planningSession.UUID_Nr,
+                            Summary = planningSession.Title,
                             Location = "Koln",
                             //Attendees = new List<EventAttendee>()
                             Attendees = new EventAttendee[] {

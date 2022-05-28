@@ -220,11 +220,16 @@ namespace CalendarServices
 
         public async Task<Event> GetSession(string calendarId, string eventId)
         {
-            if (!string.IsNullOrEmpty(calendarId))
-                return await service.Events.Get(calendarId, eventId).ExecuteAsync();
+            var calendarToCheck = calendarId ?? CalendarId;
 
-            else 
-                return await service.Events.Get(CalendarId, eventId).ExecuteAsync();
+            var returnValue = await service.Events.Get(calendarToCheck, eventId).ExecuteAsync();
+            if (returnValue == null)
+            {
+                var allSessions = await this.GetAllUpcomingSessions(CalendarId);
+                returnValue = allSessions.FirstOrDefault(s => s.Summary == eventId || s.Description == eventId);
+            }
+            return returnValue;
+            
         }
 
         public Channel CreateChannel(string address, string? id, int? ttlMinutes)
