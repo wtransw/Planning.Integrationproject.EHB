@@ -121,41 +121,42 @@ class Program
         };
         try
         {
-            ;
-            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
-            ;
+            //;
+            //Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+            //;
 
-            var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
-            {
-                ClientSecrets = new ClientSecrets
-                {
-                    ClientId = parameters.ClientId,
-                    ClientSecret = parameters.ClientSecret,
-                },
-                Scopes = Scopes,
-                DataStore = new FileDataStore("Store")
-            });
-
-            var token = new TokenResponse
-            {
-                AccessToken = parameters.AccessToken,
-                RefreshToken = parameters.RefreshToken
-            };
-
-            credential = new UserCredential(flow, Environment.UserName, token);
-
-
-            //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            //var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
             //{
-            //    // The file token.json stores the user's access and refresh tokens, and is created
-            //    // automatically when the authorization flow completes for the first time.
-            //    string credPath = "token.json";
+            //    ClientSecrets = new ClientSecrets
+            //    {
+            //        ClientId = parameters.ClientId,
+            //        ClientSecret = parameters.ClientSecret,
+            //    },
+            //    Scopes = Scopes,
+            //    DataStore = new FileDataStore("Store")
+            //});
 
-            //    var googleClientSecrets = GoogleClientSecrets.FromFile("credentials.json");
-            //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(googleClientSecrets.Secrets, Scopes, "user", CancellationToken.None).GetAwaiter().GetResult();
+            //var token = new TokenResponse
+            //{
+            //    AccessToken = parameters.AccessToken,
+            //    RefreshToken = parameters.RefreshToken
+            //};
 
-            //Thread.Sleep(3000);
-            //}
+            //credential = new UserCredential(flow, Environment.UserName, token);
+
+
+            using (var stream = new FileStream("credentialss.json", FileMode.Open, FileAccess.Read))
+            {
+                // The file token.json stores the user's access and refresh tokens, and is created
+                // automatically when the authorization flow completes for the first time.
+                string credPath = "token.json";
+
+                var googleClientSecrets = GoogleClientSecrets.FromFile("credentials.json");
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(googleClientSecrets.Secrets, Scopes, "user", CancellationToken.None).GetAwaiter().GetResult();
+                ; ;
+                Thread.Sleep(3000);
+            }
+            ;
 
         }
         catch (Exception ex)
