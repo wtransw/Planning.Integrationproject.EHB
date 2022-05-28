@@ -183,6 +183,8 @@ namespace Crm.Link.RabbitMq.Consumer
             // We krijgen een Session binnen die nog niet bestaat. Create dus.
             else if (uuidData == null)
             {
+                sessionLogger.LogInformation($"Creating session with title {planningSession.Title} with UUID {planningSession.UUID_Nr}.");
+                sessionLogger.LogInformation($"From {planningSession.StartDateUTC} to {planningSession.EndDateUTC}.");
                 for (int i = 0; i < maxRetries; i++)
                 {
                     try
@@ -216,7 +218,11 @@ namespace Crm.Link.RabbitMq.Consumer
                             }
                         };
 
-                        await GoogleCalendarService.CreateSessionForEvent(GoogleCalendarService.CalendarGuid, planningSession.Title, newSession);
+                        var createdSession = await GoogleCalendarService.CreateSessionForEvent(GoogleCalendarService.CalendarGuid, planningSession.Title, newSession);
+                        if (createdSession != null)
+                            sessionLogger.LogInformation("New session successfully created.");
+                        else
+                            sessionLogger.LogInformation("Failed to create new session.");
                         i = maxRetries;
                     }
                     catch (Exception ex)
