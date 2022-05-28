@@ -140,6 +140,7 @@ namespace Crm.Link.RabbitMq.Consumer
                         if (attendee != null)
                         {
                             attendee.ResponseStatus = planningSessionAttendee.InvitationStatus.ToString();
+                            await UuidMaster.UpdateEntity(attendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
                         }
                         else
                         {
@@ -166,6 +167,7 @@ namespace Crm.Link.RabbitMq.Consumer
                         }
 
                         await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
+                        UuidMaster.
                         i = maxRetries;
                     }
                     catch (Exception ex)

@@ -177,7 +177,17 @@ namespace CalendarServices
 
             return firstSessionWithOurAttendee != null ? firstSessionWithOurAttendee.Attendees.First(a => a.Email.ToLower() == attendeeEmail.ToLower()) : null;
         }
-
+        public async Task<EventAttendee?> GetAttendeeByUuid(string uuid)
+        {
+            var allSessions = await GetAllUpcomingSessions(CalendarGuid);
+            var firstSessionWithOurAttendee = allSessions.FirstOrDefault(session => 
+                                                    session.Attendees != null && 
+                                                    session.Attendees.Any(
+                                                        attendee => 
+                                                            attendee.Comment == uuid)
+                                                );
+            return firstSessionWithOurAttendee != null ? firstSessionWithOurAttendee.Attendees.First(a => a.Comment == uuid) : null;
+        }
 
         public async Task<Event> AddAttendeeToSessionAsync(string sessionGuid, EventAttendee attendee)
         {
@@ -192,7 +202,7 @@ namespace CalendarServices
         {
             //attendee.Id ??= Guid.NewGuid().ToString();
             var allSessions = await this.GetAllUpcomingSessions(CalendarId);
-            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Id == attendee.Id || y.Email.ToLower() == attendee.Email.ToLower())).ToList(); ;
+            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Id == attendee.Id || (y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val")).ToList(); ;
             foreach (var session in sessionsWithThisAttendee)
             {
                 session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();

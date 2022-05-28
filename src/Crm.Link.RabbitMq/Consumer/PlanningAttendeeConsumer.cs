@@ -131,7 +131,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
             await GoogleCalendarService.UpdateAttendee(eventAttendee);
 
-            await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+
         }
 
         public async Task HandleAttendee(PlanningAttendee planningAttendee)
@@ -149,6 +149,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 try
                 {
                     await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                    await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
                 }
                 catch (Exception ex)
                 {
@@ -162,20 +163,36 @@ namespace Crm.Link.RabbitMq.Consumer
             else if (uuidData == null)
             {
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
+                //Of als de dummy al gemaakt is in Google Calendar.
 
                 for (int i = 0; i < maxRetries; i++)
                 {
+                    //bij create: in google de sessies ophalen, en kijken of ik sessie heb met deze attendee. 
+                    //Dat moet per definitie de dummy zijn, want het is een Create. 
+                    // -> deze aanpassen. 
+
                     //Als we al een sessionAttendee gekregen hebben vanuit de queue, dan bestaat ie in google calendar, dus kunnen we ook gewoon updaten.
                     try
                     {
-                        await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
-                            uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
-
-                        if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+                        var dummyAttendee = await GoogleCalendarService.GetAttendeeByUuid(planningAttendee.UUID_Nr);
+                        if (dummyAttendee != null)
                         {
                             await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                            await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
                             i = maxRetries;
                         }
+                        else
+                        {
+                            await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
+                                uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
+
+                            if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+                            {
+                                await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                                i = maxRetries;
+                            }
+                        }
+
                         i++;
                     }
                     catch (Exception ex)
