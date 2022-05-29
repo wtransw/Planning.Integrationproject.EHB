@@ -161,6 +161,7 @@ namespace Crm.Link.RabbitMq.Consumer
                                 DisplayName = "new attendee",
                                 Email = "default@email.val",
                                 ResponseStatus = responseStatus,
+                                Organizer = false
                             };
 
                             session.Attendees.Add(nieuweAttendee);

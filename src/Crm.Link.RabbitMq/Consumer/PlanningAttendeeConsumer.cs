@@ -126,7 +126,8 @@ namespace Crm.Link.RabbitMq.Consumer
                 Id = planningAttendee.Email,
                 DisplayName = planningAttendee.LastName + planningAttendee.Name,
                 Email = planningAttendee.Email,
-                Comment = planningAttendee.UUID_Nr ?? ""
+                Comment = planningAttendee.UUID_Nr ?? "",
+                Organizer = planningAttendee.EntityType.ToLower().Contains("org")
             };
 
             await GoogleCalendarService.UpdateAttendee(eventAttendee);
@@ -160,6 +161,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
             // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
             // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
+            // Opletten: dit kan ook de organizer zijn voor de sessie. 
             else if (uuidData == null)
             {
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 

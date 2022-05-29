@@ -146,7 +146,7 @@ namespace PlanningApi.Controllers
                 OrganiserUUID = testUuidAttendee,
                 SourceEntityId = "testUuid",
                 Source = SourceEnum.PLANNING,
-                UUID_Nr = testUuidSession
+                UUID_Nr = testUuidSession,
             };
             var sessionAttendee = new PlanningSessionAttendee()
             {
@@ -158,7 +158,7 @@ namespace PlanningApi.Controllers
                 AttendeeUUID = testUuidAttendee,
                 EntityType = "SessionAttendee",
                 InvitationStatus = NotificationStatus.PENDING,
-                SessionUUID = testUuidSession
+                SessionUUID = testUuidSession,
             };
 
             var attendeeGuest = new PlanningAttendee()
