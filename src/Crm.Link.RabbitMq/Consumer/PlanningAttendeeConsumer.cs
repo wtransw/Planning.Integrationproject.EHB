@@ -123,11 +123,11 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             var eventAttendee = new EventAttendee()
             {
-                Id = planningAttendee.Email,
+                //Id = planningAttendee.Email,
                 DisplayName = planningAttendee.LastName + planningAttendee.Name,
                 Email = planningAttendee.Email,
                 Comment = planningAttendee.UUID_Nr ?? "",
-                Organizer = planningAttendee.EntityType.ToLower().Contains("org")
+                Organizer = planningAttendee.EntityType.ToLower().Contains("org"),
             };
 
             await GoogleCalendarService.UpdateAttendee(eventAttendee);
