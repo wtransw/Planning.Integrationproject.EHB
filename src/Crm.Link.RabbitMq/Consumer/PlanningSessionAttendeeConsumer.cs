@@ -132,6 +132,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
                 if (session != null)
                 {
+                    sessionAttendeeLogger.LogInformation($"Sessie {session.Description} gevonden.");
                     //update 
                     try
                     {
@@ -179,7 +180,10 @@ namespace Crm.Link.RabbitMq.Consumer
 
                 // anders 2 minuten wachten, en opnieuw proberen. Eerst moet de sessie aangemaakt worden, en dan pas kunnen we een attendee linken. 
                 else
+                {
+                    sessionAttendeeLogger.LogError($"Sessie {planningSessionAttendee.SessionUUID} niet gevonden. Wacht 2 min en probeer opnieuw.");
                     await Task.Delay(2 * 60 * 1000);
+                }
             }
 
 

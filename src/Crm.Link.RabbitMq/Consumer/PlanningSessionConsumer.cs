@@ -224,6 +224,9 @@ namespace Crm.Link.RabbitMq.Consumer
                             sessionLogger.LogInformation("New session successfully created.");
                         else
                             sessionLogger.LogInformation("Failed to create new session.");
+
+                        //await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
+
                         i = maxRetries;
                     }
                     catch (Exception ex)
