@@ -178,7 +178,8 @@ class Program
         var newEventKerst = new Event()
         {
             Summary = "Kersttrip 2022",
-            Location = "Koln",
+            //Location = "Koln",
+            Location = "Brussel",
             Description = "Shoppen met gluhwein",
             Start = new EventDateTime()
             {
@@ -247,7 +248,7 @@ class Program
                 TimeZone = "Europe/Zurich"
             },
             Summary = "12345678901234567890123456789012",
-            Location = "Koln",
+            Location = "Brussel",
             //Attendees = new List<EventAttendee>()
             Attendees = new EventAttendee[] {
                                 new EventAttendee

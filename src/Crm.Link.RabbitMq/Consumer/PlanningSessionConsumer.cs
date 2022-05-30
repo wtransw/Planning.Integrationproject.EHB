@@ -205,7 +205,8 @@ namespace Crm.Link.RabbitMq.Consumer
                                 TimeZone = "Europe/Zurich"
                             },
                             Summary = planningSession.Title,
-                            Location = "Koln",
+                            //Location = "Koln",
+                            Location = "Brussel",
                             //Attendees = new List<EventAttendee>()
                             Attendees = new EventAttendee[] {
                                 new EventAttendee
