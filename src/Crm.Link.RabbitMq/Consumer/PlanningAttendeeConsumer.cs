@@ -139,6 +139,9 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             var maxRetries = 5;    
             attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
+            var allInfo = planningAttendee.Source + " " + planningAttendee.Email + " " + planningAttendee.Name + " " + planningAttendee.LastName + " " +
+                planningAttendee.EntityVersion + " " + planningAttendee.EntityType + " " + planningAttendee.SourceEntityId;
+            attendeeLogger.LogInformation("[DEBUG]: " + allInfo);
 
             //Kijken welke versie wij hebben van dit object.
             var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);

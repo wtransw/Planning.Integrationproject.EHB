@@ -145,18 +145,20 @@ class Program
             //credential = new UserCredential(flow, Environment.UserName, token);
 
 
-            using (var stream = new FileStream("credentialss.json", FileMode.Open, FileAccess.Read))
-            {
-                // The file token.json stores the user's access and refresh tokens, and is created
-                // automatically when the authorization flow completes for the first time.
-                string credPath = "token.json";
+            //using (var stream = new FileStream("credentialss.json", FileMode.Open, FileAccess.Read))
+            //{
+            //    // The file token.json stores the user's access and refresh tokens, and is created
+            //    // automatically when the authorization flow completes for the first time.
+            //    string credPath = "token.json";
 
-                var googleClientSecrets = GoogleClientSecrets.FromFile("credentials.json");
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(googleClientSecrets.Secrets, Scopes, "user", CancellationToken.None).GetAwaiter().GetResult();
-                ; ;
-                Thread.Sleep(3000);
-            }
-            ;
+            //    var googleClientSecrets = GoogleClientSecrets.FromFile("credentials.json");
+            //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(googleClientSecrets.Secrets, Scopes, "user", CancellationToken.None).GetAwaiter().GetResult();
+            //    ; ;
+            //    Thread.Sleep(3000);
+            //}
+            //;
+
+            HandleAttendee();
 
         }
         catch (Exception ex)
@@ -308,27 +310,41 @@ class Program
             Thread.Sleep(10000);
             */
 
-            var elfMeiEvent = new Event
-            {
-                Summary = "Elf Mei",
-                Location = "Verrassing",
-                Description = "Wortelen planten",
-                Start = new EventDateTime()
-                {
-                    DateTime = DateTime.Parse("2022-05-11T08:00:00-07:00"),
-                    TimeZone = "Europe/Zurich"
-                },
-                End = new EventDateTime()
-                {
-                    DateTime = DateTime.Parse("2022-05-11T17:00:00-07:00"),
-                    TimeZone = "Europe/Zurich"
-                }
-            };
 
-            EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, sessieMetJeremy, CalendarId);
-            Event response = request.Execute();
+            
 
-            Thread.Sleep(5000);
+
+
+
+
+
+
+
+
+
+
+
+            //var elfMeiEvent = new Event
+            //{
+            //    Summary = "Elf Mei",
+            //    Location = "Verrassing",
+            //    Description = "Wortelen planten",
+            //    Start = new EventDateTime()
+            //    {
+            //        DateTime = DateTime.Parse("2022-05-11T08:00:00-07:00"),
+            //        TimeZone = "Europe/Zurich"
+            //    },
+            //    End = new EventDateTime()
+            //    {
+            //        DateTime = DateTime.Parse("2022-05-11T17:00:00-07:00"),
+            //        TimeZone = "Europe/Zurich"
+            //    }
+            //};
+
+            //EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, sessieMetJeremy, CalendarId);
+            //Event response = request.Execute();
+
+            //Thread.Sleep(5000);
 
             var _ = ShowEvents(service).ConfigureAwait(false);
 
@@ -505,11 +521,12 @@ class Program
         //return attendee is not null ? (attendee.Name ?? "Doe" + attendee.LastName ?? "John") : "";
     }
 
-    static async void HandleAttendee(PlanningAttendee attendee)
+    //static async void HandleAttendee(PlanningAttendee attendee)
+    static async void HandleAttendee()
     {
         try
         {
-            Console.WriteLine(Environment.NewLine + "Getting attendee with email " + attendee.Email);
+            //Console.WriteLine(Environment.NewLine + "Getting attendee with email " + attendee.Email);
             var gcal = new GoogleCalendarService(service);
 
             var calOptions = new CalendarOptions()
@@ -526,29 +543,62 @@ class Program
             };
             await gcal.CreateCalendarService(calOptions);
 
-            var allSessions = await gcal.GetAllUpcomingSessions(gcal.CalendarGuid);
+            //var allSessions = await gcal.GetAllUpcomingSessions(gcal.CalendarGuid);
 
-            var firstSession = allSessions.FirstOrDefault();
-            var legeAttendee = new EventAttendee() { Email = "Rogekepateeke@rogeke.com", DisplayName = "Geen idee wat mijn naam is." };
+            //var firstSession = allSessions.FirstOrDefault();
+            //var legeAttendee = new EventAttendee() { Email = "Rogekepateeke@rogeke.com", DisplayName = "Geen idee wat mijn naam is." };
 
-            if (firstSession != null)
-                await gcal.AddAttendeeToSessionAsync(firstSession.Id, legeAttendee);
+            //if (firstSession != null)
+            //    await gcal.AddAttendeeToSessionAsync(firstSession.Id, legeAttendee);
+
+
+
+
+
+
+            //            [8:10 PM] TULPINCK Mathieu(s)
+            //<? xml version = "1.0" encoding = "utf-8" ?>< AttendeeEvent xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns: 
+            //            xsd = "http://www.w3.org/2001/XMLSchema" >  
+            //                < UUID_Nr > 7f8a265b - 9e2c - 4351 - a373 - c3db95470b68 </ UUID_Nr >  
+            //                < SourceEntityId > 5 </ SourceEntityId >  < EntityVersion > 1 </ EntityVersion >  
+            //                < EntityType > ATTENDEE </ EntityType >  < Source > FRONTEND </ Source >  < Method > CREATE </ Method >  < Name > Mathieu </ Name >  < LastName > Tulpinck </ LastName >  < Email > mathieu.tulpinck@hackaton2022.test </ Email ></ AttendeeEvent ><? xml version = "1.0" encoding = "utf-8" ?>< SessionAttendeeEvent xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns: xsd = "http://www.w3.org/2001/XMLSchema" >  < UUID_Nr > 21834faf - 7df2 - 4e8e - b2b0 - b66bf565de15 </ UUID_Nr >  < SourceEntityId > 18 </ SourceEntityId >  < EntityType > SESSIONATTENDEE </ EntityType >  < EntityVersion > 1 </ EntityVersion >  < Source > FRONTEND </ Source >  < Method > CREATE </ Method >  < AttendeeUUID > 7f8a265b - 9e2c - 4351 - a373 - c3db95470b68 </ AttendeeUUID >  < SessionUUID > 9e5c9d00 - 9fb6 - 411d - 99c6 - 259132203d06 </ SessionUUID >  < InvitationStatus > ACCEPTED </ InvitationStatus ></ SessionAttendeeEvent >
+
+            var planningAttendee = new PlanningAttendee()
+            {
+                Name = "Mathieu",
+                LastName = "Tulpinck",
+                Email = "mathieu.tulpinck@hackaton2022.test",
+                UUID_Nr = "7f8a265b -9e2c-4351-a373-c3db95470b68",
+                EntityType = "ATTENDEE"
+            };
+
+
+            var eventAttendee = new EventAttendee()
+            {
+                //Id = planningAttendee.Email,
+                DisplayName = planningAttendee.LastName + planningAttendee.Name,
+                Email = planningAttendee.Email,
+                Comment = planningAttendee.UUID_Nr ?? "",
+                Organizer = planningAttendee.EntityType.ToLower().Contains("org"),
+            };
+
+            var meh = await gcal.UpdateAttendee(eventAttendee).ConfigureAwait(false);
 
 
             ;
 
 
 
-            var attendeeUitGoogleCalendar = await gcal.GetAttendeeByEmail(attendee.Email);
+            //var attendeeUitGoogleCalendar = await gcal.GetAttendeeByEmail(attendee.Email);
 
-            //updaten wat we moeten updaten, bijvoorbeeld zijn naam
-            if (attendeeUitGoogleCalendar is not null)
-            {
-                attendeeUitGoogleCalendar.DisplayName = attendee.LastName + attendee.Name;
-                //attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
+            ////updaten wat we moeten updaten, bijvoorbeeld zijn naam
+            //if (attendeeUitGoogleCalendar is not null)
+            //{
+            //    attendeeUitGoogleCalendar.DisplayName = attendee.LastName + attendee.Name;
+            //    //attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
 
-                await gcal.UpdateAttendee(attendeeUitGoogleCalendar);
-            }
+            //    await gcal.UpdateAttendee(attendeeUitGoogleCalendar);
+            //}
 
 
         }
