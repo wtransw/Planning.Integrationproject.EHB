@@ -202,7 +202,11 @@ namespace CalendarServices
         {
             //attendee.Id ??= Guid.NewGuid().ToString();
             var allSessions = await this.GetAllUpcomingSessions(CalendarId);
-            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => (y.Id == attendee.Id && !string.IsNullOrEmpty(attendee.Id))|| (y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val")).ToList(); ;
+            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => 
+                                                            (y.Id == attendee.Id && !string.IsNullOrEmpty(attendee.Id)) || 
+                                                            ((y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val") ||
+                                                            y.Comment == attendee.Comment
+                                                    )).ToList();
             foreach (var session in sessionsWithThisAttendee)
             {
                 session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();
@@ -221,12 +225,21 @@ namespace CalendarServices
         public async Task<Event> GetSession(string calendarId, string eventId)
         {
             var calendarToCheck = calendarId ?? CalendarId;
-
-            var returnValue = await service.Events.Get(calendarToCheck, eventId).ExecuteAsync();
-            if (returnValue == null)
+            Event returnValue;
+            try
             {
+                returnValue = await service.Events.Get(calendarToCheck, eventId).ExecuteAsync();
+            }
+
+            catch (Google.GoogleApiException ex) when (ex.Message.ToLower().Contains("404"))
+            {
+                // Expected when no results found (wtf, Google?)
                 var allSessions = await this.GetAllUpcomingSessions(CalendarId);
                 returnValue = allSessions.FirstOrDefault(s => s.Summary == eventId || s.Description == eventId);
+            }
+            catch 
+            {
+                returnValue = null!;
             }
             return returnValue;
             

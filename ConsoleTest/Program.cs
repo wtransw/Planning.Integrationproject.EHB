@@ -554,41 +554,6 @@ class Program
 
 
 
-
-
-            //            [8:10 PM] TULPINCK Mathieu(s)
-            //<? xml version = "1.0" encoding = "utf-8" ?>< AttendeeEvent xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns: 
-            //            xsd = "http://www.w3.org/2001/XMLSchema" >  
-            //                < UUID_Nr > 7f8a265b - 9e2c - 4351 - a373 - c3db95470b68 </ UUID_Nr >  
-            //                < SourceEntityId > 5 </ SourceEntityId >  < EntityVersion > 1 </ EntityVersion >  
-            //                < EntityType > ATTENDEE </ EntityType >  < Source > FRONTEND </ Source >  < Method > CREATE </ Method >  < Name > Mathieu </ Name >  < LastName > Tulpinck </ LastName >  < Email > mathieu.tulpinck@hackaton2022.test </ Email ></ AttendeeEvent ><? xml version = "1.0" encoding = "utf-8" ?>< SessionAttendeeEvent xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns: xsd = "http://www.w3.org/2001/XMLSchema" >  < UUID_Nr > 21834faf - 7df2 - 4e8e - b2b0 - b66bf565de15 </ UUID_Nr >  < SourceEntityId > 18 </ SourceEntityId >  < EntityType > SESSIONATTENDEE </ EntityType >  < EntityVersion > 1 </ EntityVersion >  < Source > FRONTEND </ Source >  < Method > CREATE </ Method >  < AttendeeUUID > 7f8a265b - 9e2c - 4351 - a373 - c3db95470b68 </ AttendeeUUID >  < SessionUUID > 9e5c9d00 - 9fb6 - 411d - 99c6 - 259132203d06 </ SessionUUID >  < InvitationStatus > ACCEPTED </ InvitationStatus ></ SessionAttendeeEvent >
-
-            var planningAttendee = new PlanningAttendee()
-            {
-                Name = "Mathieu",
-                LastName = "Tulpinck",
-                Email = "mathieu.tulpinck@hackaton2022.test",
-                UUID_Nr = "7f8a265b -9e2c-4351-a373-c3db95470b68",
-                EntityType = "ATTENDEE"
-            };
-
-
-            var eventAttendee = new EventAttendee()
-            {
-                //Id = planningAttendee.Email,
-                DisplayName = planningAttendee.LastName + planningAttendee.Name,
-                Email = planningAttendee.Email,
-                Comment = planningAttendee.UUID_Nr ?? "",
-                Organizer = planningAttendee.EntityType.ToLower().Contains("org"),
-            };
-
-            var meh = await gcal.UpdateAttendee(eventAttendee).ConfigureAwait(false);
-
-
-            ;
-
-
-
             //var attendeeUitGoogleCalendar = await gcal.GetAttendeeByEmail(attendee.Email);
 
             ////updaten wat we moeten updaten, bijvoorbeeld zijn naam
