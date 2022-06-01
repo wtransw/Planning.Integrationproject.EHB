@@ -225,7 +225,7 @@ namespace Crm.Link.RabbitMq.Consumer
                         else
                             sessionLogger.LogInformation("Failed to create new session.");
 
-                        //await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
+                        await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Session, createdSession.Id ?? planningSession.UUID_Nr, planningSession.EntityVersion);
 
                         i = maxRetries;
                     }

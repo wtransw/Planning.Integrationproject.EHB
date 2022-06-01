@@ -29,19 +29,15 @@ namespace PlanningApi.Controllers
             //PlanningService planningService)
         {
             this.Logger = logger;
-            //this.CalendarOptions = calendarOptions; 
             this.CalendarService = calendarService;
             calendarService.CreateCalendarService(calendarOptions);
-            //CalendarService.CalendarGuid = calendarOptions.CalendarGuid;
             Logger.LogInformation("PlanningController created");
             this.PlanningAttendeePublisher = planningAttendeePublisher;
             this.PlanningSessionPublisher = planningSessionPublisher;
             this.PlanningSessionAttendeePublisher = planningSessionAttendeePublisher;
-            //this.PlanningService = planningService;
         }
 
 
-        //[HttpGet(Name = "Meh")]
         [HttpGet("Test")]
         public string Get()
         {
@@ -105,14 +101,6 @@ namespace PlanningApi.Controllers
             }
             //var guid = CalendarOptions.CalendarGuid;
         }
-
-
-        //[HttpPost("RabbitEndpoint")]
-        //public async Task<IActionResult> RabbitEndpoint([FromBody] string message)
-        //{
-        //    Logger.LogInformation("RabbitEndpoint called");
-        //    return Ok();
-        //}
 
         [HttpPost("PublishOnRabbitMqTest")]
         public async Task<IActionResult> PublishOnRabbitMqTest(int objectNumber)
@@ -234,8 +222,6 @@ namespace PlanningApi.Controllers
             return BadRequest();
 
         }
-
-
 
 
         [HttpPost("AttendeeEventDebug")]

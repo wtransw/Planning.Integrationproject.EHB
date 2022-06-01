@@ -34,7 +34,7 @@ try
 
     // configuration rabbitmq
     builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
-    builder.Services.AddPublisher();
+    builder.Services.AddPublishers();
     var calendarSection = builder.Configuration.GetSection(CalendarOptions.SectionName);
     builder.Services.AddSingleton<ICalendarOptions>(provider =>
         new CalendarOptions()
