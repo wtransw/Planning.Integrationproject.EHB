@@ -43,8 +43,9 @@ public class PollingScheduler : IHostedService
             {
                 //Poll Google Calendar for changes.
                 var upcomingSessions = await GoogleCalendarService.GetAllUpcomingSessions(GoogleCalendarService.CalendarGuid);
+                var upcomingSessionsNext30Days = upcomingSessions.Where(s => s.Start.DateTime < DateTime.Now.AddDays(30));
 
-                foreach (var session in upcomingSessions)
+                foreach (var session in upcomingSessionsNext30Days)
                 {
                     var sessionUuid = await UuidMaster.GetGuid(session.Id, SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Session);
 
@@ -56,66 +57,67 @@ public class PollingScheduler : IHostedService
 
                         //Kijken of er attendees bijgekomen zijn. Attendees die niet komen moeten gewoon hun invitationstatus veranderen. 
                         
-                        foreach (var attendee in session.Attendees)
-                        {
-                            var attendeeUuid = await UuidMaster.GetGuid(attendee.Email, SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Attendee);
+                        //foreach (var attendee in session.Attendees)
+                        //{
+                        //    var attendeeUuid = await UuidMaster.GetGuid(attendee.Email, SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Attendee);
                             
-                            //Nieuwe Attendee
-                            if (attendeeUuid == null)
-                            { 
-                                string firstname = "John";
-                                string lastname = "Doe";
-                                string newAttendeeUuid = new Guid().ToString();
-                                try
-                                {
-                                    firstname = attendee.DisplayName.Split(' ')[0];
-                                    lastname = attendee.DisplayName.Split(' ')[1];
-                                    if (!string.IsNullOrEmpty(attendee.Id))
-                                        newAttendeeUuid = Guid.Parse(attendee.Id).ToString();
-                                }
-                                catch
-                                {
-                                    Logger.LogError($"Error splitting name ");
-                                }
-                                var newAttendee = new PlanningAttendee()
-                                {
-                                    Email = attendee.Email,
-                                    EntityVersion = 1,
-                                    Name = firstname,
-                                    LastName = lastname,
-                                    Method = MethodEnum.CREATE,
-                                    Source = SourceEnum.PLANNING,
-                                    SourceEntityId = attendee.Email,
-                                    UUID_Nr = newAttendeeUuid,
-                                    EntityType = "Attendee"
-                                };
+                        //    //Nieuwe Attendee
+                        //    if (attendeeUuid == null)
+                        //    { 
+                        //        string firstname = "John";
+                        //        string lastname = "Doe";
+                        //        string newAttendeeUuid = new Guid().ToString();
+                        //        try
+                        //        {
+                        //            firstname = attendee.DisplayName.Split(' ')[0];
+                        //            lastname = attendee.DisplayName.Split(' ')[1];
+                        //            if (!string.IsNullOrEmpty(attendee.Id))
+                        //                newAttendeeUuid = Guid.Parse(attendee.Id).ToString();
+                        //        }
+                        //        catch
+                        //        {
+                        //            Logger.LogError($"Error splitting name ");
+                        //        }
+                        //        var newAttendee = new PlanningAttendee()
+                        //        {
+                        //            Email = attendee.Email,
+                        //            EntityVersion = 1,
+                        //            Name = firstname,
+                        //            LastName = lastname,
+                        //            Method = MethodEnum.CREATE,
+                        //            Source = SourceEnum.PLANNING,
+                        //            SourceEntityId = attendee.Email,
+                        //            UUID_Nr = newAttendeeUuid,
+                        //            EntityType = "Attendee"
+                        //        };
 
-                                var newSessionAttendee = new PlanningSessionAttendee()
-                                {
-                                    AttendeeUUID = Guid.NewGuid().ToString(),
-                                    EntityType = "SessionAttendee",
-                                    EntityVersion = 1,
-                                    InvitationStatus = attendee.ResponseStatus == "accepted" ? NotificationStatus.ACCEPTED
-                                                        : attendee.ResponseStatus == "declined" ? NotificationStatus.DECLINED
-                                                        : NotificationStatus.PENDING,
-                                    Method = MethodEnum.CREATE,
-                                    SessionUUID = sessionUuid.Uuid.ToString(),
-                                    Source = SourceEnum.PLANNING,
-                                    SourceEntityId = Guid.NewGuid().ToString(),
-                                    UUID_Nr = Guid.NewGuid().ToString()
-                                };
+                        //        var newSessionAttendee = new PlanningSessionAttendee()
+                        //        {
+                        //            AttendeeUUID = Guid.NewGuid().ToString(),
+                        //            EntityType = "SessionAttendee",
+                        //            EntityVersion = 1,
+                        //            InvitationStatus = attendee.ResponseStatus == "accepted" ? NotificationStatus.ACCEPTED
+                        //                                : attendee.ResponseStatus == "declined" ? NotificationStatus.DECLINED
+                        //                                : NotificationStatus.PENDING,
+                        //            Method = MethodEnum.CREATE,
+                        //            SessionUUID = sessionUuid.Uuid.ToString(),
+                        //            Source = SourceEnum.PLANNING,
+                        //            SourceEntityId = Guid.NewGuid().ToString(),
+                        //            UUID_Nr = Guid.NewGuid().ToString()
+                        //        };
 
-                                PlanningAttendeePublisher.Publish(newAttendee);
-                                PlanningSessionAttendeePublisher.Publish(newSessionAttendee);
+                        //        PlanningAttendeePublisher.Publish(newAttendee);
+                        //        PlanningSessionAttendeePublisher.Publish(newSessionAttendee);
 
-                            }
-                        }
+                        //    }
+                        //}
 
                     }
                     else
                     {
                         //Nieuwe sessie aangemaakt via Calendar.
-                        var sessionId = session.Id ?? new Guid().ToString();
+                        var sessionId = session.Id != null && session.Id.Length >= 32 ? session.Id : Guid.NewGuid().ToString();  
+                        var organizerId = session.Organizer.Id != null && session.Organizer.Id.Length >= 32 ? session.Organizer.Id : Guid.NewGuid().ToString();
                         var planningSession = new PlanningSession()
                         {
                             Title = session.Summary,
@@ -126,7 +128,7 @@ public class PollingScheduler : IHostedService
                             EntityVersion = 1,
                             Method = MethodEnum.CREATE,
                             OrganiserUUID = sessionId,
-                            SourceEntityId = "testUuid",
+                            SourceEntityId = sessionId,
                             Source = SourceEnum.PLANNING,
                             UUID_Nr = sessionId,
                         };
