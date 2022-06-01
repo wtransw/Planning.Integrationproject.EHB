@@ -254,7 +254,6 @@ namespace Crm.Link.RabbitMq.Consumer
 
             //Kijken welke versie wij hebben van dit object.
             //var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
-
             Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
@@ -290,8 +289,10 @@ namespace Crm.Link.RabbitMq.Consumer
                     try
                     {
                         var dummyAttendee = await GoogleCalendarService.GetAttendeeByUuid(planningAttendee.UUID_Nr);
+
                         if (dummyAttendee != null)
                         {
+                            attendeeLogger.LogInformation($"Adjusting planning attendee data for {planningAttendee.Email}");
                             //if (planningAttendee.EntityType.ToLower().Contains("org"))
                             //{
                             //    await CalendarService.CreateOrganizer()
@@ -303,13 +304,20 @@ namespace Crm.Link.RabbitMq.Consumer
                         }
                         else
                         {
-                            //await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
-                            //    uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
+
+                            await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
+                                    uuidData = await UuidMaster.GetResource(Guid.Parse(planningAttendee.UUID_Nr), SourceEnum.PLANNING.ToString()));
+                                    //uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
 
                             if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
                             {
+                                attendeeLogger.LogInformation($"Adding planning attendee {planningAttendee.Email} to event");
                                 await UpdateAttendeeInGoogleCalendar(planningAttendee);
                                 i = maxRetries;
+                            }
+                            else
+                            {
+                                attendeeLogger.LogWarning($"Could not add planning attendee {planningAttendee.Email} to event");
                             }
                         }
 

@@ -18,6 +18,17 @@ namespace Crm.Link.UUID
             _logger = logger;
         }
 
+        public async Task<ResourceDto?> GetResource(Guid id, string source)
+        {
+            var response = await _httpClient.GetAsync($"api/resources/{id}/{source}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            var content = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(content))
+                return null;
+
+            return JsonConvert.DeserializeObject<ResourceDto>(content);
+        }
 
         public async Task<ResourceDto?> GetGuid(string id, string sourceType, EntityTypeEnum entityType)
         {
