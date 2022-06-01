@@ -249,12 +249,12 @@ namespace Crm.Link.RabbitMq.Consumer
         }
         private async Task HandleAttendee(PlanningAttendee planningAttendee)
         {
-            var maxRetries = 5;
+            var maxRetries = 20;
             attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
 
             //Kijken welke versie wij hebben van dit object.
-            //var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
-            Crm.Link.UUID.Model.ResourceDto uuidData = new();
+            var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+            //Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
             if (uuidData != null && uuidData.EntityVersion > 0 && uuidData.EntityVersion < planningAttendee.EntityVersion)
@@ -262,7 +262,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 try
                 {
                     await UpdateAttendeeInGoogleCalendar(planningAttendee);
-                    //await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+                    await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
                 }
                 catch (Exception ex)
                 {
@@ -299,13 +299,13 @@ namespace Crm.Link.RabbitMq.Consumer
                             //}
                             //else
                             await UpdateAttendeeInGoogleCalendar(planningAttendee);
-                            //await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
+                            await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
                             i = maxRetries;
                         }
                         else
                         {
 
-                            await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
+                            await Task.Delay(1 * 60 * 1000).ContinueWith(async t =>
                                     uuidData = await UuidMaster.GetResource(Guid.Parse(planningAttendee.UUID_Nr), SourceEnum.PLANNING.ToString()));
                                     //uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
 

@@ -236,43 +236,6 @@ namespace PlanningApi.Controllers
         }
 
 
-        //[HttpGet("PublishTest")]    // API/Planning/PublishTest
-        //public IActionResult PublishTest()
-        //{
-        //    try
-        //    {
-        //        //var attendee = new PlanningAttendee { Name = "Wouter", LastName = "A", Email = "my@mail.here", EntityVersion = "1", UUID_Nr = Guid.NewGuid().ToString(), Method = MethodEnum.CREATE, EntityType = "Attendee", Source = Source.PLANNING, SourceEntityId = "brol@mail.be" };
-        //        var attendee = new PlanningAttendee { 
-        //            Name = "Wouter", 
-        //            LastName = "A", 
-        //            Email = "my@mail.here", 
-        //            EntityVersion = 1, 
-        //            UUID_Nr = Guid.NewGuid().ToString(), 
-        //            Method = MethodEnum.CREATE, 
-        //            Source = SourceEnum.PLANNING, 
-        //            SourceEntityId = "my@mail.here"
-        //        }; 
-
-
-        //        planningAttendeePublisher.Publish(attendee);
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //        Logger.LogError(ex.Message);
-        //        return UnprocessableEntity(ex);
-        //    }
-        //    //var guid = CalendarOptions.CalendarGuid;
-        //}
-
-
-
-
-
-
-
-
 
 
         [HttpPost("AttendeeEventDebug")]
