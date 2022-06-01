@@ -349,7 +349,7 @@ namespace PlanningApi.Controllers
             Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
-            if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+            if (uuidData != null && uuidData.EntityVersion > 0 && uuidData.EntityVersion < planningAttendee.EntityVersion)
             {
                 try
                 {
@@ -366,7 +366,7 @@ namespace PlanningApi.Controllers
             // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
             // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
             // Opletten: dit kan ook de organizer zijn voor de sessie. 
-            else if (uuidData == null)
+            else if (uuidData == null || uuidData.EntityVersion == 0)
             {
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
                 //Of als de dummy al gemaakt is in Google Calendar.
@@ -472,8 +472,8 @@ namespace PlanningApi.Controllers
                             };
                             var nieuweAttendee = new Google.Apis.Calendar.v3.Data.EventAttendee()
                             {
-                                Id = planningSessionAttendee.UUID_Nr,
-                                Comment = planningSessionAttendee.UUID_Nr,
+                                Id = planningSessionAttendee.AttendeeUUID,
+                                Comment = planningSessionAttendee.AttendeeUUID,
                                 DisplayName = "new attendee",
                                 Email = "default@email.val",
                                 ResponseStatus = responseStatus,

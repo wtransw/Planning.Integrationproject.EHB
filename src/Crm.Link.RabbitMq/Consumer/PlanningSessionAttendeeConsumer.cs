@@ -118,7 +118,7 @@ namespace Crm.Link.RabbitMq.Consumer
         }
 
 
-        public async Task HandlePlanningSessionAttendee(PlanningSessionAttendee planningSessionAttendee)
+        public async Task HandlePlanningSessionAttendeeOld(PlanningSessionAttendee planningSessionAttendee)
         {
             sessionAttendeeLogger.LogInformation($"Handling planning Session attendee {planningSessionAttendee.AttendeeUUID}");
             var maxRetries = 10;
@@ -189,6 +189,75 @@ namespace Crm.Link.RabbitMq.Consumer
 
         }
 
+        private async Task HandlePlanningSessionAttendee(PlanningSessionAttendee planningSessionAttendee)
+        {
+            sessionAttendeeLogger.LogInformation($"Handling planning Session attendee {planningSessionAttendee.AttendeeUUID}");
+            var maxRetries = 10;
+
+            //haal de session op (met retries)
+            //update de attendee voor die session, of create hem.
+            for (int i = 0; i < maxRetries; i++)
+            {
+
+                var session = await GoogleCalendarService.GetSession(null, planningSessionAttendee.SessionUUID);
+
+                if (session != null)
+                {
+                    sessionAttendeeLogger.LogInformation($"Sessie {session.Description} gevonden.");
+                    //update 
+                    try
+                    {
+                        //kijk of er in de attendees van de sessie al 1 staat met deze guid, en update hem
+                        var attendee = session.Attendees.FirstOrDefault(a => a.Comment == planningSessionAttendee.AttendeeUUID);
+                        if (attendee != null)
+                        {
+                            attendee.ResponseStatus = planningSessionAttendee.InvitationStatus.ToString();
+                            //await UuidMaster.UpdateEntity(attendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+                        }
+                        else
+                        {
+                            //maak de attendee met default waardes. We vullen nog geen versienummer in in de UUID master. 
+                            //Hierdoor wordt automatisch de rest ingevuld wanneer de attendee van de queue komt. 
+
+                            var responseStatus = (planningSessionAttendee.InvitationStatus.ToString()) switch
+                            {
+                                "PENDING" => "needsAction",
+                                "ACCEPTED" => "accepted",
+                                "DECLINED" => "declined",
+                                _ => "needsAction"
+                            };
+                            var nieuweAttendee = new Google.Apis.Calendar.v3.Data.EventAttendee()
+                            {
+                                Id = planningSessionAttendee.AttendeeUUID,
+                                Comment = planningSessionAttendee.AttendeeUUID,
+                                DisplayName = "new attendee",
+                                Email = "default@email.val",
+                                ResponseStatus = responseStatus,
+                                Organizer = false
+                            };
+
+                            session.Attendees.Add(nieuweAttendee);
+                        }
+
+                        await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
+                        i = maxRetries;
+                    }
+                    catch (Exception ex)
+                    {
+                        sessionAttendeeLogger.LogError($"Error while handling Attendee {planningSessionAttendee.UUID_Nr}: {ex.Message}", ex);
+                        i++;
+                    }
+                }
+
+                // anders 2 minuten wachten, en opnieuw proberen. Eerst moet de sessie aangemaakt worden, en dan pas kunnen we een attendee linken. 
+                else
+                {
+                    sessionAttendeeLogger.LogError($"Sessie {planningSessionAttendee.SessionUUID} niet gevonden. Wacht 2 min en probeer opnieuw.");
+                    await Task.Delay(2 * 60 * 1000);
+                }
+            }
+
 
         }
+    }
     }

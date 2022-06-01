@@ -119,7 +119,7 @@ namespace Crm.Link.RabbitMq.Consumer
             }
         }
 
-        private async Task UpdateAttendeeInGoogleCalendar(PlanningAttendee planningAttendee)
+        private async Task UpdateAttendeeInGoogleCalendarOld(PlanningAttendee planningAttendee)
         {
             var eventAttendee = new EventAttendee()
             {
@@ -134,8 +134,22 @@ namespace Crm.Link.RabbitMq.Consumer
 
 
         }
+        private async Task UpdateAttendeeInGoogleCalendar(PlanningAttendee planningAttendee)
+        {
+            var eventAttendee = new Google.Apis.Calendar.v3.Data.EventAttendee()
+            {
+                Id = planningAttendee.Email,
+                DisplayName = planningAttendee.LastName + planningAttendee.Name,
+                Email = planningAttendee.Email,
+                Comment = planningAttendee.UUID_Nr ?? "",
+                Organizer = planningAttendee.EntityType.ToLower().Contains("org")
+            };
 
-        public async Task HandleAttendee(PlanningAttendee planningAttendee)
+            await GoogleCalendarService.UpdateAttendee(eventAttendee);
+
+        }
+
+        public async Task HandleAttendeeOld(PlanningAttendee planningAttendee)
         {
             var maxRetries = 5;    
             attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
@@ -233,6 +247,84 @@ namespace Crm.Link.RabbitMq.Consumer
 
             ;
         }
+        private async Task HandleAttendee(PlanningAttendee planningAttendee)
+        {
+            var maxRetries = 5;
+            attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
 
+            //Kijken welke versie wij hebben van dit object.
+            //var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+
+            Crm.Link.UUID.Model.ResourceDto uuidData = new();
+
+            //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
+            if (uuidData != null && uuidData.EntityVersion > 0 && uuidData.EntityVersion < planningAttendee.EntityVersion)
+            {
+                try
+                {
+                    await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                    //await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+                }
+                catch (Exception ex)
+                {
+                    attendeeLogger.LogError($"Error while handling Attendee {planningAttendee.Email}: {ex.Message}", ex);
+                }
+            }
+
+
+            // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
+            // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
+            // Opletten: dit kan ook de organizer zijn voor de sessie. 
+            else if (uuidData == null || uuidData.EntityVersion == 0)
+            {
+                //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
+                //Of als de dummy al gemaakt is in Google Calendar.
+
+                for (int i = 0; i < maxRetries; i++)
+                {
+                    //bij create: in google de sessies ophalen, en kijken of ik sessie heb met deze attendee. 
+                    //Dat moet per definitie de dummy zijn, want het is een Create. 
+                    // -> deze aanpassen. 
+
+                    //Als we al een sessionAttendee gekregen hebben vanuit de queue, dan bestaat ie in google calendar, dus kunnen we ook gewoon updaten.
+                    try
+                    {
+                        var dummyAttendee = await GoogleCalendarService.GetAttendeeByUuid(planningAttendee.UUID_Nr);
+                        if (dummyAttendee != null)
+                        {
+                            //if (planningAttendee.EntityType.ToLower().Contains("org"))
+                            //{
+                            //    await CalendarService.CreateOrganizer()
+                            //}
+                            //else
+                            await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                            //await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
+                            i = maxRetries;
+                        }
+                        else
+                        {
+                            //await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
+                            //    uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
+
+                            if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+                            {
+                                await UpdateAttendeeInGoogleCalendar(planningAttendee);
+                                i = maxRetries;
+                            }
+                        }
+
+                        i++;
+                    }
+                    catch (Exception ex)
+                    {
+                        attendeeLogger.LogError($"Error while handling Attendee {planningAttendee.Email}: {ex.Message}", ex);
+                    }
+
+                }
+
+            }
+
+    ;
+        }
     }
 }
