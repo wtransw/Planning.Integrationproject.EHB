@@ -366,7 +366,7 @@ namespace PlanningApi.Controllers
             // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
             // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
             // Opletten: dit kan ook de organizer zijn voor de sessie. 
-            else if (uuidData == null || uuidData.EntityVersion == 0)
+            else if (uuidData == null)
             {
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
                 //Of als de dummy al gemaakt is in Google Calendar.
