@@ -32,18 +32,26 @@ namespace Crm.Link.UUID
 
         public async Task<ResourceDto?> GetGuid(string id, string sourceType, EntityTypeEnum entityType)
         {
-            var response = await _httpClient.GetAsync($"resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
-
-            if (response.StatusCode != HttpStatusCode.OK)
+            try
             {
-                _logger.LogError($"{nameof(GetGuid)} failed: {response.StatusCode}");
+                //var response = await _httpClient.GetAsync($"resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
+                var response = await _httpClient.GetAsync($"api/resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    _logger.LogError($"{nameof(GetGuid)} failed: {response.StatusCode}");
+                    return null;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var resource = JsonConvert.DeserializeObject<ResourceDto>(content);
+
+                return resource;
+            }
+            catch
+            {
                 return null;
             }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceDto>(content);
-
-            return resource;
+            
         }
 
         public async Task<ResourceDto?> PublishEntityFirstMethod(string source, EntityTypeEnum entityType, string sourceEntityId, int version)

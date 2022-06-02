@@ -4,6 +4,7 @@ using CalendarServices.Models.Configuration;
 using Crm.Link.RabbitMq.Common;
 using Crm.Link.RabbitMq.Producer;
 using Crm.Link.UUID;
+using Crm.Link.UUID.Model;
 using Google.Apis.Calendar.v3.Data;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -251,9 +252,11 @@ namespace Crm.Link.RabbitMq.Consumer
         {
             var maxRetries = 20;
             attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
+            ResourceDto uuidData;
 
             //Kijken welke versie wij hebben van dit object.
-            var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+            uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
+
             //Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
 
