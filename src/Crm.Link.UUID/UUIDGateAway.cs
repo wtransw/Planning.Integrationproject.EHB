@@ -93,7 +93,7 @@ namespace Crm.Link.UUID
             }
             else
             {
-                _logger.LogWarning($"Failed: Status code:{resp.StatusCode}: {resp.ReasonPhrase}");
+                _logger.LogWarning($"Failed: Status code:{response.StatusCode}: {response.ReasonPhrase}");
                 return null;
             }
         }

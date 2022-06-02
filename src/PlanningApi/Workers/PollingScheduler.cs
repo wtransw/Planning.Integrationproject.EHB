@@ -143,7 +143,7 @@ public class PollingScheduler : IHostedService
                         session.Description = planningSession.UUID_Nr;
                         await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
 
-                        await UuidMaster.PublishEntityFirstMethod(Guid.Parse(planningSession.UUID_Nr), SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Session, organizerId, 1);
+                        await UuidMaster.PublishEntityFirstMethod(SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Session, sessionId, 1);
                     }
                 }
                 await Task.Delay(60 * 1000);
