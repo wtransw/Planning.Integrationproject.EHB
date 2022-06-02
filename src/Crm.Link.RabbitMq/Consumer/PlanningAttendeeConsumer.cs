@@ -299,6 +299,23 @@ namespace Crm.Link.RabbitMq.Consumer
                             //}
                             //else
                             await UpdateAttendeeInGoogleCalendar(planningAttendee);
+
+                            try
+                            {
+                                //Als er een attendee bestaat met dezelfde description als deze en het dummy email adres, moet deze weg. 
+                                var allsessions = await GoogleCalendarService.GetAllUpcomingSessions(GoogleCalendarService.CalendarGuid);
+                                foreach (var session in allsessions)
+                                {
+                                    session.Attendees = session.Attendees.Where(a => !(a.Comment == planningAttendee.UUID_Nr && a.Email == "default@email.val")).ToList();
+                                    await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                attendeeLogger.LogError($"Error removing placeholder attendee: {ex.Message}");
+                            }
+                            
+
                             //await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
                             await UuidMaster.PublishEntity(Guid.Parse(planningAttendee.UUID_Nr), SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
                             i = maxRetries;

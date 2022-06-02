@@ -237,6 +237,14 @@ namespace Crm.Link.RabbitMq.Consumer
                             };
 
                             session.Attendees.Add(nieuweAttendee);
+                            try
+                            {
+                                await UuidMaster.PublishEntity(Guid.Parse(planningSessionAttendee.AttendeeUUID), SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.SessionAttendee, planningSessionAttendee.UUID_Nr, planningSessionAttendee.EntityVersion);
+                            }
+                            catch (Exception ex)
+                            {
+                                sessionAttendeeLogger.LogError($"Couldn't publish planning session attendee to UUID: {ex.Message}");
+                            }
                         }
 
                         await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
