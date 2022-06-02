@@ -192,7 +192,7 @@ namespace Crm.Link.RabbitMq.Consumer
         private async Task HandlePlanningSessionAttendee(PlanningSessionAttendee planningSessionAttendee)
         {
             sessionAttendeeLogger.LogInformation($"Handling planning Session attendee {planningSessionAttendee.AttendeeUUID}");
-            var maxRetries = 10;
+            var maxRetries = 15;
 
             //haal de session op (met retries)
             //update de attendee voor die session, of create hem.
@@ -260,8 +260,8 @@ namespace Crm.Link.RabbitMq.Consumer
                 // anders 2 minuten wachten, en opnieuw proberen. Eerst moet de sessie aangemaakt worden, en dan pas kunnen we een attendee linken. 
                 else
                 {
-                    sessionAttendeeLogger.LogError($"Sessie {planningSessionAttendee.SessionUUID} niet gevonden. Wacht 2 min en probeer opnieuw.");
-                    await Task.Delay(2 * 60 * 1000); 
+                    sessionAttendeeLogger.LogError($"Sessie {planningSessionAttendee.SessionUUID} niet gevonden. Wacht 30 sec en probeer opnieuw.");
+                    await Task.Delay(30 * 1000); 
                 }
             }
 
