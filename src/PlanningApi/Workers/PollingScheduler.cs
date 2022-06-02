@@ -116,7 +116,7 @@ public class PollingScheduler : IHostedService
                         //}
 
                     }
-                    else if (!ObjectsFound.Contains(session.Description) && !ObjectsFound.Contains(session.Id))
+                    else if (string.IsNullOrEmpty(session.Description) && !ObjectsFound.Contains(session.Id))
                     {
                         //Nieuwe sessie aangemaakt via Calendar.
                         var sessionId = session.Id != null && session.Id.Length >= 32 ? session.Id : Guid.NewGuid().ToString();  
@@ -140,8 +140,12 @@ public class PollingScheduler : IHostedService
                         PlanningSessionPublisher.Publish(planningSession);
 
                         //add the (new) Guid in comment
-                        session.Description = planningSession.UUID_Nr;
-                        await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
+                        if (string.IsNullOrWhiteSpace(session.Description))
+                        {
+                            session.Description = planningSession.UUID_Nr;
+                            await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
+                        }
+
 
                         await UuidMaster.PublishEntityFirstMethod(SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Session, sessionId, 1);
                     }
