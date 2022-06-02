@@ -256,6 +256,7 @@ namespace Crm.Link.RabbitMq.Consumer
             var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
             //Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
+
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
             if (uuidData != null && uuidData.EntityVersion > 0 && uuidData.EntityVersion < planningAttendee.EntityVersion)
             {
@@ -276,6 +277,7 @@ namespace Crm.Link.RabbitMq.Consumer
             // Opletten: dit kan ook de organizer zijn voor de sessie. 
             else if (uuidData == null || uuidData.EntityVersion == 0)
             {
+                attendeeLogger.LogInformation("New Attendee.");
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
                 //Of als de dummy al gemaakt is in Google Calendar.
 
@@ -288,6 +290,7 @@ namespace Crm.Link.RabbitMq.Consumer
                     //Als we al een sessionAttendee gekregen hebben vanuit de queue, dan bestaat ie in google calendar, dus kunnen we ook gewoon updaten.
                     try
                     {
+                        attendeeLogger.LogInformation("Getting dummy Attendee");
                         var dummyAttendee = await GoogleCalendarService.GetAttendeeByUuid(planningAttendee.UUID_Nr);
 
                         if (dummyAttendee != null)
@@ -305,12 +308,19 @@ namespace Crm.Link.RabbitMq.Consumer
                         }
                         else
                         {
-
-                            await Task.Delay(1 * 60 * 1000).ContinueWith(async t =>
-                                    uuidData = await UuidMaster.GetResource(Guid.Parse(planningAttendee.UUID_Nr), SourceEnum.PLANNING.ToString()));
+                            attendeeLogger.LogInformation("Dummy Attendee not found.");
+                            await Task.Delay(1 * 60 * 1000);
+                            try
+                            {
+                                    uuidData = await UuidMaster.GetResource(Guid.Parse(planningAttendee.UUID_Nr), SourceEnum.PLANNING.ToString());
                                     //uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
+                            }
+                            catch (Exception ex)
+                            {
+                                attendeeLogger.LogError("error while consulting uuid master: {tiskapot}", ex.Message);
+                            }
 
-                            if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
+                            if (uuidData != null && uuidData.EntityVersion <= planningAttendee.EntityVersion)
                             {
                                 attendeeLogger.LogInformation($"Adding planning attendee {planningAttendee.Email} to event");
                                 await UpdateAttendeeInGoogleCalendar(planningAttendee);
