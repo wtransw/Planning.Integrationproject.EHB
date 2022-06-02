@@ -14,7 +14,7 @@ public class PollingScheduler : IHostedService
     private readonly PlanningAttendeePublisher PlanningAttendeePublisher;
     private readonly PlanningSessionPublisher PlanningSessionPublisher;
     private readonly PlanningSessionAttendeePublisher PlanningSessionAttendeePublisher;
-    private List<>
+    private List<string> ObjectsFound = new List<string>();
 
     public PollingScheduler(
         ILogger<PollingScheduler> logger,
@@ -116,7 +116,7 @@ public class PollingScheduler : IHostedService
                         //}
 
                     }
-                    else
+                    else if (!ObjectsFound.Contains(session.Description) && !ObjectsFound.Contains(session.Id))
                     {
                         //Nieuwe sessie aangemaakt via Calendar.
                         var sessionId = session.Id != null && session.Id.Length >= 32 ? session.Id : Guid.NewGuid().ToString();  
@@ -135,6 +135,7 @@ public class PollingScheduler : IHostedService
                             Source = SourceEnum.PLANNING,
                             UUID_Nr = sessionId,
                         };
+                        ObjectsFound.Add(sessionId);
 
                         PlanningSessionPublisher.Publish(planningSession);
 
