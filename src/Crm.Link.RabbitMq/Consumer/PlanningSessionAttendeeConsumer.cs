@@ -253,7 +253,7 @@ namespace Crm.Link.RabbitMq.Consumer
                 else
                 {
                     sessionAttendeeLogger.LogError($"Sessie {planningSessionAttendee.SessionUUID} niet gevonden. Wacht 2 min en probeer opnieuw.");
-                    await Task.Delay(2 * 60 * 1000);
+                    await Task.Delay(2 * 60 * 1000); 
                 }
             }
 
