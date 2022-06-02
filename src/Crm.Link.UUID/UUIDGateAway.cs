@@ -46,29 +46,29 @@ namespace Crm.Link.UUID
             return resource;
         }
 
-        //public async Task<ResourceDto?> PublishEntity(string source, EntityTypeEnum entityType, string sourceEntityId, int version)
-        //{
-        //    var body = new
-        //    {
-        //        Source = source,
-        //        EntityType = entityType.ToString(),
-        //        SourceEntityId = sourceEntityId,
-        //        EntityVersion = version
-        //    };
+        public async Task<ResourceDto?> PublishEntityFirstMethod(string source, EntityTypeEnum entityType, string sourceEntityId, int version)
+        {
+            var body = new
+            {
+                Source = source,
+                EntityType = entityType.ToString(),
+                SourceEntityId = sourceEntityId,
+                EntityVersion = version
+            };
 
-        //    var json = JsonConvert.SerializeObject(body);
-        //    var contentBody = new StringContent(json, Encoding.UTF8, Application.Json);
-        //    var response = await _httpClient.PostAsync("resources", contentBody);
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var content = await response.Content.ReadAsStringAsync();
-        //        return JsonConvert.DeserializeObject<ResourceDto>(content);
-        //    }
-        //    else
-        //    {
-        //        return null;
-        //    }
-        //}
+            var json = JsonConvert.SerializeObject(body);
+            var contentBody = new StringContent(json, Encoding.UTF8, Application.Json);
+            var response = await _httpClient.PostAsync("resources", contentBody);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ResourceDto>(content);
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         public async Task<ResourceDto?> PublishEntity(Guid uuid, string source, EntityTypeEnum entityType, string sourceEntityId, int version)
         {
