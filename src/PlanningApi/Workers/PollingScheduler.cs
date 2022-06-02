@@ -14,6 +14,7 @@ public class PollingScheduler : IHostedService
     private readonly PlanningAttendeePublisher PlanningAttendeePublisher;
     private readonly PlanningSessionPublisher PlanningSessionPublisher;
     private readonly PlanningSessionAttendeePublisher PlanningSessionAttendeePublisher;
+    private List<>
 
     public PollingScheduler(
         ILogger<PollingScheduler> logger,
@@ -56,11 +57,11 @@ public class PollingScheduler : IHostedService
                         var currentVersionNumber = uuidResource.EntityVersion;
 
                         //Kijken of er attendees bijgekomen zijn. Attendees die niet komen moeten gewoon hun invitationstatus veranderen. 
-                        
+
                         //foreach (var attendee in session.Attendees)
                         //{
                         //    var attendeeUuid = await UuidMaster.GetGuid(attendee.Email, SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Attendee);
-                            
+
                         //    //Nieuwe Attendee
                         //    if (attendeeUuid == null)
                         //    { 
@@ -109,6 +110,8 @@ public class PollingScheduler : IHostedService
                         //        PlanningAttendeePublisher.Publish(newAttendee);
                         //        PlanningSessionAttendeePublisher.Publish(newSessionAttendee);
 
+                        //        session.Description = planningSession.UUID_Nr;
+                        //        await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
                         //    }
                         //}
 
@@ -134,6 +137,10 @@ public class PollingScheduler : IHostedService
                         };
 
                         PlanningSessionPublisher.Publish(planningSession);
+
+                        //add the (new) Guid in comment
+                        session.Description = planningSession.UUID_Nr;
+                        await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
                     }
                 }
                 await Task.Delay(60 * 1000);
