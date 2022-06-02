@@ -11,7 +11,7 @@ namespace Crm.Link.UUID.Model
         public Guid Uuid { get; set; }
         public string Source { get; set; } = string.Empty;
         public string EntityType { get; set; } = string.Empty;
-        public int SourceEntityId { get; set; }
+        public string SourceEntityId { get; set; } = string.Empty;
         public int EntityVersion { get; set; }
     }
 }
