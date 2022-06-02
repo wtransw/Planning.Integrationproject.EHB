@@ -82,6 +82,8 @@ namespace Crm.Link.UUID
             };
 
             var json = JsonConvert.SerializeObject(body);
+            _logger.LogInformation($"Publish Json on UUID Master: {json}");
+
             var contentBody = new StringContent(json, Encoding.UTF8, Application.Json);
             var response = await _httpClient.PostAsync($"api/resources/{uuid}", contentBody);
             if (response.IsSuccessStatusCode)
@@ -91,6 +93,7 @@ namespace Crm.Link.UUID
             }
             else
             {
+                _logger.LogWarning($"Failed: Status code:{resp.StatusCode}: {resp.ReasonPhrase}");
                 return null;
             }
         }
@@ -110,6 +113,8 @@ namespace Crm.Link.UUID
             };
 
             var json = JsonConvert.SerializeObject(body);
+            _logger.LogInformation($"Publish Json on UUID Master: {json}");
+
             var contentBody = new StringContent(json, Encoding.UTF8, Application.Json);
             var resp = await _httpClient.PatchAsync($"resources/{response.Uuid}", contentBody);
             if (resp.IsSuccessStatusCode)
@@ -119,6 +124,7 @@ namespace Crm.Link.UUID
             }
             else
             {
+                _logger.LogWarning($"Failed: Status code:{resp.StatusCode}: {resp.ReasonPhrase}");
                 return null;
             }
         }
