@@ -47,11 +47,11 @@ namespace Crm.Link.UUID
 
                 return resource;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"{nameof(GetGuid)} failed: {ex.Message}");
                 return null;
             }
-            
         }
 
         public async Task<ResourceDto?> PublishEntityFirstMethod(string source, EntityTypeEnum entityType, string sourceEntityId, int version)

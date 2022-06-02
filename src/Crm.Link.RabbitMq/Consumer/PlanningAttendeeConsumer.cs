@@ -150,104 +150,6 @@ namespace Crm.Link.RabbitMq.Consumer
 
         }
 
-        //public async Task HandleAttendeeOld(PlanningAttendee planningAttendee)
-        //{
-        //    var maxRetries = 5;    
-        //    attendeeLogger.LogInformation($"Handling planning attendee {planningAttendee.Email}");
-        //    var allInfo = planningAttendee.Source + " " + planningAttendee.Email + " " + planningAttendee.Name + " " + planningAttendee.LastName + " " +
-        //        planningAttendee.EntityVersion + " " + planningAttendee.EntityType + " " + planningAttendee.SourceEntityId;
-        //    attendeeLogger.LogInformation("[DEBUG]: " + allInfo);
-
-        //    //Kijken welke versie wij hebben van dit object.
-        //    var uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
-
-            
-        //    //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
-        //    if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
-        //    {
-        //        try
-        //        {
-        //            await UpdateAttendeeInGoogleCalendar(planningAttendee);
-        //            await UuidMaster.UpdateEntity(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            attendeeLogger.LogError($"Error while handling Attendee {planningAttendee.Email}: {ex.Message}", ex);
-        //        }
-        //    }
-
-
-        //    // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
-        //    // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
-        //    // Opletten: dit kan ook de organizer zijn voor de sessie. 
-        //    else if (uuidData == null)
-        //    {
-        //        //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
-        //        //Of als de dummy al gemaakt is in Google Calendar.
-
-        //        for (int i = 0; i < maxRetries; i++)
-        //        {
-        //            //bij create: in google de sessies ophalen, en kijken of ik sessie heb met deze attendee. 
-        //            //Dat moet per definitie de dummy zijn, want het is een Create. 
-        //            // -> deze aanpassen. 
-
-        //            //Als we al een sessionAttendee gekregen hebben vanuit de queue, dan bestaat ie in google calendar, dus kunnen we ook gewoon updaten.
-        //            try
-        //            {
-        //                var dummyAttendee = await GoogleCalendarService.GetAttendeeByUuid(planningAttendee.UUID_Nr);
-        //                if (dummyAttendee != null)
-        //                {
-        //                    await UpdateAttendeeInGoogleCalendar(planningAttendee);
-        //                    await UuidMaster.PublishEntity(SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee, planningAttendee.Email, planningAttendee.EntityVersion);
-        //                    i = maxRetries;
-        //                }
-        //                else
-        //                {
-        //                    await Task.Delay(5 * 60 * 1000).ContinueWith(async t =>
-        //                        uuidData = await UuidMaster.GetGuid(planningAttendee.Email, SourceEnum.PLANNING.ToString(), UUID.Model.EntityTypeEnum.Attendee));
-
-        //                    if (uuidData != null && uuidData.EntityVersion < planningAttendee.EntityVersion)
-        //                    {
-        //                        await UpdateAttendeeInGoogleCalendar(planningAttendee);
-        //                        i = maxRetries;
-        //                    }
-        //                }
-
-        //                i++;
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                attendeeLogger.LogError($"Error while handling Attendee {planningAttendee.Email}: {ex.Message}", ex);
-        //            }
-
-        //        }
-
-        //    }
-
-
-
-
-        //    //de attendee die je hier binnen krijgt heeft ook een versienummer, bijvoorbeeld 4.
-        //    //je moet op de UUID master gaan zoeken naar die zelfde Attendee, en in de search meegeven dat je die van planning wilt (SourceType.Planning).
-
-        //    //verbind met de UUID master API, /search met de parameters meegegeven (entitytype, enum sourcetype, ...)
-        //    // EntityType is een string (waarschijnlijk "AttendeeEvent" zoals de base van de XML,
-        //    // maar je zult kunnen zien wat er al bestaat met /get
-
-        //    // Als versienummer van die op 3 staat, dan weet je dat we hem moeten updaten in google Calendar.
-
-        //    //maak een google attendee
-        //    // Haal eerst de onze op, en update hem dan. De EventGuid haal je uit de onze. 
-        //    //var sessieVanOnzeAttendee = CalendarService.GetSession(null, "eventId van de onze");
-
-        //    //Misschien nog beter: maak een methode GetAttendeeByEmail in GoogleCalendarService, en vraag hem zo op.
-        //    // of je kan direct een UpdateAttendeeWithEmail maken die kijkt op email.
-
-        //    //als ie niet bestaat doe je een create, anders een update.
-
-
-        //    ;
-        //}
         private async Task HandleAttendee(PlanningAttendee planningAttendee)
         {
             var maxRetries = 20;
@@ -280,7 +182,7 @@ namespace Crm.Link.RabbitMq.Consumer
             // Opletten: dit kan ook de organizer zijn voor de sessie. 
             else if (uuidData == null || uuidData.EntityVersion == 0)
             {
-                attendeeLogger.LogInformation("New Attendee.");
+                attendeeLogger.LogInformation("New Attendee!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ¯\\_(ツ)_/¯  ");
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
                 //Of als de dummy al gemaakt is in Google Calendar.
 
