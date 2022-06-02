@@ -130,7 +130,7 @@ public class PollingScheduler : IHostedService
                             IsActive = true,
                             EntityVersion = 1,
                             Method = MethodEnum.CREATE,
-                            OrganiserUUID = sessionId,
+                            OrganiserUUID = organizerId,
                             SourceEntityId = sessionId,
                             Source = SourceEnum.PLANNING,
                             UUID_Nr = sessionId,
@@ -142,6 +142,8 @@ public class PollingScheduler : IHostedService
                         //add the (new) Guid in comment
                         session.Description = planningSession.UUID_Nr;
                         await GoogleCalendarService.UpdateSession(GoogleCalendarService.CalendarGuid, session);
+
+                        await UuidMaster.PublishEntity(Guid.Parse(planningSession.UUID_Nr), SourceEnum.PLANNING.ToString(), Crm.Link.UUID.Model.EntityTypeEnum.Session, organizerId, 1);
                     }
                 }
                 await Task.Delay(60 * 1000);
