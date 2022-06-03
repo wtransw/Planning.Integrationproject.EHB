@@ -200,21 +200,30 @@ namespace CalendarServices
 
         public async Task<EventAttendee> UpdateAttendee(EventAttendee attendee)
         {
-            //attendee.Id ??= Guid.NewGuid().ToString();
-            var allSessions = await this.GetAllUpcomingSessions(CalendarId);
-            var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => 
-                                                            (y.Id == attendee.Id && !string.IsNullOrEmpty(attendee.Id)) || 
-                                                            ((y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val") ||
-                                                            y.Comment == attendee.Comment
-                                                    )).ToList();
-            foreach (var session in sessionsWithThisAttendee)
+            try
             {
-                session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();
-                session.Attendees.Add(attendee);
-                var updateSession = await UpdateSession(CalendarId, session);
-                ;
+                //attendee.Id ??= Guid.NewGuid().ToString();
+                var allSessions = await this.GetAllUpcomingSessions(CalendarId);
+                var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => 
+                                                                (y.Id == attendee.Id && !string.IsNullOrEmpty(attendee.Id)) || 
+                                                                ((y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val") ||
+                                                                y.Comment.ToLower().Contains(attendee.Comment.ToLower()) ||
+                                                                y.Comment.ToLower().Contains(attendee.Id .ToLower())
+                                                        )).ToList();
+
+                foreach (var session in sessionsWithThisAttendee)
+                {
+                    session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();
+                    session.Attendees.Add(attendee);
+                    var updateSession = await UpdateSession(CalendarId, session);
+                    ;
+                }
+                return attendee;
             }
-            return attendee;
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<Event> UpdateSession(string calendarGuid, Event session)
