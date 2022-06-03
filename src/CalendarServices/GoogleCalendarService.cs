@@ -204,19 +204,21 @@ namespace CalendarServices
             {
                 //attendee.Id ??= Guid.NewGuid().ToString();
                 var allSessions = await this.GetAllUpcomingSessions(CalendarId);
-                var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => 
-                                                                (y.Id == attendee.Id && !string.IsNullOrEmpty(attendee.Id)) || 
-                                                                ((y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val") ||
-                                                                y.Comment.ToLower().Contains(attendee.Comment.ToLower()) ||
-                                                                y.Comment.ToLower().Contains(attendee.Id .ToLower())
-                                                        )).ToList();
+                //var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => 
+                //                                                (y.Id == attendee.Id && !string.IsNullOrEmpty(attendee.Id)) || 
+                //                                                ((y.Email.ToLower() == attendee.Email.ToLower()) && y.Email.ToLower() != "default@email.val") ||
+                //                                                y.Comment.ToLower().Contains(attendee.Comment.ToLower()) ||
+                //                                                y.Comment.ToLower().Contains(attendee.Id .ToLower())
+                //                                        )).ToList();
+
+                var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Comment.ToLower().Contains(attendee.Comment.ToLower()))).ToList();
 
                 foreach (var session in sessionsWithThisAttendee)
                 {
-                    session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower()).ToList();
+                    //session.Attendees = session.Attendees.Where(x => x.Id != attendee.Id && x.Email.ToLower() != attendee.Email.ToLower())   .ToList();
+                    session.Attendees = session.Attendees.Where(x => x.Comment == null || !x.Comment.Contains(attendee.Comment.ToLower())).ToList() ;
                     session.Attendees.Add(attendee);
                     var updateSession = await UpdateSession(CalendarId, session);
-                    ;
                 }
                 return attendee;
             }
