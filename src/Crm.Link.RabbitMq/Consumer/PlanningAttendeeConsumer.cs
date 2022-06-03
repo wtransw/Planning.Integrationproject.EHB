@@ -145,9 +145,14 @@ namespace Crm.Link.RabbitMq.Consumer
                 Comment = planningAttendee.UUID_Nr ?? "",
                 Organizer = planningAttendee.EntityType.ToLower().Contains("org")
             };
-
-            await GoogleCalendarService.UpdateAttendee(eventAttendee);
-
+            try
+            {
+                await GoogleCalendarService.UpdateAttendee(eventAttendee);
+            }
+            catch (Exception ex)
+            {
+                attendeeLogger.LogError("Update Attendee failed: {error}", ex.Message);
+            }
         }
 
         private async Task HandleAttendee(PlanningAttendee planningAttendee)
@@ -229,7 +234,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
                             if (uuidData != null && uuidData.EntityVersion <= planningAttendee.EntityVersion)
                             {
-                                attendeeLogger.LogInformation($"Adding planning attendee {planningAttendee.Email} to event");
+                                attendeeLogger.LogInformation($"Adding planning attendee {planningAttendee.Email} {planningAttendee.UUID_Nr} to event");
                                 await UpdateAttendeeInGoogleCalendar(planningAttendee);
                                 i = maxRetries;
                             }
