@@ -161,6 +161,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
             //Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
+            attendeeLogger.LogInformation($"Na ophalen uuid data...");
 
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
             if (uuidData != null && uuidData.EntityVersion > 0 && uuidData.EntityVersion < planningAttendee.EntityVersion)
@@ -180,7 +181,8 @@ namespace Crm.Link.RabbitMq.Consumer
             // We krijgen een Attendee binnen die nog niet bestaat. We kunnen enkel een attendee toevoegen als we ook een sessie hebben waarin deze bestaat. 
             // We wachten tot er een sessie bestaat met deze attendee er in, en voegen hem dan toe.
             // Opletten: dit kan ook de organizer zijn voor de sessie. 
-            else if (uuidData == null || uuidData.EntityVersion == 0)
+
+            else //if (uuidData == null || uuidData.EntityVersion == 0)
             {
                 attendeeLogger.LogInformation("New Attendee!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ¯\\_(ツ)_/¯  ");
                 //create attendee ALS er een sessionattendee voor dit object bestaat, eventueel met een retry over paar min? 
