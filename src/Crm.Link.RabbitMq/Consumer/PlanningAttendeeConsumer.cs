@@ -161,6 +161,7 @@ namespace Crm.Link.RabbitMq.Consumer
 
             //Crm.Link.UUID.Model.ResourceDto uuidData = new();
 
+            attendeeLogger.LogInformation($"Na ophalen uuid data...");
 
             //enkel afhandelen als de versienummer hoger is dan wat al bestond. 
             if (uuidData != null && uuidData.EntityVersion > 0 && uuidData.EntityVersion < planningAttendee.EntityVersion)
