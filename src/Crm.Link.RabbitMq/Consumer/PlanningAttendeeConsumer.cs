@@ -151,7 +151,7 @@ namespace Crm.Link.RabbitMq.Consumer
             }
             catch (Exception ex)
             {
-                attendeeLogger.LogError("Update Attendee failed: {error}", ex.Message);
+                attendeeLogger.LogError("Update Attendee failed: {error}", ex);
             }
         }
 
