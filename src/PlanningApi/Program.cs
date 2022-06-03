@@ -8,8 +8,10 @@ using PlanningApi.Configuration.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using CalendarServices.Models.Configuration;
 using Crm.Link.UUID.Configuration;
+using PlanningApi.Workers;
 
 Logger logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+
 logger.Debug("Booting Planning API");
 
 try
@@ -33,7 +35,8 @@ try
 
     // configuration rabbitmq
     builder.Services.StartConsumers(builder.Configuration.GetConnectionString("RabbitMq"));
-    builder.Services.AddPublisher();
+    builder.Services.AddPublishers();
+    builder.Services.AddHostedService<PollingScheduler>();
     var calendarSection = builder.Configuration.GetSection(CalendarOptions.SectionName);
     builder.Services.AddSingleton<ICalendarOptions>(provider =>
         new CalendarOptions()

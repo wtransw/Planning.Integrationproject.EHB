@@ -16,8 +16,9 @@ namespace Crm.Link.RabbitMq.Configuration
                 var uri = new Uri(connectionstring);
                 return new ConnectionFactory
                 {
-                    Uri = uri,
+                    //Uri = uri,
                     DispatchConsumersAsync = true,
+                    HostName = "rabbitmq"
                 };
             });
 
@@ -30,9 +31,8 @@ namespace Crm.Link.RabbitMq.Configuration
             return services;
         }
 
-        public static IServiceCollection AddPublisher(this IServiceCollection services)
+        public static IServiceCollection AddPublishers(this IServiceCollection services)
         {
-            //planning models
             services.AddSingleton<PlanningAttendeePublisher>();
             services.AddSingleton<PlanningSessionAttendeePublisher>();
             services.AddSingleton<PlanningSessionPublisher>();

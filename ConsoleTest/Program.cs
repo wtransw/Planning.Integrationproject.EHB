@@ -72,7 +72,13 @@ class Program
         //    Console.WriteLine("Credential file saved to: " + credPath);
         //}
 
-        
+        ;
+
+        //2022-06-02: 
+        // access   "ya29.a0ARrdaM9OMsZtcvtL76okOs6Cr7hU0C775AyQ2zhvxwQ8MwPDpjADMoYOWNUB-wWKAc_CO-auoxdH3tWGXnIHmsA5ah76kTOQnrHQZ3WanykLCgKFwxW1XB_4Eo-CCcNyOhS7DqCoGy50QFJVbMG8xI8YpITd"
+        // refresh   "1//038-s64GKy2Y7CgYIARAAGAMSNwF-L9IrRRSKlairFE95fI8zj-baK3aZyFqlgMy7CPqCw3cNxGVxNCWtF3Y5LMrsT3oBmMQUSEc"
+
+
 
         /*	"access_token": "ya29.A0ARrdaM-yXDGRhX1odkuwY7QyptjBTFQA-9H1J335DYH-LfmFGvwCKLjNhz6VXCqRIJ6vukNU1eD1omzpVoFNLZ9ScdNe4BAuwzOu9cmHsCgkhSLKKv8R03t6ASSFNDgWMN2anpBQUrwHxN1UbDtOfHTygiB9",
 	"token_type": "Bearer",
@@ -121,31 +127,31 @@ class Program
         };
         try
         {
-            ;
-            Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
-            ;
+            //;
+            //Google.GData.Client.OAuthUtil.RefreshAccessToken(parameters);
+            //;
 
-            var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
-            {
-                ClientSecrets = new ClientSecrets
-                {
-                    ClientId = parameters.ClientId,
-                    ClientSecret = parameters.ClientSecret,
-                },
-                Scopes = Scopes,
-                DataStore = new FileDataStore("Store")
-            });
+            //var flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+            //{
+            //    ClientSecrets = new ClientSecrets
+            //    {
+            //        ClientId = parameters.ClientId,
+            //        ClientSecret = parameters.ClientSecret,
+            //    },
+            //    Scopes = Scopes,
+            //    DataStore = new FileDataStore("Store")
+            //});
 
-            var token = new TokenResponse
-            {
-                AccessToken = parameters.AccessToken,
-                RefreshToken = parameters.RefreshToken
-            };
+            //var token = new TokenResponse
+            //{
+            //    AccessToken = parameters.AccessToken,
+            //    RefreshToken = parameters.RefreshToken
+            //};
 
-            credential = new UserCredential(flow, Environment.UserName, token);
+            //credential = new UserCredential(flow, Environment.UserName, token);
 
 
-            //using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            //using (var stream = new FileStream("credentialss.json", FileMode.Open, FileAccess.Read))
             //{
             //    // The file token.json stores the user's access and refresh tokens, and is created
             //    // automatically when the authorization flow completes for the first time.
@@ -153,9 +159,12 @@ class Program
 
             //    var googleClientSecrets = GoogleClientSecrets.FromFile("credentials.json");
             //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(googleClientSecrets.Secrets, Scopes, "user", CancellationToken.None).GetAwaiter().GetResult();
-
-            //Thread.Sleep(3000);
+            //    ; ;
+            //    Thread.Sleep(3000);
             //}
+            //;
+
+            //HandleAttendee();
 
         }
         catch (Exception ex)
@@ -174,10 +183,11 @@ class Program
             ApplicationName = ApplicationName,
         });
 
-        var newEvent = new Event()
+        var newEventKerst = new Event()
         {
             Summary = "Kersttrip 2022",
-            Location = "Koln",
+            //Location = "Koln",
+            Location = "Brussel",
             Description = "Shoppen met gluhwein",
             Start = new EventDateTime()
             {
@@ -213,6 +223,51 @@ class Program
             }
         };
 
+        /*
+         * <SessionEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	            <UUID_Nr>12345678901234567890123456789012</UUID_Nr>
+	            <SourceEntityId>testUuid</SourceEntityId>
+	            <EntityType>SessionEvent</EntityType>
+	            <EntityVersion>2</EntityVersion>
+	            <Source>PLANNING</Source>
+	            <Method>UPDATE</Method>
+	            <Title>eerste sessie</Title>
+	            <StartDateUTC>2022-12-01T00:00:00</StartDateUTC>
+	            <EndDateUTC>2022-12-02T00:00:00</EndDateUTC>
+	            <OrganiserUUID>12345678901234567890123456789012</OrganiserUUID>
+	            <IsActive>true</IsActive>
+            </SessionEvent>
+         * */
+
+
+        var sessieMetJeremy = new Event()
+        {
+            Description = "eerste sessie",
+            Start = new EventDateTime()
+            {
+                //Date = planningSession.EndDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = DateTime.Parse("2022-12-01T00:00:00"),
+                TimeZone = "Europe/Zurich"
+            },
+            End = new EventDateTime()
+            {
+                //Date = planningSession.StartDateUTC.ToString("yyyy-mm-dd"),
+                DateTime = DateTime.Parse("2022-12-02T00:00:00"),
+                TimeZone = "Europe/Zurich"
+            },
+            Summary = "12345678901234567890123456789012",
+            Location = "Brussel",
+            //Attendees = new List<EventAttendee>()
+            Attendees = new EventAttendee[] {
+                                new EventAttendee
+                                {
+                                    Email = "dummy@default.com",
+                                    DisplayName = "Organizer",
+                                    ResponseStatus = "accepted",
+                                    Organizer = true                //bij ons de spreker
+                                }
+                            }
+        };
 
         try
         {
@@ -261,36 +316,51 @@ class Program
             Thread.Sleep(10000);
             */
 
-            var elfMeiEvent = new Event
-            {
-                Summary = "Elf Mei",
-                Location = "Verrassing",
-                Description = "Wortelen planten",
-                Start = new EventDateTime()
-                {
-                    DateTime = DateTime.Parse("2022-05-11T08:00:00-07:00"),
-                    TimeZone = "Europe/Zurich"
-                },
-                End = new EventDateTime()
-                {
-                    DateTime = DateTime.Parse("2022-05-11T17:00:00-07:00"),
-                    TimeZone = "Europe/Zurich"
-                }
-            };
-            /*
-            EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, elfMeiEvent, CalendarId);
-            Event response = request.Execute();
 
-            Thread.Sleep(5000);
+            
+
+
+
+
+
+
+
+
+
+
+
+
+            //var elfMeiEvent = new Event
+            //{
+            //    Summary = "Elf Mei",
+            //    Location = "Verrassing",
+            //    Description = "Wortelen planten",
+            //    Start = new EventDateTime()
+            //    {
+            //        DateTime = DateTime.Parse("2022-05-11T08:00:00-07:00"),
+            //        TimeZone = "Europe/Zurich"
+            //    },
+            //    End = new EventDateTime()
+            //    {
+            //        DateTime = DateTime.Parse("2022-05-11T17:00:00-07:00"),
+            //        TimeZone = "Europe/Zurich"
+            //    }
+            //};
+
+            //EventsResource.InsertRequest request = new EventsResource.InsertRequest(service, sessieMetJeremy, CalendarId);
+            //Event response = request.Execute();
+
+            //Thread.Sleep(5000);
 
             var _ = ShowEvents(service).ConfigureAwait(false);
-            
+
             ;
 
 
-            Thread.Sleep(10000);
-            */
-         testAttendeeXml();
+            Thread.Sleep(120 * 1000);
+            ;
+
+            //testAttendeeXml();
         }
         catch (Exception ex)
         {
@@ -339,11 +409,24 @@ class Program
 
         // List events.
         Events events = request.Execute();
+
+
         Console.WriteLine("Upcoming events:");
         if (events.Items != null && events.Items.Count > 0)
         {
             foreach (var eventItem in events.Items)
             {
+                if (eventItem.Start.DateTime > DateTime.Now)
+                {
+                    var deleterequest = service.Events.Delete("primary", eventItem.Id);
+                    _ = request.Execute();
+                }
+
+                Console.WriteLine("deleted all");
+                ;
+
+
+
                 Console.WriteLine($"{Environment.NewLine} -= EVENT =-");
                 string when = eventItem.Start.DateTime.ToString();
                 if (String.IsNullOrEmpty(when))
@@ -458,11 +541,12 @@ class Program
         //return attendee is not null ? (attendee.Name ?? "Doe" + attendee.LastName ?? "John") : "";
     }
 
-    static async void HandleAttendee(PlanningAttendee attendee)
+    //static async void HandleAttendee(PlanningAttendee attendee)
+    static async void HandleAttendee()
     {
         try
         {
-            Console.WriteLine(Environment.NewLine + "Getting attendee with email " + attendee.Email);
+            //Console.WriteLine(Environment.NewLine + "Getting attendee with email " + attendee.Email);
             var gcal = new GoogleCalendarService(service);
 
             var calOptions = new CalendarOptions()
@@ -479,29 +563,27 @@ class Program
             };
             await gcal.CreateCalendarService(calOptions);
 
-            var allSessions = await gcal.GetAllUpcomingSessions(gcal.CalendarGuid);
+            //var allSessions = await gcal.GetAllUpcomingSessions(gcal.CalendarGuid);
 
-            var firstSession = allSessions.FirstOrDefault();
-            var legeAttendee = new EventAttendee() { Email = "Rogekepateeke@rogeke.com", DisplayName = "Geen idee wat mijn naam is." };
+            //var firstSession = allSessions.FirstOrDefault();
+            //var legeAttendee = new EventAttendee() { Email = "Rogekepateeke@rogeke.com", DisplayName = "Geen idee wat mijn naam is." };
 
-            if (firstSession != null)
-                await gcal.AddAttendeeToSessionAsync(firstSession.Id, legeAttendee);
-
-
-            ;
+            //if (firstSession != null)
+            //    await gcal.AddAttendeeToSessionAsync(firstSession.Id, legeAttendee);
 
 
 
-            var attendeeUitGoogleCalendar = await gcal.GetAttendeeByEmail(attendee.Email);
 
-            //updaten wat we moeten updaten, bijvoorbeeld zijn naam
-            if (attendeeUitGoogleCalendar is not null)
-            {
-                attendeeUitGoogleCalendar.DisplayName = attendee.LastName + attendee.Name;
-                //attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
+            //var attendeeUitGoogleCalendar = await gcal.GetAttendeeByEmail(attendee.Email);
 
-                await gcal.UpdateAttendee(attendeeUitGoogleCalendar);
-            }
+            ////updaten wat we moeten updaten, bijvoorbeeld zijn naam
+            //if (attendeeUitGoogleCalendar is not null)
+            //{
+            //    attendeeUitGoogleCalendar.DisplayName = attendee.LastName + attendee.Name;
+            //    //attendeeUitGoogleCalendar.Comment = attendee.VatNumber;
+
+            //    await gcal.UpdateAttendee(attendeeUitGoogleCalendar);
+            //}
 
 
         }

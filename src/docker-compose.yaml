@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  planning:
+    depends_on: # Not possible to depend on service defined in other file.
+      # - wordpress
+      - rabbitmq # Not possible to depend on service defined in other file.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports: # replace by expose
+      - "6002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - uuidmasterapi
+      - rabbitmq
+      - planning
+
+networks:
+  #frontend:
+  #  name: frontend
+  #  driver: bridge
+  #rabbitmq:
+  #  external: true 
+  #uuidmasterapi:
+  #  external: true
+  planning:
+    name: planning
+    driver: bridge
+  uuidmasterapi:
+    name: uuidmasterapi
+    driver: bridge
+  rabbitmq:
+    name: rabbitmq
+    driver: bridge
+
+
+

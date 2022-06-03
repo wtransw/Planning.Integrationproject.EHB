@@ -18,24 +18,43 @@ namespace Crm.Link.UUID
             _logger = logger;
         }
 
+        public async Task<ResourceDto?> GetResource(Guid id, string source)
+        {
+            var response = await _httpClient.GetAsync($"api/resources/{id}/{source}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+            var content = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(content))
+                return null;
+
+            return JsonConvert.DeserializeObject<ResourceDto>(content);
+        }
 
         public async Task<ResourceDto?> GetGuid(string id, string sourceType, EntityTypeEnum entityType)
         {
-            var response = await _httpClient.GetAsync($"resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
-
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            try
             {
-                _logger.LogError($"{nameof(GetGuid)} failed: {response.StatusCode}");
+                //var response = await _httpClient.GetAsync($"resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
+                var response = await _httpClient.GetAsync($"api/resources/search?source={sourceType}&entityType={entityType}&sourceEntityId={id}");
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    _logger.LogError($"{nameof(GetGuid)} failed: {response.StatusCode}");
+                    return null;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var resource = JsonConvert.DeserializeObject<ResourceDto>(content);
+
+                return resource;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(GetGuid)} failed: {ex.Message}");
                 return null;
             }
-
-            var content = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceDto>(content);
-
-            return resource;
         }
 
-        public async Task<ResourceDto?> PublishEntity(string source, EntityTypeEnum entityType, string sourceEntityId, int version)
+        public async Task<ResourceDto?> PublishEntityFirstMethod(string source, EntityTypeEnum entityType, string sourceEntityId, int version)
         {
             var body = new
             {
@@ -59,6 +78,35 @@ namespace Crm.Link.UUID
             }
         }
 
+        public async Task<ResourceDto?> PublishEntity(Guid uuid, string source, EntityTypeEnum entityType, string sourceEntityId, int version)
+        {
+            var body = new
+            {
+                Uuid = uuid,
+                Source = source,
+                EntityType = entityType.ToString(),
+                SourceEntityId = sourceEntityId,
+                EntityVersion = version
+            };
+
+            var json = JsonConvert.SerializeObject(body);
+            _logger.LogInformation($"Publish Json on UUID Master: {json}");
+
+            var contentBody = new StringContent(json, Encoding.UTF8, Application.Json);
+            var response = await _httpClient.PostAsync($"api/resources/{uuid}", contentBody);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ResourceDto>(content);
+            }
+            else
+            {
+                _logger.LogWarning($"Failed: Status code:{response.StatusCode}: {response.ReasonPhrase}");
+                return null;
+            }
+        }
+
+
         public async Task<ResourceDto?> UpdateEntity(string id, string sourceType, EntityTypeEnum entityType)
         {
             var response = await GetGuid(id, sourceType, entityType);
@@ -73,6 +121,8 @@ namespace Crm.Link.UUID
             };
 
             var json = JsonConvert.SerializeObject(body);
+            _logger.LogInformation($"Publish Json on UUID Master: {json}");
+
             var contentBody = new StringContent(json, Encoding.UTF8, Application.Json);
             var resp = await _httpClient.PatchAsync($"resources/{response.Uuid}", contentBody);
             if (resp.IsSuccessStatusCode)
@@ -82,6 +132,7 @@ namespace Crm.Link.UUID
             }
             else
             {
+                _logger.LogWarning($"Failed: Status code:{resp.StatusCode}: {resp.ReasonPhrase}");
                 return null;
             }
         }
