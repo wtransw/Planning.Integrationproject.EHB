@@ -211,7 +211,7 @@ namespace CalendarServices
                 //                                                y.Comment.ToLower().Contains(attendee.Id .ToLower())
                 //                                        )).ToList();
 
-                var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Comment.ToLower().Contains(attendee.Comment.ToLower()))).ToList();
+                var sessionsWithThisAttendee = allSessions.Where(x => x.Attendees.Any(y => y.Comment != null && y.Comment.ToLower().Contains(attendee.Comment.ToLower()))).ToList();
 
                 foreach (var session in sessionsWithThisAttendee)
                 {
